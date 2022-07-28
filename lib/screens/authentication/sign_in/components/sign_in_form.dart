@@ -147,7 +147,7 @@ class _SignFormState extends State<SignForm> {
           AuthButton(
             textColor: kWhite,
             color: kBlue,
-            text: "Sign Up",
+            text: "Sign In",
             press: () {
               // try {
               //   // doSignIn();

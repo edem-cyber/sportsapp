@@ -144,7 +144,8 @@ class AuthProvider with ChangeNotifier {
 
   Future<UserModel?> signInWithGoogle() async {
     try {
-      setIsLoading(true);
+      // setIsLoading(true);
+      _isLoading = true;
       notifyListeners();
       final GoogleSignInAccount? account = await _googleSignIn?.signIn();
       final GoogleSignInAuthentication? googleAuth =
@@ -161,26 +162,32 @@ class AuthProvider with ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         return _userFromFirebase(user);
-
-        // await _auth.signOut();
       } else {
         appNotification(
           title: "Error",
-          message: "Something went wrong",
+          message: "Missing Google Auth Token",
           icon: const Icon(Icons.error, color: Colors.red),
         );
-        throw FirebaseAuthException(
-          code: 'ERROR_MISSING_GOOGLE_AUTH_TOKEN',
-          message: 'Missing Google Auth Token',
-        );
+        // _isLoading = false;
+        // notifyListeners();
+        // throw FirebaseAuthException(
+        //   code: 'ERROR_MISSING_GOOGLE_AUTH_TOKEN',
+        //   message: 'Missing Google Auth Token',
+        // );
       }
-      // return _userFromFirebase(googleauth.user);
     } catch (e) {
-      // signedOutNotification("Sign in failed");
-      notifyListeners();
+      print(e);
+      appNotification(
+        title: "Error",
+        message: "GOOGLE AUTH ERROR : $e",
+        icon: const Icon(Icons.error, color: Colors.red),
+      );
+      // _isLoading = false;
+      // notifyListeners();
       return _userFromFirebase(null);
     } finally {
-      setIsLoading(false);
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -204,12 +211,9 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> signOut() async {
     try {
-      // setIsLoading(true);
-      _isLoading = true;
       await _auth.signOut();
       _googleSignIn?.signOut();
       //if sign out is success show notification
-
       appNotification(
           title: "Success",
           message: "Signed Out",

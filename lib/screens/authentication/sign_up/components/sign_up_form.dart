@@ -246,13 +246,7 @@ class _SignUpFormState extends State<SignUpForm> {
           const SizedBox(height: 26),
           FormError(errors: errors),
           const SizedBox(height: 18),
-          TextButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  print(authProvider.isLoading);
-                }
-              },
-              child: Text("Sign Up")),
+     
           AuthButton(
             textColor: kWhite,
             color: kBlue,
