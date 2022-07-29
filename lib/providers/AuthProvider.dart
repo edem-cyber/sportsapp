@@ -46,7 +46,7 @@ class AuthProvider with ChangeNotifier {
   AuthProvider() {
     _auth = FirebaseAuth.instance;
     _databaseService = DatabaseService();
-    // _navigationService = NavigationService();
+    _navigationService = NavigationService();
     _auth.authStateChanges().listen(
       // ignore: no_leading_underscores_for_local_identifiers
       (_user) {
@@ -90,6 +90,8 @@ class AuthProvider with ChangeNotifier {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       debugPrint('${_auth.currentUser}');
+      _navigationService.removeAndNavigateToRoute(Base.routeName);
+
       // ignore: await_only_futures
       await appNotification(
           title: "Success",
