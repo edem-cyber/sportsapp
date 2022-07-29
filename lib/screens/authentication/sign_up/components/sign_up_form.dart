@@ -246,7 +246,7 @@ class _SignUpFormState extends State<SignUpForm> {
           const SizedBox(height: 26),
           FormError(errors: errors),
           const SizedBox(height: 18),
-     
+
           AuthButton(
             textColor: kWhite,
             color: kBlue,
@@ -257,6 +257,8 @@ class _SignUpFormState extends State<SignUpForm> {
               //   // _formKey.currentState!.validate() ? doSignIn() : null;
               // Navigator.of(context).push(MaterialPageRoute(
               //     builder: (_) => const Base(), fullscreenDialog: true));
+              bool passwordMatch =
+                  _passwordController.text == _confirmPasswordController.text;
               try {
                 if (_formKey.currentState!.validate()) {
                   // authProvider.setIsLoading(true);
@@ -274,6 +276,10 @@ class _SignUpFormState extends State<SignUpForm> {
                   // if (!mounted) return;
                   // Navigator.of(context).push(MaterialPageRoute(
                   //     builder: (_) => const Base(), fullscreenDialog: true));
+                } else if (passwordMatch) {
+                  addError(error: kPassMatchError);
+                } else {
+                  addError(error: kPassNullError);
                 }
               } catch (e) {
                 debugPrint("Auth Button Error: $e");

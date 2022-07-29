@@ -8,6 +8,7 @@ import 'package:sportsapp/helper/constants.dart';
 
 import 'package:sportsapp/models/User.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
+import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/notification.dart';
@@ -45,7 +46,7 @@ class AuthProvider with ChangeNotifier {
   AuthProvider() {
     _auth = FirebaseAuth.instance;
     _databaseService = DatabaseService();
-    _navigationService = NavigationService();
+    // _navigationService = NavigationService();
     _auth.authStateChanges().listen(
       // ignore: no_leading_underscores_for_local_identifiers
       (_user) {
@@ -70,7 +71,7 @@ class AuthProvider with ChangeNotifier {
           );
         } else {
           // * In case the user is not null (exists), then the user must login
-          _navigationService.signOutWithAnimation(SignIn.routeName);
+          _navigationService.signOutWithAnimation(SignUp.routeName);
         }
       },
     );
