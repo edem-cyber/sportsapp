@@ -31,6 +31,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+.metadata
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -46,10 +47,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-.vscode/
-ios
-android
-web
-linux
-macos
-windows
+/.vscode/
+/ios/
+/android/
+/web/
+/linux/
+/macos/
+/windows/
