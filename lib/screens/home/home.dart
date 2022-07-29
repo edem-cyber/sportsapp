@@ -15,7 +15,7 @@ class News extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            // Text('Welcome ${authProvider.user.email}'),
+            // Text('Welcome ${authProvider.user!.username.toString()}'),
             ElevatedButton(
               child: Text('Sign Out'),
               onPressed: () {

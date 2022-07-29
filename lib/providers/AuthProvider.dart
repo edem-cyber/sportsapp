@@ -39,7 +39,7 @@ class AuthProvider with ChangeNotifier {
   late final NavigationService _navigationService;
 
   GoogleSignIn? _googleSignIn;
-  late UserModel user;
+  UserModel? user;
 
   AuthProvider() {
     _auth = FirebaseAuth.instance;
@@ -66,7 +66,7 @@ class AuthProvider with ChangeNotifier {
                       'last_active': userData['last_active'],
                     },
                   );
-                  print('User data IS : ${user.toJson()}');
+                  print('User data IS : ${user!.toJson()}');
                 }
               }
               //* Automatic navigates to the home page

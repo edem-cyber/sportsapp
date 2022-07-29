@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/screens/splash/components/splash_text.dart';
@@ -16,7 +17,7 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   int currentPage = 0;
-  late NavigationService _navigationService;
+  // late NavigationService _navigationService;
 
   final PageController _pageController = PageController();
   List<Map<String, String>> splashData = [
@@ -68,6 +69,8 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     //initialize the nav class
     // _navigationService = GetIt.instance.get<NavigationService>();
+    var _navigationService =
+        Provider.of<NavigationService>(context, listen: false);
 
     return PageView.builder(
       physics: const ClampingScrollPhysics(),
