@@ -208,14 +208,14 @@ class _SignUpFormState extends State<SignUpForm> {
           //   child: buildFullNameFormField(),
           // ),
           // const SizedBox(height: 10),
-          // Container(
-          //   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-          //   decoration: BoxDecoration(
-          //     color: kGrey.withOpacity(0.1),
-          //     borderRadius: BorderRadius.circular(32),
-          //   ),
-          //   child: buildUsernameFormField(),
-          // ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+            decoration: BoxDecoration(
+              color: kGrey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: buildUsernameFormField(),
+          ),
           const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -234,15 +234,15 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             child: buildPasswordFormField(),
           ),
-          // const SizedBox(height: 10),
-          // Container(
-          //   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-          //   decoration: BoxDecoration(
-          //     color: kGrey.withOpacity(0.1),
-          //     borderRadius: BorderRadius.circular(32),
-          //   ),
-          //   child: buildConfirmPasswordFormField(),
-          // ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+            decoration: BoxDecoration(
+              color: kGrey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: buildConfirmPasswordFormField(),
+          ),
           const SizedBox(height: 26),
           FormError(errors: errors),
           const SizedBox(height: 18),

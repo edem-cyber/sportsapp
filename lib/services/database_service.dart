@@ -16,14 +16,14 @@ class DatabaseService {
 
   // Create User
   // Future<void> createUser(
-  //     String _uid, String _email, String _name, String _imageUrl) async {
+  //     String _uid, String _email, String _name, String _photoURL) async {
   //   try {
   //     // * Going to the collections (User) the to the user uid and overrides the values of the fields
   //     await _dataBase.collection(userCollection).doc(_uid).set(
   //       {
   //         'name': _name,
   //         'email': _email,
-  //         'image': _imageUrl,
+  //         'image': _photoURL,
   //         'last_active': DateTime.now().toUtc(),
   //       },
   //     );
@@ -36,7 +36,7 @@ class DatabaseService {
     required String uid,
     required String name,
     required String email,
-    String? imageUrl,
+    String? photoURL,
   }) async {
     try {
       // * Going to the collections (User) the to the user uid and overrides the values of the fields
@@ -44,7 +44,7 @@ class DatabaseService {
         {
           'name': name,
           'email': email,
-          'image': imageUrl ?? '',
+          'image': photoURL ?? '',
           'last_active': DateTime.now().toUtc(),
         },
       );

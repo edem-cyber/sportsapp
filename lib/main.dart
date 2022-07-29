@@ -175,7 +175,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
+  static GlobalKey mtAppKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     // var themeProvider = Provider.of<ThemeProvider>(context);
@@ -199,6 +199,7 @@ class MyApp extends StatelessWidget {
         child: Consumer<ThemeProvider>(
           builder: (context, ThemeProvider themeProvider, child) {
             return GetMaterialApp(
+              key: mtAppKey,
               navigatorKey: NavigationService.navigatorKey,
               title: 'Toppick',
               debugShowCheckedModeBanner: false,

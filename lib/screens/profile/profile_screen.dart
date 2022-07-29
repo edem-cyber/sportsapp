@@ -29,9 +29,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               try {
                 await authProvider.signOut();
                 //if mounted
-                if (!mounted) return;
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => const SignIn(), fullscreenDialog: true));
+                // if (!mounted) return;
+                // Navigator.of(context).push(MaterialPageRoute(
+                //     builder: (_) => const SignIn(), fullscreenDialog: true));
               } catch (e) {
                 debugPrint(e.toString());
               }

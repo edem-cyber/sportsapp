@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sportsapp/base.dart';
+import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 
 import 'package:sportsapp/models/User.dart';
@@ -29,8 +30,8 @@ class AuthProvider with ChangeNotifier {
             uid: user.uid,
             email: user.email!,
             // name: user.name!,
-            avatar: user.photoURL,
-            username: user.displayName!,
+            photoURL: user.photoURL ?? AppImage.defaultProfilePicture,
+            username: user.displayName ?? user.email!.split('@')[0],
           )
         : null;
   }
@@ -57,15 +58,9 @@ class AuthProvider with ChangeNotifier {
                 final userData = snapshot.data() as Map<String, dynamic>;
                 //* Check if the document object is null or not
                 if (snapshot.data() != null) {
-                  user = UserModel.fromJson(
-                    {
-                      'uid': _user.uid,
-                      'name': userData['name'],
-                      'email': userData['email'],
-                      'image': userData['image'],
-                      'last_active': userData['last_active'],
-                    },
-                  );
+                  // user = UserModel.fromMap(userData);
+                  // _userFromFirebase = user;
+                  _userFromFirebase(_user);
                   print('User data IS : ${user!.toJson()}');
                 }
               }
@@ -75,7 +70,7 @@ class AuthProvider with ChangeNotifier {
           );
         } else {
           // * In case the user is not null (exists), then the user must login
-          _navigationService.removeAndNavigateToRoute(SignIn.routeName);
+          _navigationService.signOutWithAnimation(SignIn.routeName);
         }
       },
     );
@@ -109,7 +104,10 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<UserModel?> signUp(
-      String email, String password, String username) async {
+    String email,
+    String password,
+    String username,
+  ) async {
     _isLoading = true;
     notifyListeners();
     try {
@@ -118,12 +116,12 @@ class AuthProvider with ChangeNotifier {
         password: password,
       );
       //database service to create a new user
-      // await _databaseService.createUser(
-      //   email: email,
-      //   name: username,
-      //   uid: _auth.currentUser!.uid,
-      //   imageUrl: _auth.currentUser!.photoURL!,
-      // );
+      await _databaseService.createUser(
+        email: email,
+        name: username,
+        uid: _auth.currentUser!.uid,
+        // photoURL: _auth.currentUser!.photoURL!,
+      );
       _isLoading = false;
       return _userFromFirebase(_auth.currentUser);
     } catch (e) {
