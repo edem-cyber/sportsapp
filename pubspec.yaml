@@ -49,6 +49,10 @@ dependencies:
   firebase_messaging: ^12.0.0
   firebase_crashlytics: ^2.8.5
   firebase_analytics: ^9.2.0
+  cached_network_image: ^3.2.1
+  http: ^0.13.4
+  like_button: ^2.0.4
+  shimmer: ^2.0.0
   
 
 

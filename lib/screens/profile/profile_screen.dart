@@ -4,16 +4,16 @@ import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/screens/profile/components/body.dart';
 
-class ProfileScreen extends StatefulWidget {
+class Leagues extends StatefulWidget {
   static String routeName = "/profile";
 
-  const ProfileScreen({Key? key}) : super(key: key);
+  const Leagues({Key? key}) : super(key: key);
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<Leagues> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<Leagues> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;

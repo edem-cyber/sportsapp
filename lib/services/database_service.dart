@@ -1,7 +1,6 @@
 // Packages
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:sportsapp/models/ChatMessageModel.dart';
 
 // Models
@@ -158,5 +157,28 @@ class DatabaseService {
       debugPrint('$error');
     }
     return null;
+  }
+
+  Stream<List> getPosts(
+      {required String uid, required String postType, required int limit}) {
+    return _dataBase
+        .collection('Posts')
+        .where('uid', isEqualTo: uid)
+        .where('post_type', isEqualTo: postType)
+        .orderBy('created_at', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  // Stream<List> getFollowedTopics() {}
+
+  Stream<List> getAllPosts(String uid) {
+    return _dataBase
+        .collection('Posts')
+        .where('uid', isEqualTo: uid)
+        .orderBy('created_at', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 }

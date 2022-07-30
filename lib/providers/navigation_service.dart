@@ -12,11 +12,13 @@ class NavigationService extends ChangeNotifier {
 
   void signOutWithAnimation(String route) {
     navigatorKey.currentState?.pushReplacement(
-      // context,
-      CustomNamedPageTransition(
-          MyApp.mtAppKey,
-          // MyRoute.routeName,
-          route),
+      CustomNamedPageTransition(MyApp.mtAppKey, route),
+    );
+  }
+
+  void signInWithAnimation(String route) {
+    navigatorKey.currentState?.pushReplacement(
+      CustomNamedPageTransition(MyApp.mtAppKey, route),
     );
   }
 

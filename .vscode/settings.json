@@ -2,6 +2,9 @@
     "java.configuration.updateBuildConfiguration": "interactive",
     "cmake.configureOnOpen": false,
     "cSpell.words": [
-        "mtapp"
+        "Firestore",
+        "mtapp",
+        "newslist",
+        "publshed"
     ]
 }

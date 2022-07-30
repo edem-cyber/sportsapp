@@ -11,6 +11,7 @@ import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/default_button.dart';
 import 'package:sportsapp/widgets/form_error.dart';
 import 'package:sportsapp/widgets/no_account_text.dart';
+import 'package:sportsapp/widgets/notification.dart';
 import 'package:sportsapp/widgets/social_card.dart';
 
 class SignForm extends StatefulWidget {
@@ -177,6 +178,14 @@ class _SignFormState extends State<SignForm> {
               }
             },
           ),
+          ElevatedButton(
+              onPressed: () {
+                appNotification(
+                    title: "User is: ${authProvider.user?.email ?? "No User"}",
+                    message: " message",
+                    icon: const Icon(Icons.abc));
+              },
+              child: const Text("test")),
           const SizedBox(height: 10),
           NoAccountText(
             text: "I don’t have an account",

@@ -1,21 +1,27 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sportsapp/base.dart';
-import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
-
-import 'package:sportsapp/models/User.dart';
+import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
-import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/notification.dart';
+import 'package:http/http.dart' as http;
 
 class AuthProvider with ChangeNotifier {
+  //initialize shared preferences
   // FirebaseAuth _auth;
   late final FirebaseAuth _auth;
+  // late StorageManager _storageManager;
+  late final DatabaseService _databaseService;
+  late final NavigationService _navigationService;
+  //posts list from firebase
+  // get storageManager => _storageManager;
+
   //isLoading is used to show the loading indicator when signing in or out
   bool _isLoading = false;
   get isLoading => _isLoading;
@@ -25,72 +31,84 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  UserModel? _userFromFirebase(User? user) {
-    return user != null
-        ? UserModel(
-            uid: user.uid,
-            email: user.email!,
-            // name: user.name!,
-            photoURL: user.photoURL ?? AppImage.defaultProfilePicture,
-            username: user.displayName ?? user.email!.split('@')[0],
-          )
-        : null;
-  }
+  // UserModel? _userFromFirebase(User? user) {
+  //   return user != null
+  //       ? UserModel(
+  //           uid: user.uid,
+  //           email: user.email!,
+  //           // name: user.name!,
+  //           photoURL: user.photoURL ?? AppImage.defaultProfilePicture,
+  //           username: user.displayName ?? user.email!.split('@')[0],
+  //         )
+  //       : null;
+  // }
+  Stream<User?> get authState => _auth.idTokenChanges();
 
-  late final DatabaseService _databaseService;
-  late final NavigationService _navigationService;
+  // User? _user;
+  User? get user => _auth.currentUser;
 
   GoogleSignIn? _googleSignIn;
-  UserModel? user;
+  //google sign in accounnt
+  GoogleSignInAccount? _googleSignInAccount;
+  GoogleSignInAccount? get googleSignInAccount => _googleSignInAccount;
 
   AuthProvider() {
+    // posts = _databaseService.getFollowedTopics();
     _auth = FirebaseAuth.instance;
     _databaseService = DatabaseService();
     _navigationService = NavigationService();
-    _auth.authStateChanges().listen(
-      // ignore: no_leading_underscores_for_local_identifiers
-      (_user) {
-        if (_user != null) {
-          _databaseService.updateUserLastSeenTime(_user.uid);
-          _databaseService.getUser(_user.uid).then(
+    _googleSignIn = GoogleSignIn();
+
+    authState.listen(
+      (fireUser) {
+        if (fireUser != null) {
+          _databaseService.updateUserLastSeenTime(fireUser.uid);
+          _databaseService.getUser(fireUser.uid).then(
             (snapshot) {
               // * Check if the documentSnapshot exists or not.
               if (snapshot.exists) {
-                final userData = snapshot.data() as Map<String, dynamic>;
+                final userData = snapshot.data() as Map<String, dynamic>?;
                 //* Check if the document object is null or not
-                if (snapshot.data() != null) {
+                if (userData != null) {
                   // user = UserModel.fromMap(userData);
                   // _userFromFirebase = user;
-                  _userFromFirebase(_user);
-                  print('User data IS : ${user!.toJson()}');
+                  // _userFromFirebase(_user);
+                  // print(_user);
+                  // print('User data IS : ${user!.toJson()}');
                 }
               }
               //* Automatic navigates to the home page
-              _navigationService.removeAndNavigateToRoute(Base.routeName);
+              _navigationService.signInWithAnimation(Base.routeName);
             },
           );
         } else {
+          //read user from storage
+          // _storageManager.readData("user").then(
+          //   (user) {
+          //     if (user != null) {
+          //       _user = user;
+          //       // print('User data IS : ${_user!.email()}');
+          //     } else {
+          //       _navigationService.signOutWithAnimation(SignIn.routeName);
+          //     }
+          //   },
+          // );
           // * In case the user is not null (exists), then the user must login
-          _navigationService.signOutWithAnimation(SignUp.routeName);
+          // _navigationService.signOutWithAnimation(SignIn.routeName);
         }
       },
     );
   }
-  // AuthProvider() {
-  //   _auth = FirebaseAuth.instance;
-  //   _googleSignIn = GoogleSignIn();
-  // }
-
-  // Stream<UserModel?> get user {
-  //   return _auth!.authStateChanges().map(_userFromFirebase);
-  // }
 
   Future<void> signIn(String email, String password) async {
+    //save user to storage
     setIsLoading(true);
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-      debugPrint('${_auth.currentUser}');
-      _navigationService.removeAndNavigateToRoute(Base.routeName);
+      debugPrint('PRINT USER SIGN IN : ${_auth.currentUser}');
+      // _navigationService.removeAndNavigateToRoute(Base.routeName);
+      //save user to storage
+      // await _storageManager.saveData("user", _auth.currentUser!.email);
 
       // ignore: await_only_futures
       await appNotification(
@@ -106,13 +124,13 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<UserModel?> signUp(
+  Future<User?> signUp(
     String email,
     String password,
     String username,
   ) async {
-    _isLoading = true;
-    notifyListeners();
+    setIsLoading(true);
+
     try {
       await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
@@ -125,8 +143,9 @@ class AuthProvider with ChangeNotifier {
         uid: _auth.currentUser!.uid,
         // photoURL: _auth.currentUser!.photoURL!,
       );
-      _isLoading = false;
-      return _userFromFirebase(_auth.currentUser);
+      setIsLoading(false);
+
+      // return _userFromFirebase(_auth.currentUser);
     } catch (e) {
       //regex to filter firebase error messages
       var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
@@ -138,19 +157,21 @@ class AuthProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      setIsLoading(false);
     }
+    print('Sign up print ${_auth.currentUser}');
+    // return _userFromFirebase(_auth.currentUser);
   }
 
-  Future<UserModel?> signInWithGoogle() async {
+  Future<User?> signInWithGoogle() async {
     try {
       // setIsLoading(true);
       _isLoading = true;
       notifyListeners();
-      final GoogleSignInAccount? account = await _googleSignIn?.signIn();
+      _googleSignInAccount = await _googleSignIn!.signIn();
+
       final GoogleSignInAuthentication? googleAuth =
-          await account?.authentication;
+          await _googleSignInAccount?.authentication;
 
       if (googleAuth != null) {
         UserCredential? credentials = await _auth.signInWithCredential(
@@ -162,13 +183,15 @@ class AuthProvider with ChangeNotifier {
         final User? user = credentials.user;
         _isLoading = false;
         notifyListeners();
-        return _userFromFirebase(user);
+        // return _userFromFirebase(user);
       } else {
         appNotification(
           title: "Error",
           message: "Missing Google Auth Token",
           icon: const Icon(Icons.error, color: Colors.red),
         );
+        setIsLoading(false);
+
         // _isLoading = false;
         // notifyListeners();
         // throw FirebaseAuthException(
@@ -183,12 +206,12 @@ class AuthProvider with ChangeNotifier {
         message: "GOOGLE AUTH ERROR : $e",
         icon: const Icon(Icons.error, color: Colors.red),
       );
+      setIsLoading(false);
       // _isLoading = false;
       // notifyListeners();
-      return _userFromFirebase(null);
+      // return _userFromFirebase(_auth.currentUser);
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      print('Sign up print ${_auth.currentUser}');
     }
   }
 
@@ -210,24 +233,78 @@ class AuthProvider with ChangeNotifier {
   //   }
   // }
 
+  // Future<void> signOut() async {
+  //   try {
+  //     _googleSignIn?.signOut().then((value) => _auth.signOut().then((value) =>
+  //         _navigationService.signOutWithAnimation(SignIn.routeName)));
+
+  //     //clear cache
+  //     await _auth.currentUser?.delete();
+
+  //     // _googleSignIn?.signOut();
+
+  //     //if sign out is success show notification
+  //     appNotification(
+  //         title: "Success",
+  //         message: "Signed Out",
+  //         icon: const Icon(Icons.check, color: Colors.green));
+  //     notifyListeners();
+  //     return;
+  //   } catch (e) {
+  //     debugPrint("SIGN OUT ERROR: $e");
+  //     return;
+  //   } finally {
+  //     notifyListeners();
+  //     // setIsLoading(false);
+  //   }
+  // }
+
   Future<void> signOut() async {
-    try {
-      await _auth.signOut();
-      _googleSignIn?.signOut();
-      //if sign out is success show notification
-      appNotification(
-          title: "Success",
-          message: "Signed Out",
-          icon: const Icon(Icons.check, color: Colors.green));
-      notifyListeners();
-      return;
-    } catch (e) {
-      debugPrint("SIGN OUT ERROR: $e");
-      return;
-    } finally {
-      notifyListeners();
-      // setIsLoading(false);
+    await FirebaseAuth.instance.signOut();
+    await _googleSignIn?.signOut();
+    _auth.signOut();
+    //set local user to null;
+    // _user = null;
+    _navigationService.signOutWithAnimation(SignIn.routeName);
+  }
+
+  // getPosts() {
+
+  // }
+  List<Article> news = [];
+
+  Future<List<Article>> getPosts() async {
+    var apiKey = "800dce9aa1334456ac941842fa55edf8";
+    // "https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=800dce9aa1334456ac941842fa55edf8");
+
+    Uri url = Uri.parse(
+        "https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=800dce9aa1334456ac941842fa55edf8");
+    var response = await http.get(url);
+    print("RESPONSE STATUS: ${response.statusCode}");
+    // print("RESPONSE BODY: ${response.body}");
+
+    var jsonData = jsonDecode(response.body);
+    // print("JSON DATA: ${jsonData}");
+    print("JSON STATUS: ${jsonData['status']}");
+    if (jsonData['status'] == "ok") {
+      jsonData["articles"].forEach((element) {
+        if (element['urlToImage'] != null && element['description'] != null) {
+          Article article = Article(
+            title: element['title'] ?? "",
+            description: element['description'] ?? "",
+            urlToImage: element['urlToImage'] ?? "",
+            content: element['content'] ?? "",
+            publishedAt: DateTime.parse(element['publishedAt']),
+            author: element['author'] ?? "",
+            articleUrl: element['url'] ?? "",
+          );
+          // print("ARTICLE: ${article.title}");
+          // print("NEWS LENGTH: ${news.length}");
+          news.add(article);
+        }
+      });
     }
+    return news;
   }
 
   // Future<bool> signInWithGoogle() async {

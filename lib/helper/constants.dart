@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-const kBlue = Color(0xFF416DFF);
-Color kLightBlue = kBlue.withOpacity(0.5);
+const kBlue = Color(0xFF305FFC);
+Color kLightBlue = const Color(0xFF89A5FF);
 const kPrimaryGradientColor = LinearGradient(
   begin: Alignment.topLeft,
   end: Alignment.bottomRight,
@@ -9,8 +9,9 @@ const kPrimaryGradientColor = LinearGradient(
 );
 const kTertiaryColor = Color(0xffF5A000);
 const kBlack = Color(0xFF252525);
+const kBlack500 = Color(0xFF1F1F1F);
 const kTextColor = Color(0xFF444444);
-const kTextLightColor = Color(0xFF9E9E9E);
+const kTextLightColor = Color(0xFFB4B4B4);
 const kGrey = Color(0xFF757575);
 const kWhite = Color(0xFFFFFFFF);
 const kWarning = Color(0xFFFF4646);
@@ -96,23 +97,29 @@ TextTheme darkTextTheme() {
 }
 
 AppBarTheme appBarTheme() {
-  return const AppBarTheme(
+  return AppBarTheme(
     color: kWhite,
-    elevation: 0,
-    iconTheme: IconThemeData(color: kBlack),
-    // textTheme: TextTheme(
-    //   headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
-    // ),
+    elevation: 1,
+    iconTheme: const IconThemeData(color: kBlack),
+    toolbarTextStyle: const TextTheme(
+      headline6: TextStyle(color: kBlack, fontSize: 18),
+    ).bodyText2,
+    titleTextStyle: const TextTheme(
+      headline6: TextStyle(color: kBlack, fontSize: 18),
+    ).headline6,
   );
 }
 
 AppBarTheme darkAppBarTheme() {
-  return const AppBarTheme(
+  return AppBarTheme(
     color: kBlack,
-    elevation: 0,
-    iconTheme: IconThemeData(color: kWhite),
-    // textTheme: TextTheme(
-    //   headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
-    // ),
+    elevation: 1,
+    iconTheme: const IconThemeData(color: kWhite),
+    toolbarTextStyle: const TextTheme(
+      headline6: TextStyle(color: kWhite, fontSize: 18),
+    ).bodyText2,
+    titleTextStyle: const TextTheme(
+      headline6: TextStyle(color: kWhite, fontSize: 18),
+    ).headline6,
   );
 }

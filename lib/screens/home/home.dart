@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
-import 'package:sportsapp/widgets/notification.dart';
+import 'package:sportsapp/screens/home/widgets/body.dart';
+import 'package:sportsapp/widgets/small_appbar.dart';
 
 class News extends StatelessWidget {
   const News({Key? key}) : super(key: key);
@@ -13,29 +14,10 @@ class News extends StatelessWidget {
     var authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            // Text('Welcome ${authProvider.user!.username.toString()}'),
-            ElevatedButton(
-              child: const Text('Sign Out'),
-              onPressed: () {
-                authProvider.signOut();
-              },
-            ),
-            ElevatedButton(
-              child: Text('ISLOADING ${authProvider.isLoading}'),
-              onPressed: () {
-                print('ISLOADING ${authProvider.isLoading}');
-                appNotification(
-                    title: "isloading",
-                    message: "${authProvider.isLoading}",
-                    icon: const Icon(Icons.abc));
-              },
-            ),
-          ],
-        ),
+      appBar: SmallAppBar(
+        url: authProvider.user!.photoURL ?? AppImage.defaultProfilePicture,
       ),
+      body: const Body(),
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageManager {
-  static void saveData(String key, dynamic value) async {
+  Future<dynamic> saveData(String key, dynamic value) async {
     final prefs = await SharedPreferences.getInstance();
     if (value is int) {
       prefs.setInt(key, value);
@@ -11,17 +11,33 @@ class StorageManager {
     } else if (value is bool) {
       prefs.setBool(key, value);
     } else {
-      debugPrint("Invalid Type");
+      debugPrint("Invalid Type..................");
+    }
+    return value is int
+        ? prefs.getInt(key)
+        : value is String
+            ? prefs.getString(key)
+            : value is bool
+                ? prefs.getBool(key)
+                : null;
+  }
+
+  Future<dynamic> getData(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(key)) {
+      return prefs.get(key);
+    } else {
+      return null;
     }
   }
 
-  static Future<dynamic> readData(String key) async {
+  Future<dynamic> readData(String key) async {
     final prefs = await SharedPreferences.getInstance();
     dynamic obj = prefs.get(key);
     return obj;
   }
 
-  static Future<bool> deleteData(String key) async {
+  Future<bool> deleteData(String key) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.remove(key);
   }

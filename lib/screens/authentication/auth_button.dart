@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
@@ -37,7 +38,7 @@ class AuthButton extends StatelessWidget {
         icon: Consumer<AuthProvider>(
           builder: (context, provider, child) {
             return provider.isLoading
-            ? const CircularProgressIndicator(
+            ? const CupertinoActivityIndicator(
                 // valueColor: AlwaysStoppedAnimation<Color>(kPrimaryColor),
                 color: kWhite,
               )
