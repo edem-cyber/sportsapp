@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 
@@ -19,7 +21,16 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.only(left: 20, right: 0, top: 0, bottom: 0),
         child: CircleAvatar(
           // ignore: prefer_if_null_operators
-          backgroundImage: NetworkImage(url),
+          backgroundImage: CachedNetworkImageProvider(url, errorListener: () {
+            Shimmer.fromColors(
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  color: Colors.white,
+                ),
+                baseColor: Colors.grey,
+                highlightColor: Colors.white);
+          }),
           radius: 15,
         ),
       ),

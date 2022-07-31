@@ -18,7 +18,7 @@ class Base extends StatefulWidget {
 }
 
 class _BaseState extends State<Base> {
-  var _currentIndex = 0;
+  var _currentIndex = 1;
   final List pages = [
     {
       'title': 'News',

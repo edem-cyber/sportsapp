@@ -97,26 +97,12 @@ class NewsTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // child: Container(
-                  //   // height: 180,
-                  //   // width: MediaQuery.of(context).size.width,
-                  //   alignment: Alignment.center,
-                  //   child: Consumer<ThemeProvider>(
-                  //     builder: (context, themeProvider, child) =>
-                  //         CupertinoActivityIndicator(
-                  //       radius: 15,
-                  //       color: themeProvider.isDarkMode ? kWhite : kBlue,
-                  //     ),
-                  //   ),
-                  // ),
                 ),
               ),
               const SizedBox(
                 height: 15,
               ),
-              //show shimmer when loading
-
-              title.isNotEmpty || title != null
+              title.isNotEmpty
                   ? Text(
                       title,
                       maxLines: 1,
@@ -138,7 +124,6 @@ class NewsTile extends StatelessWidget {
               const SizedBox(
                 height: 4,
               ),
-
               desc.isNotEmpty || desc != null
                   ? Text(
                       desc,
