@@ -8,7 +8,7 @@ import 'package:sportsapp/screens/search/widgets/body.dart';
 
 class Search extends StatefulWidget {
   Search({Key? key}) : super(key: key);
-  static const String routeName = '/home';
+  static const String routeName = '/search';
 
   late TabController tabController;
   @override

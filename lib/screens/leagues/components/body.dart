@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/screens/profile/components/profile_menu.dart';
-import 'package:sportsapp/screens/profile/components/profile_pic.dart';
+import 'package:sportsapp/screens/leagues/components/profile_menu.dart';
+import 'package:sportsapp/screens/leagues/components/profile_pic.dart';
 
 class Body extends StatelessWidget {
   const Body({Key? key}) : super(key: key);

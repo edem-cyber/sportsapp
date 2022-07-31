@@ -4,23 +4,21 @@ import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/screens/picks/widgets/body.dart';
+import 'package:sportsapp/screens/leagues/components/body.dart';
 
-class Picks extends StatefulWidget {
-  static const String routeName = '/picks';
-  const Picks({Key? key}) : super(key: key);
+class Leagues extends StatefulWidget {
+  static const String routeName = '/leagues';
+  const Leagues({Key? key}) : super(key: key);
 
   @override
-  State<Picks> createState() => _PicksState();
+  State<Leagues> createState() => _LeaguesState();
 }
 
-
-class _PicksState extends State<Picks> with TickerProviderStateMixin {
+class _LeaguesState extends State<Leagues> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<ThemeProvider>(context);
     var authProvider = Provider.of<AuthProvider>(context);
-    TabController tabController = TabController(length: 3, vsync: this);
 
     return Scaffold(
       appBar: AppBar(
@@ -57,7 +55,7 @@ class _PicksState extends State<Picks> with TickerProviderStateMixin {
             textAlign: TextAlign.center,
             decoration: InputDecoration(
               border: InputBorder.none,
-              hintText: 'Search Rooms',
+              hintText: 'Search Leagues',
               hintStyle: Theme.of(context)
                   .textTheme
                   .bodyLarge!
@@ -67,7 +65,7 @@ class _PicksState extends State<Picks> with TickerProviderStateMixin {
         ),
         //,
       ),
-      body: Body(
+      body: const Body(
           // tabController: tabController,
           ),
     );

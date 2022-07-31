@@ -5,7 +5,7 @@ import 'package:sportsapp/screens/authentication/forgot_password/forgot_password
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
 import 'package:sportsapp/screens/home/home.dart';
-import 'package:sportsapp/screens/profile/profile_screen.dart';
+import 'package:sportsapp/screens/leagues/leagues.dart';
 import 'package:sportsapp/screens/splash/splash_screen.dart';
 import 'package:sportsapp/screens/welcome/welcome.dart';
 

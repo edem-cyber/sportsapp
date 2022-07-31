@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/screens/home/home.dart';
+import 'package:sportsapp/screens/leagues/leagues.dart';
 import 'package:sportsapp/screens/picks/picks.dart';
-import 'package:sportsapp/screens/profile/profile_screen.dart';
 import 'package:sportsapp/screens/search/search.dart';
 
 class Base extends StatefulWidget {
@@ -34,13 +34,13 @@ class _BaseState extends State<Base> {
       'page': Search(),
     },
     {
-      'title': 'Profile',
+      'title': 'Picks',
       'icon': 'assets/icons/picks.svg',
       // 'activeIcon': 'assets/icons/profile_active.svg',
       'page': const Picks(),
     },
     {
-      'title': 'Profile',
+      'title': 'Leagues',
       'icon': 'assets/icons/leagues.svg',
       // 'activeIcon': 'assets/icons/profile_active.svg',
       'page': const Leagues(),
