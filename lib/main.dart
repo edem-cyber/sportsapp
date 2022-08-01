@@ -9,6 +9,7 @@ import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
+import 'package:sportsapp/screens/splash/splash_screen.dart';
 import 'providers/postprovider.dart';
 import 'routes.dart';
 
@@ -208,7 +209,7 @@ class MyApp extends StatelessWidget {
               navigatorKey: NavigationService.navigatorKey,
               title: 'Toppick',
               debugShowCheckedModeBanner: false,
-              initialRoute: SignIn.routeName,
+              initialRoute: SplashScreen.routeName,
               //set theme preference from shared prefs
               routes: routes,
               theme: themeProvider.isDarkMode ? dark : light,

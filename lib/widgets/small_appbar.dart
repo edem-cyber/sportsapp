@@ -19,19 +19,24 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
       scrolledUnderElevation: 3,
       leading: Padding(
         padding: const EdgeInsets.only(left: 20, right: 0, top: 0, bottom: 0),
-        child: CircleAvatar(
-          // ignore: prefer_if_null_operators
-          backgroundImage: CachedNetworkImageProvider(url, errorListener: () {
-            Shimmer.fromColors(
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  color: Colors.white,
-                ),
-                baseColor: Colors.grey,
-                highlightColor: Colors.white);
-          }),
-          radius: 15,
+        child: GestureDetector(
+          onTap: () {
+            authProvider.signOut();
+          },
+          child: CircleAvatar(
+            // ignore: prefer_if_null_operators
+            backgroundImage: CachedNetworkImageProvider(url, errorListener: () {
+              Shimmer.fromColors(
+                  baseColor: Color.fromARGB(255, 143, 143, 143),
+                  highlightColor: Colors.white,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    color: Colors.white,
+                  ));
+            }),
+            radius: 15,
+          ),
         ),
       ),
       title: const Text(''),

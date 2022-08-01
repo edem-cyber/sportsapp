@@ -1,6 +1,11 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/base.dart';
+import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/authentication/auth_button.dart';
@@ -36,6 +41,42 @@ class _SignUpFormState extends State<SignUpForm> {
 
   final TextEditingController _usernameController =
       TextEditingController(text: "edem-cyber");
+
+  //image picker
+  final picker = ImagePicker();
+  XFile? _photo;
+
+  pickImage() async {
+    _photo =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 25);
+    setState(() {
+      // _photo = image;
+    });
+  }
+
+  //firebase storage
+  final FirebaseStorage storage = FirebaseStorage.instance;
+
+  Future<void> uploadPfP() async {
+    File? uploadFile = File(_photo!.path);
+    Reference storageRef =
+        storage.ref().child('profile_pics/${uploadFile.path}');
+    UploadTask uploadTask = storageRef.putFile(uploadFile);
+    await uploadTask.whenComplete(() => print('uploaded'));
+    print('File Uploaded');
+    storageRef.getDownloadURL().then((fileURL) {
+      print(fileURL);
+    });
+  }
+
+  Future<String> getDownload() async {
+    File? uploadFile = File(_photo!.path);
+    var ref = await storage
+        .ref()
+        .child('profile_pics/${uploadFile.path}')
+        .getDownloadURL();
+    return ref;
+  }
 
   void addError({String? error}) {
     if (!errors.contains(error)) {
@@ -179,6 +220,24 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
+  Widget buildAvatar() {
+    return GestureDetector(
+      onTap: pickImage(),
+      child: CircleAvatar(
+        backgroundImage: _photo != null
+            ? Image.file(File(_photo!.path)).image
+            : const AssetImage(AppImage.defaultProfilePicture),
+        radius: 40,
+        child: _photo == null
+            ? const Icon(
+                Icons.add,
+                size: 40,
+              )
+            : const SizedBox(),
+      ),
+    );
+  }
+
   // @override
   // void initState() {
   //   super.initState();
@@ -208,6 +267,29 @@ class _SignUpFormState extends State<SignUpForm> {
           //   child: buildFullNameFormField(),
           // ),
           // const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+            decoration: BoxDecoration(
+              color: kGrey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: GestureDetector(
+              onTap: pickImage(),
+              child: CircleAvatar(
+                backgroundImage: _photo != null
+                    ? Image.file(File(_photo!.path)).image
+                    : const AssetImage(AppImage.defaultProfilePicture),
+                radius: 40,
+                child: _photo == null
+                    ? const Icon(
+                        Icons.add,
+                        size: 40,
+                      )
+                    : const SizedBox(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
             decoration: BoxDecoration(
@@ -251,7 +333,7 @@ class _SignUpFormState extends State<SignUpForm> {
             textColor: kWhite,
             color: kBlue,
             text: "Sign Up",
-            press: () {
+            press: () async {
               // try {
               //   // doSignIn();
               //   // _formKey.currentState!.validate() ? doSignIn() : null;
@@ -263,13 +345,22 @@ class _SignUpFormState extends State<SignUpForm> {
                 if (_formKey.currentState!.validate()) {
                   // authProvider.setIsLoading(true);
                   print(authProvider.isLoading);
+                  // authProvider.signUp(
+                  //   // : _fullNameController.text,
+                  //   _emailController.text,
+                  //   _passwordController.text,
+                  //   _usernameController.text,
+                  // );
+                  // .then((value) => authProvider.setIsLoading(false));
+                  uploadPfP().then((value) async {});
+                  String value = await getDownload();
                   authProvider.signUp(
-                    // : _fullNameController.text,
                     _emailController.text,
                     _passwordController.text,
                     _usernameController.text,
+                    value,
                   );
-                  // .then((value) => authProvider.setIsLoading(false));
+
                   print("second print ${authProvider.isLoading}");
 
                   //if mounted

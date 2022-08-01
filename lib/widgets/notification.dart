@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
+import 'package:sportsapp/providers/AuthProvider.dart';
+import 'package:sportsapp/providers/ThemeProvider.dart';
 
 SnackbarController appNotification({
   required String title,
@@ -13,14 +16,22 @@ SnackbarController appNotification({
       animationDuration: const Duration(milliseconds: 600),
       title,
       message,
-      colorText: kWhite,
+      colorText:
+          Provider.of<ThemeProvider>(Get.context!, listen: false).isDarkMode
+              ? kWhite
+              : kBlack,
       mainButton: TextButton(
         onPressed: () {
           Get.back();
         },
-        child: const Text(
+        child: Text(
           "Cancel",
-          // style: TextStyle(color: kTertiaryColor),
+          style: TextStyle(
+            color: Provider.of<ThemeProvider>(Get.context!, listen: false)
+                    .isDarkMode
+                ? kWhite
+                : kBlack,
+          ),
         ),
       ),
       duration: const Duration(milliseconds: 1300),

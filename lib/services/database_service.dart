@@ -52,6 +52,14 @@ class DatabaseService {
     }
   }
 
+  Future addUserInfoToDB(String uid, Map<String, dynamic> userInfoMap) {
+    return _dataBase.collection(userCollection).doc(uid).set(userInfoMap);
+  }
+
+  Future getUserFromDB(String uid) {
+    return _dataBase.collection(userCollection).doc(uid).get();
+  }
+
   //* Getting the User from Firebase Cloud Store
   Future<DocumentSnapshot> getUser(String _uid, {String? name}) {
     return _dataBase.collection(userCollection).doc(_uid).get();

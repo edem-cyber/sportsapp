@@ -58,6 +58,8 @@ class AuthProvider with ChangeNotifier {
     _databaseService = DatabaseService();
     _navigationService = NavigationService();
     _googleSignIn = GoogleSignIn();
+    //get posts
+    getPosts();
 
     authState.listen(
       (fireUser) {
@@ -115,9 +117,22 @@ class AuthProvider with ChangeNotifier {
           title: "Success",
           message: "Signed In",
           icon: const Icon(Icons.check, color: Colors.green));
-    } on FirebaseAuthException {
+    } on FirebaseAuthException catch (e) {
+      var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
+      appNotification(
+        title: "Error",
+        message: er,
+        icon: const Icon(Icons.error, color: kWarning),
+      );
+      setIsLoading(false);
       debugPrint('Error login user into Firebase.');
     } catch (e) {
+      appNotification(
+        title: "Error",
+        message: "Something went wrong",
+        icon: const Icon(Icons.error, color: kWarning),
+      );
+      setIsLoading(false);
       debugPrint('$e');
     } finally {
       setIsLoading(false);
@@ -125,37 +140,45 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<User?> signUp(
-    String email,
-    String password,
-    String username,
-  ) async {
+      String email, String password, String username, String photoURL) async {
     setIsLoading(true);
 
     try {
-      await _auth.createUserWithEmailAndPassword(
+      UserCredential usercredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
+
+      var userInfoMap = {
+        'email': email,
+        'username': username,
+        'password': password,
+        'photoURL': photoURL,
+      };
+
+      await _databaseService.addUserInfoToDB(
+          _auth.currentUser!.uid, userInfoMap);
       //database service to create a new user
-      await _databaseService.createUser(
-        email: email,
-        name: username,
-        uid: _auth.currentUser!.uid,
-        // photoURL: _auth.currentUser!.photoURL!,
-      );
+      // await _databaseService.createUser(
+      //   email: email,
+      //   name: username,
+      //   uid: _auth.currentUser!.uid,
+      //   // photoURL: _auth.currentUser!.photoURL!,
+      // );
       setIsLoading(false);
 
       // return _userFromFirebase(_auth.currentUser);
     } catch (e) {
+      //switch
       //regex to filter firebase error messages
       var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
       appNotification(
         title: "Error",
         message: er,
-        icon: const Icon(Icons.error, color: Colors.red),
+        icon: const Icon(Icons.error, color: kWarning),
       );
-      _isLoading = false;
-      notifyListeners();
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -180,6 +203,18 @@ class AuthProvider with ChangeNotifier {
             idToken: googleAuth.idToken,
           ),
         );
+        var userInfoMap = {
+          'email': _googleSignInAccount?.email,
+          'username': _googleSignInAccount?.displayName,
+          'password': _googleSignInAccount?.id,
+          'photoURL': _googleSignInAccount?.photoUrl,
+        };
+        //if user already exists in database, then update the user info
+        await _databaseService.addUserInfoToDB(
+            _auth.currentUser!.uid, userInfoMap);
+
+        await _databaseService.addUserInfoToDB(
+            _auth.currentUser!.uid, userInfoMap);
         final User? user = credentials.user;
         _isLoading = false;
         notifyListeners();
@@ -188,7 +223,7 @@ class AuthProvider with ChangeNotifier {
         appNotification(
           title: "Error",
           message: "Missing Google Auth Token",
-          icon: const Icon(Icons.error, color: Colors.red),
+          icon: const Icon(Icons.error, color: kWarning),
         );
         setIsLoading(false);
 
@@ -204,7 +239,7 @@ class AuthProvider with ChangeNotifier {
       appNotification(
         title: "Error",
         message: "GOOGLE AUTH ERROR : $e",
-        icon: const Icon(Icons.error, color: Colors.red),
+        icon: const Icon(Icons.error, color: kWarning),
       );
       setIsLoading(false);
       // _isLoading = false;

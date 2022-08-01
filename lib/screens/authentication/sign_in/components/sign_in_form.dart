@@ -33,6 +33,7 @@ class _SignFormState extends State<SignForm> {
       TextEditingController(text: "edem.agbakpe@icloud.com");
 
   final _formKey = GlobalKey<FormState>();
+  late NavigationService _navigationService;
   final TextEditingController _passwordController =
       TextEditingController(text: "1234567");
 
@@ -111,8 +112,6 @@ class _SignFormState extends State<SignForm> {
     );
   }
 
-  late NavigationService _navigationService;
-
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -178,14 +177,14 @@ class _SignFormState extends State<SignForm> {
               }
             },
           ),
-          ElevatedButton(
-              onPressed: () {
-                appNotification(
-                    title: "User is: ${authProvider.user?.email ?? "No User"}",
-                    message: " message",
-                    icon: const Icon(Icons.abc));
-              },
-              child: const Text("test")),
+          // ElevatedButton(
+          //     onPressed: () {
+          //       appNotification(
+          //           title: "User is: ${authProvider.user?.email ?? "No User"}",
+          //           message: " message",
+          //           icon: const Icon(Icons.abc));
+          //     },
+          //     child: const Text("test")),
           const SizedBox(height: 10),
           NoAccountText(
             text: "I don’t have an account",

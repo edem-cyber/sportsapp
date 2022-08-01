@@ -73,9 +73,7 @@ class _ForYouState extends State<ForYou> with AutomaticKeepAliveClientMixin {
                                       .headlineSmall!
                                       .copyWith(
                                           fontWeight: FontWeight.w600,
-                                          color: themeProvider.isDarkMode
-                                              ? kBlack
-                                              : kWhite),
+                                          color: kWhite),
                                 ),
                                 const SizedBox(
                                   height: 4,
@@ -87,9 +85,7 @@ class _ForYouState extends State<ForYou> with AutomaticKeepAliveClientMixin {
                                       .bodyMedium!
                                       .copyWith(
                                           fontWeight: FontWeight.w700,
-                                          color: themeProvider.isDarkMode
-                                              ? kBlack
-                                              : kWhite),
+                                          color: kWhite),
                                 ),
                                 ElevatedButton(
                                   //set elevated button color
