@@ -209,7 +209,7 @@ class MyApp extends StatelessWidget {
               navigatorKey: NavigationService.navigatorKey,
               title: 'Toppick',
               debugShowCheckedModeBanner: false,
-              initialRoute: SplashScreen.routeName,
+              initialRoute: SignIn.routeName,
               //set theme preference from shared prefs
               routes: routes,
               theme: themeProvider.isDarkMode ? dark : light,

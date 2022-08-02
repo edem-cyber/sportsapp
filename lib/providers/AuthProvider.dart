@@ -80,7 +80,7 @@ class AuthProvider with ChangeNotifier {
                 }
               }
               //* Automatic navigates to the home page
-              // _navigationService.signInWithAnimation(Base.routeName);
+              _navigationService.signInWithAnimation(Base.routeName);
             },
           );
         } else {
@@ -117,7 +117,7 @@ class AuthProvider with ChangeNotifier {
           title: "Success",
           message: "Signed In",
           icon: const Icon(Icons.check, color: Colors.green));
-      _navigationService.signInWithAnimation(Base.routeName);
+      // _navigationService.signInWithAnimation(Base.routeName);
     } on FirebaseAuthException catch (e) {
       var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
       appNotification(
@@ -168,7 +168,7 @@ class AuthProvider with ChangeNotifier {
       //   // photoURL: _auth.currentUser!.photoURL!,
       // );
       setIsLoading(false);
-      _navigationService.signInWithAnimation(Base.routeName);
+      // _navigationService.signInWithAnimation(Base.routeName);
 
       // return _userFromFirebase(_auth.currentUser);
     } catch (e) {

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/base.dart';
@@ -44,14 +45,28 @@ class _SignUpFormState extends State<SignUpForm> {
 
   //image picker
   final picker = ImagePicker();
-  XFile? _photo;
+  File? _photo;
 
-  pickImage() async {
-    _photo =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 25);
-    setState(() {
-      // _photo = image;
-    });
+  Future pickImage() async {
+    try {
+      File file = File(_photo!.path);
+      // _photo = await picker.pickImage(
+      //     source: ImageSource.gallery, imageQuality: 25) as File;
+      if (_photo == null) return;
+
+      final imageTemporary = File(_photo!.path);
+
+      setState(() {
+        _photo = imageTemporary;
+      });
+    } on PlatformException catch (e) {
+      appNotification(
+          title: "Error",
+          message: "Failed to pick image",
+          icon: const Icon(Icons.error));
+    } on Exception catch (e) {
+      debugPrint("Error pick image function: $e");
+    }
   }
 
   //firebase storage
@@ -222,11 +237,13 @@ class _SignUpFormState extends State<SignUpForm> {
 
   Widget buildAvatar() {
     return GestureDetector(
-      onTap: pickImage(),
+      onTap: () {
+        pickImage();
+      },
       child: CircleAvatar(
         backgroundImage: _photo != null
-            ? Image.file(File(_photo!.path)).image
-            : const AssetImage(AppImage.defaultProfilePicture),
+            ? Image.file(_photo!).image
+            : const NetworkImage(AppImage.defaultProfilePicture),
         radius: 40,
         child: _photo == null
             ? const Icon(
@@ -273,21 +290,7 @@ class _SignUpFormState extends State<SignUpForm> {
               color: kGrey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(32),
             ),
-            child: GestureDetector(
-              onTap: pickImage(),
-              child: CircleAvatar(
-                backgroundImage: _photo != null
-                    ? Image.file(File(_photo!.path)).image
-                    : const AssetImage(AppImage.defaultProfilePicture),
-                radius: 40,
-                child: _photo == null
-                    ? const Icon(
-                        Icons.add,
-                        size: 40,
-                      )
-                    : const SizedBox(),
-              ),
-            ),
+            child: buildAvatar(),
           ),
           const SizedBox(height: 10),
           Container(
