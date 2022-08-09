@@ -149,20 +149,12 @@ class _SignFormState extends State<SignForm> {
             color: kBlue,
             text: "Sign In",
             press: () {
-              // try {
-              //   // doSignIn();
-              //   // _formKey.currentState!.validate() ? doSignIn() : null;
-              // Navigator.of(context).push(MaterialPageRoute(
-              //     builder: (_) => const Base(), fullscreenDialog: true));
               try {
                 if (_formKey.currentState!.validate()) {
-                  // authProvider.setIsLoading(true);
                   print(authProvider.isLoading);
                   authProvider.signIn(
-                    // : _fullNameController.text,
                     _emailController.text,
                     _passwordController.text,
-                    // _usernameController.text,
                   );
                   // .then((value) => authProvider.setIsLoading(false));
                   print("second print ${authProvider.isLoading}");

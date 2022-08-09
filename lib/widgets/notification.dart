@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 
 SnackbarController appNotification({
@@ -11,8 +10,12 @@ SnackbarController appNotification({
   required Widget icon,
 }) =>
     Get.snackbar(
+      backgroundColor:
+          Provider.of<ThemeProvider>(Get.context!, listen: false).isDarkMode
+              ? kBlack
+              : kWhite,
       showProgressIndicator: false,
-      shouldIconPulse: false,
+      shouldIconPulse: true,
       animationDuration: const Duration(milliseconds: 600),
       title,
       message,
@@ -34,9 +37,7 @@ SnackbarController appNotification({
           ),
         ),
       ),
-      duration: const Duration(milliseconds: 1300),
-      // messageText: Text('Item removed'),
-      // backgroundColor: kBlack,
+      duration: const Duration(milliseconds: 1900),
       icon: AspectRatio(
         aspectRatio: 1,
         child: Padding(

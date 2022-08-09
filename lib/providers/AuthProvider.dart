@@ -1,4 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -18,7 +22,67 @@ class AuthProvider with ChangeNotifier {
   late final FirebaseAuth _auth;
   // late StorageManager _storageManager;
   late final DatabaseService _databaseService;
+  DatabaseService get databaseService => _databaseService;
+
   late final NavigationService _navigationService;
+  late DeviceInfoPlugin _deviceInfo;
+  //get device info
+  // DeviceInfoPlugin get deviceInfo => _deviceInfo;
+
+  Future getDeviceInfo() async {
+    // final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
+      notifyListeners();
+      return androidInfo.toMap().toString();
+      // return androidInfo.;
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
+      notifyListeners();
+      return iosInfo.toMap().toString();
+    } else if (Platform.isWindows) {
+      WindowsDeviceInfo windowsInfo = await _deviceInfo.windowsInfo;
+      notifyListeners();
+      return windowsInfo.toMap().toString();
+    } else if (Platform.isMacOS) {
+      MacOsDeviceInfo macOsInfo = await _deviceInfo.macOsInfo;
+      return macOsInfo.toMap().toString();
+    }
+    return _deviceInfo;
+  }
+
+  // void loadInfo() async {
+  //   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+  //   if (kIsWeb) {
+  //     WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+  //     // e.g. "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"
+  //     print('Web - Running on ${webBrowserInfo.userAgent}');
+  //     // setState(() {text = webBrowserInfo.toMap().toString();});
+  //   } else if (Platform.isIOS) {
+  //     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+  //     print('iOS - Running on ${iosInfo.utsname.machine}'); // e.g. "iPod7,1"
+  //     // setState(() {text = iosInfo.toMap().toString();});
+  //     // text = iosInfo.toMap().toString();
+  //     notifyListeners();
+  //   } else if (Platform.isAndroid) {
+  //     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  //     print('Android - Running on ${androidInfo.model}'); // e.g. "Moto G (4)"
+  //     // setState(() {text = androidInfo.toMap().toString();});
+  //   } else if (Platform.isWindows) {
+  //     WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
+  //     print(windowsInfo.toMap().toString());
+  //     // setState(() {text = windowsInfo.toMap().toString();});
+  //   } else if (Platform.isMacOS) {
+  //     MacOsDeviceInfo macOSInfo = await deviceInfo.macOsInfo;
+  //     print(macOSInfo.toMap().toString());
+  //     // setState(() {text = macOSInfo.toMap().toString();});
+  //   } else if (Platform.isLinux) {
+  //     LinuxDeviceInfo linuxInfo = await deviceInfo.linuxInfo;
+  //     print(linuxInfo.toMap().toString());
+  //     // setState(() {text = linuxInfo.toMap().toString();});
+  //   }
+  // }
   //posts list from firebase
   // get storageManager => _storageManager;
 
@@ -54,6 +118,21 @@ class AuthProvider with ChangeNotifier {
 
   AuthProvider() {
     // posts = _databaseService.getFollowedTopics();
+    _deviceInfo = DeviceInfoPlugin();
+
+    // getDeviceInfo().then((value) {
+    //   if (value != null) {
+    //     _deviceInfo = value.toString();
+    //     notifyListeners();
+    //   }
+    // });
+    getDeviceInfo().then((value) {
+      if (value != null) {
+        var mystring = value.toString();
+        print("DEVICE INFO HERE: $mystring");
+      }
+    });
+
     _auth = FirebaseAuth.instance;
     _databaseService = DatabaseService();
     _navigationService = NavigationService();
@@ -80,7 +159,7 @@ class AuthProvider with ChangeNotifier {
                 }
               }
               //* Automatic navigates to the home page
-              _navigationService.signInWithAnimation(Base.routeName);
+              // _navigationService.signInWithAnimation(Base.routeName);
             },
           );
         } else {
@@ -117,7 +196,12 @@ class AuthProvider with ChangeNotifier {
           title: "Success",
           message: "Signed In",
           icon: const Icon(Icons.check, color: Colors.green));
-      // _navigationService.signInWithAnimation(Base.routeName);
+      _navigationService.signInWithAnimation(Base.routeName);
+
+      // debugPrint("PRINT DEVICE INFO : ${_deviceInfo.iosInfo}");
+      // debugPrint("PRINT DEVICE INFO : ${_deviceInfo.androidInfo}");
+      // debugPrint("PRINT DEVICE INFO : ${_deviceInfo.webBrowserInfo}");
+      debugPrint("PRINT DEVICE INFO : ${_deviceInfo.windowsInfo}");
     } on FirebaseAuthException catch (e) {
       var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
       appNotification(
@@ -140,34 +224,62 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<User?> signUp(
+  // Future<bool> userExists(String username) async =>
+  //     (await _instance
+  //             .collection("users")
+  //             .where("username", isEqualTo: username)
+  //             .getDocuments())
+  //         .documents
+  //         .length >
+  // 0;
+
+  Future<void> signUp(
       String email, String password, String username, String photoURL) async {
     setIsLoading(true);
 
     try {
+      //usercredential
       UserCredential usercredential =
           await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
+      if (!await _databaseService.isDuplicateUniqueName(username)) {
+        // UniqueName is duplicate
+        // return 'Unique name already exists';
 
-      var userInfoMap = {
-        'email': email,
-        'username': username,
-        'password': password,
-        'photoURL': photoURL,
-      };
+        var userInfoMap = {
+          'email': email,
+          'username': username,
+          'password': password,
+          'photoURL': photoURL,
+          'lastSeen': DateTime.now(),
+          'createdAt': DateTime.now(),
+          'updatedAt': DateTime.now(),
+          // 'userDeviceInfo': deviceInfo.iosInfo,
+        };
 
-      await _databaseService.addUserInfoToDB(
-          _auth.currentUser!.uid, userInfoMap);
-      //database service to create a new user
-      // await _databaseService.createUser(
-      //   email: email,
-      //   name: username,
-      //   uid: _auth.currentUser!.uid,
-      //   // photoURL: _auth.currentUser!.photoURL!,
-      // );
+        await _databaseService.addUserInfoToDB(
+            _auth.currentUser!.uid, userInfoMap);
+      } else {
+        // UniqueName is duplicate
+        // return 'Unique name already exists';
+        appNotification(
+          title: "Error",
+          message: "User already exists",
+          icon: const Icon(Icons.error, color: kWarning),
+        );
+      }
+
+      if (!usercredential.isBlank!) {
+        appNotification(
+            title: "Success",
+            message: "Signed Up",
+            icon: const Icon(Icons.check, color: Colors.green));
+        _navigationService.signInWithAnimation(Base.routeName);
+      }
       setIsLoading(false);
+
       // _navigationService.signInWithAnimation(Base.routeName);
 
       // return _userFromFirebase(_auth.currentUser);
@@ -190,44 +302,63 @@ class AuthProvider with ChangeNotifier {
 
   Future<User?> signInWithGoogle() async {
     try {
-      // setIsLoading(true);
-      _isLoading = true;
-      notifyListeners();
+      setIsLoading(true);
+
       _googleSignInAccount = await _googleSignIn!.signIn();
 
       final GoogleSignInAuthentication? googleAuth =
           await _googleSignInAccount?.authentication;
 
+      var userInfoMap = {
+        'email': _googleSignInAccount?.email,
+        'username': _googleSignInAccount?.displayName,
+        'password': _googleSignInAccount?.id,
+        'photoURL': _googleSignInAccount?.photoUrl,
+      };
+
       if (googleAuth != null) {
-        UserCredential? credentials = await _auth.signInWithCredential(
+        UserCredential? usercredential = await _auth.signInWithCredential(
           GoogleAuthProvider.credential(
             accessToken: googleAuth.accessToken,
             idToken: googleAuth.idToken,
           ),
         );
-        var userInfoMap = {
-          'email': _googleSignInAccount?.email,
-          'username': _googleSignInAccount?.displayName,
-          'password': _googleSignInAccount?.id,
-          'photoURL': _googleSignInAccount?.photoUrl,
-        };
-        //if user already exists in database, then update the user info
-        await _databaseService.addUserInfoToDB(
-            _auth.currentUser!.uid, userInfoMap);
 
-        await _databaseService.addUserInfoToDB(
-            _auth.currentUser!.uid, userInfoMap);
-        final User? user = credentials.user;
-        _isLoading = false;
-        notifyListeners();
-        // return _userFromFirebase(user);
+        if (!await _databaseService
+            .isDuplicateUniqueName(_googleSignInAccount?.displayName)) {
+          // UniqueName is duplicate
+          // return 'Unique name already exists';
+
+          await _databaseService.addUserInfoToDB(
+              _auth.currentUser!.uid, userInfoMap);
+        } else {
+          // UniqueName is duplicate
+          // return 'Unique name already exists';
+          // appNotification(
+          //   title: "Error",
+          //   message: "User already exists",
+          //   icon: const Icon(Icons.error, color: kWarning),
+          // );
+
+          //UPDATE USER INFO
+          await _databaseService.updateUser(
+              _auth.currentUser!.uid, userInfoMap);
+        }
+
+        if (!usercredential.isBlank!) {
+          appNotification(
+              title: "Success",
+              message: "Signed In",
+              icon: const Icon(Icons.check, color: Colors.green));
+          _navigationService.signInWithAnimation(Base.routeName);
+        }
       } else {
         appNotification(
           title: "Error",
           message: "Missing Google Auth Token",
           icon: const Icon(Icons.error, color: kWarning),
         );
-        setIsLoading(false);
+        // setIsLoading(false);
 
         // _isLoading = false;
         // notifyListeners();
@@ -238,16 +369,9 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print(e);
-      appNotification(
-        title: "Error",
-        message: "GOOGLE AUTH ERROR : $e",
-        icon: const Icon(Icons.error, color: kWarning),
-      );
-      setIsLoading(false);
-      // _isLoading = false;
-      // notifyListeners();
-      // return _userFromFirebase(_auth.currentUser);
+      debugPrint('Error login user into Firebase: $e');
     } finally {
+      setIsLoading(false);
       print('Sign up print ${_auth.currentUser}');
     }
   }

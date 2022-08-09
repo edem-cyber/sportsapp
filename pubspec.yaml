@@ -53,7 +53,12 @@ dependencies:
   like_button: ^2.0.4
   shimmer: ^2.0.0
   shared_preferences: ^2.0.15
-  image_picker: ^0.8.5+3
+  # image_picker: ^0.8.5+3
+  image_picker: ^0.8.4+4
+  share_plus: ^4.0.10
+  device_info_plus: ^4.0.1
+  package_info_plus: ^1.4.3
+
   
 
 

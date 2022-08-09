@@ -1,18 +1,13 @@
 import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:sportsapp/base.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/authentication/auth_button.dart';
-import 'package:sportsapp/widgets/default_button.dart';
 import 'package:sportsapp/widgets/form_error.dart';
-import 'package:sportsapp/widgets/notification.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({Key? key}) : super(key: key);
@@ -23,9 +18,40 @@ class SignUpForm extends StatefulWidget {
 
 class _SignUpFormState extends State<SignUpForm> {
   final List<String?> errors = [];
+  // File? imageFile;
+
   // var isLoading = false;
 
   bool obscureText = true;
+
+  //image picker
+  final _picker = ImagePicker();
+  XFile? imageFile;
+
+  // Future pickImage() async {
+  //   try {
+  //     File file = File(imageFile!.path);
+  //     // imageFile = await picker.pickImage(
+  //     //     source: ImageSource.gallery, imageQuality: 25) as File;
+  //     if (imageFile == null) return;
+
+  //     final imageTemporary = File(imageFile!.path);
+
+  //     setState(() {
+  //       imageFile = imageTemporary;
+  //     });
+  //   } on PlatformException catch (e) {
+  //     appNotification(
+  //         title: "Error",
+  //         message: "Failed to pick image",
+  //         icon: const Icon(Icons.error));
+  //   } on Exception catch (e) {
+  //     debugPrint("Error pick image function: $e");
+  //   }
+  // }
+
+  //firebase storage
+  final FirebaseStorage storage = FirebaseStorage.instance;
 
   final TextEditingController _confirmPasswordController =
       TextEditingController(text: "1234567");
@@ -43,55 +69,54 @@ class _SignUpFormState extends State<SignUpForm> {
   final TextEditingController _usernameController =
       TextEditingController(text: "edem-cyber");
 
-  //image picker
-  final picker = ImagePicker();
-  File? _photo;
+  // Future<void> uploadPfP() async {
+  //   try {
+  //     File? uploadFile = File(imageFile!.path);
+  //     Reference storageRef =
+  //         storage.ref().child('profile_pics/${uploadFile.path}');
+  //     UploadTask uploadTask = storageRef.putFile(uploadFile);
+  //     await uploadTask.whenComplete(() => print('uploaded'));
+  //     print('File Uploaded');
+  //     TaskSnapshot taskSnapshot = await uploadTask;
+  //     // return taskSnapshot.ref.getDownloadURL();
+  //     storageRef.getDownloadURL().then((fileURL) {
+  //       print("File URL: $fileURL");
+  //     });
+  //   } catch (e) {
+  //     debugPrint("UPLOADPFP FUNCTION: $e");
+  //   }
+  // }
 
-  Future pickImage() async {
+  Future<void> uploadPfP() async {
+    File uplaodFile = File(imageFile!.path);
     try {
-      File file = File(_photo!.path);
-      // _photo = await picker.pickImage(
-      //     source: ImageSource.gallery, imageQuality: 25) as File;
-      if (_photo == null) return;
-
-      final imageTemporary = File(_photo!.path);
-
-      setState(() {
-        _photo = imageTemporary;
-      });
-    } on PlatformException catch (e) {
-      appNotification(
-          title: "Error",
-          message: "Failed to pick image",
-          icon: const Icon(Icons.error));
-    } on Exception catch (e) {
-      debugPrint("Error pick image function: $e");
+      await storage.ref("profile_pics/${uplaodFile.path}").putFile(
+            uplaodFile,
+          );
+    } catch (e) {
+      debugPrint("UPLOADPFP FUNCTION: $e");
     }
   }
 
-  //firebase storage
-  final FirebaseStorage storage = FirebaseStorage.instance;
-
-  Future<void> uploadPfP() async {
-    File? uploadFile = File(_photo!.path);
-    Reference storageRef =
-        storage.ref().child('profile_pics/${uploadFile.path}');
-    UploadTask uploadTask = storageRef.putFile(uploadFile);
-    await uploadTask.whenComplete(() => print('uploaded'));
-    print('File Uploaded');
-    storageRef.getDownloadURL().then((fileURL) {
-      print(fileURL);
-    });
-  }
-
-  Future<String> getDownload() async {
-    File? uploadFile = File(_photo!.path);
+  Future<String?> getDownload() async {
+    File? uploadedFile = File(imageFile!.path);
     var ref = await storage
         .ref()
-        .child('profile_pics/${uploadFile.path}')
+        .child('profile_pics/${uploadedFile.path}')
         .getDownloadURL();
+
     return ref;
   }
+
+  // Future<String> getDownload() async {
+  //   File? uploadFile = File(imageFile!.path);
+  //   var ref = await storage
+  //       .ref()
+  //       .child('profile_pics/${uploadFile.path}')
+  //       .getDownloadURL();
+
+  //   return ref;
+  // }
 
   void addError({String? error}) {
     if (!errors.contains(error)) {
@@ -237,22 +262,52 @@ class _SignUpFormState extends State<SignUpForm> {
 
   Widget buildAvatar() {
     return GestureDetector(
-      onTap: () {
-        pickImage();
-      },
-      child: CircleAvatar(
-        backgroundImage: _photo != null
-            ? Image.file(_photo!).image
-            : const NetworkImage(AppImage.defaultProfilePicture),
-        radius: 40,
-        child: _photo == null
-            ? const Icon(
-                Icons.add,
-                size: 40,
+        onTap: () {
+          // _getFromGallery();
+          pickImage();
+        },
+        child: imageFile != null
+            ? CircleAvatar(
+                backgroundImage: FileImage(File(imageFile!.path)),
+                radius: 50,
               )
-            : const SizedBox(),
-      ),
+            : const CircleAvatar(
+                backgroundImage: AssetImage(AppImage.defaultProfilePicture2),
+                radius: 50,
+              ));
+  }
+
+  // void _getFromCamera() async {
+  //   XFile? pickedFile = await ImagePicker().pickImage(
+  //     source: ImageSource.camera,
+  //     maxHeight: 720,
+  //     maxWidth: 720,
+  //   );
+  //   setState(() {
+  //     imageFile = File(pickedFile!.path);
+  //   });
+  // }
+
+  // void _getFromGallery() async {
+  //   XFile? pickedFile = await ImagePicker().pickImage(
+  //     source: ImageSource.gallery,
+  //     maxHeight: 720,
+  //     maxWidth: 720,
+  //   );
+  //   setState(() {
+  //     imageFile = File(pickedFile!.path);
+  //   });
+  // }
+
+  void pickImage() async {
+    final XFile? imageFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 25,
     );
+    setState(() {
+      this.imageFile = imageFile;
+      // if (imageFile != null) Image.file(File(imageFile.path));
+    });
   }
 
   // @override
@@ -261,6 +316,7 @@ class _SignUpFormState extends State<SignUpForm> {
   //   var authProvider = Provider.of<AuthProvider>(context, listen: false);
   //   authProvider.setIsLoading(false);
   // }
+
   @override
   Widget build(BuildContext context) {
     //authprovider
@@ -286,10 +342,10 @@ class _SignUpFormState extends State<SignUpForm> {
           // const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-            decoration: BoxDecoration(
-              color: kGrey.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(32),
-            ),
+            // decoration: const BoxDecoration(
+            //   // color: kGrey.withOpacity(0.1),
+            //   // borderRadius: BorderRadius.circular(32),
+            // ),
             child: buildAvatar(),
           ),
           const SizedBox(height: 10),
@@ -355,13 +411,14 @@ class _SignUpFormState extends State<SignUpForm> {
                   //   _usernameController.text,
                   // );
                   // .then((value) => authProvider.setIsLoading(false));
-                  uploadPfP().then((value) async {});
-                  String value = await getDownload();
+                  await uploadPfP().then((value) async {});
+                  String? value = await getDownload();
+
                   authProvider.signUp(
                     _emailController.text,
                     _passwordController.text,
                     _usernameController.text,
-                    value,
+                    value ?? "",
                   );
 
                   print("second print ${authProvider.isLoading}");
@@ -375,8 +432,12 @@ class _SignUpFormState extends State<SignUpForm> {
                 } else {
                   addError(error: kPassNullError);
                 }
+              } on FirebaseException catch (e) {
+                print("AUTH BUTTON FIREBASE EXCEPTION $e");
+                // addError(error: kEmailNullError);
               } catch (e) {
-                debugPrint("Auth Button Error: $e");
+                print("AUTH BUTTON EXCEPTION $e");
+                // addError(error: kEmailNullError);
               }
             },
           ),

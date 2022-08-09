@@ -31,29 +31,47 @@ class DatabaseService {
   //   }
   // }
 
-  Future<void> createUser({
-    required String uid,
-    required String name,
-    required String email,
-    String? photoURL,
-  }) async {
-    try {
-      // * Going to the collections (User) the to the user uid and overrides the values of the fields
-      await _dataBase.collection(userCollection).doc(uid).set(
-        {
-          'name': name,
-          'email': email,
-          'image': photoURL ?? '',
-          'last_active': DateTime.now().toUtc(),
-        },
-      );
-    } catch (error) {
-      debugPrint('$error');
-    }
+  // Future<void> createUser({
+  //   required String uid,
+  //   required String name,
+  //   required String email,
+  //   String? photoURL,
+  // }) async {
+  //   try {
+  //     // * Going to the collections (User) the to the user uid and overrides the values of the fields
+  //     await _dataBase.collection(userCollection).doc(uid).set(
+  //       {
+  //         'name': name,
+  //         'email': email,
+  //         'image': photoURL ?? '',
+  //         'last_active': DateTime.now().toUtc(),
+  //       },
+  //     );
+  //   } catch (error) {
+  //     debugPrint('$error');
+  //   }
+  // }
+
+  Future<bool> isDuplicateUniqueName(String? username) async {
+    QuerySnapshot query = await FirebaseFirestore.instance
+        .collection(userCollection)
+        .where('username', isEqualTo: username)
+        .get();
+    return query.docs.isNotEmpty;
   }
 
   Future addUserInfoToDB(String uid, Map<String, dynamic> userInfoMap) {
     return _dataBase.collection(userCollection).doc(uid).set(userInfoMap);
+  }
+
+  //Update User
+  Future<void> updateUser(String uid, Map<String, dynamic> userInfoMap) async {
+    try {
+      // * Going to the collections (User) the to the user uid and overrides the values of the fields
+      await _dataBase.collection(userCollection).doc(uid).update(userInfoMap);
+    } catch (error) {
+      debugPrint('$error');
+    }
   }
 
   Future getUserFromDB(String uid) {
@@ -61,37 +79,37 @@ class DatabaseService {
   }
 
   //* Getting the User from Firebase Cloud Store
-  Future<DocumentSnapshot> getUser(String _uid, {String? name}) {
-    return _dataBase.collection(userCollection).doc(_uid).get();
+  Future<DocumentSnapshot> getUser(String uid, {String? name}) {
+    return _dataBase.collection(userCollection).doc(uid).get();
   }
 
   Future<QuerySnapshot> getUsers({String? name}) {
-    Query _query = _dataBase.collection(userCollection);
+    Query query = _dataBase.collection(userCollection);
     if (name != null) {
-      _query = _query.where('name', isGreaterThanOrEqualTo: name).where(
+      query = query.where('name', isGreaterThanOrEqualTo: name).where(
             'name',
             isLessThanOrEqualTo: name + 'z',
           );
     }
-    return _query.get();
+    return query.get();
   }
 
 //* Getting the chats from the users
-  Stream<QuerySnapshot> getChatsForsUser(String _uid) {
+  Stream<QuerySnapshot> getChatsForsUser(String uid) {
     return _dataBase
         .collection(chatCollection)
         .where(
           'members',
-          arrayContains: _uid,
+          arrayContains: uid,
         )
         .snapshots();
   }
 
   //* Update to the last chat sent
-  Future<QuerySnapshot> getLastMessageFroChat(String _chatID) {
+  Future<QuerySnapshot> getLastMessageFroChat(String chatID) {
     return _dataBase
         .collection(chatCollection)
-        .doc(_chatID)
+        .doc(chatID)
         .collection(messagesCollection)
         .orderBy(
           'sent_time',
@@ -101,43 +119,42 @@ class DatabaseService {
         .get();
   }
 
-  Stream<QuerySnapshot> streamMessagesForChatPage(String _chatId) {
+  Stream<QuerySnapshot> streamMessagesForChatPage(String chatId) {
     return _dataBase
         .collection(chatCollection)
-        .doc(_chatId)
+        .doc(chatId)
         .collection(messagesCollection)
         .orderBy('sent_time', descending: false)
         .snapshots();
   }
 
   // * Add messages to the firestore databse
-  Future<void> addMessagesToChat(String _chatId, ChatMessage _message) async {
+  Future<void> addMessagesToChat(String chatId, ChatMessage message) async {
     try {
       await _dataBase
           .collection(chatCollection)
-          .doc(_chatId)
+          .doc(chatId)
           .collection(messagesCollection)
           .add(
-            _message.toJson(),
+            message.toJson(),
           );
     } catch (error) {
       debugPrint('$error');
     }
   }
 
-  Future<void> updateChatData(
-      String _chatId, Map<String, dynamic> _data) async {
+  Future<void> updateChatData(String chatId, Map<String, dynamic> data) async {
     try {
-      await _dataBase.collection(chatCollection).doc(_chatId).update(_data);
+      await _dataBase.collection(chatCollection).doc(chatId).update(data);
     } catch (error) {
       debugPrint('$error');
     }
   }
 
 //* Update time
-  Future<void> updateUserLastSeenTime(String _uid) async {
+  Future<void> updateUserLastSeenTime(String uid) async {
     try {
-      await _dataBase.collection(userCollection).doc(_uid).update(
+      await _dataBase.collection(userCollection).doc(uid).update(
         {
           'last_active': DateTime.now().toUtc(),
         },
@@ -148,19 +165,19 @@ class DatabaseService {
   }
 
   // *Delete chat
-  Future<void> deleteChat(String _chatId) async {
+  Future<void> deleteChat(String chatId) async {
     try {
-      await _dataBase.collection(chatCollection).doc(_chatId).delete();
+      await _dataBase.collection(chatCollection).doc(chatId).delete();
     } catch (error) {
       debugPrint('$error');
     }
   }
 
 // * Select and Create chat
-  Future<DocumentReference?> createChat(Map<String, dynamic> _data) async {
+  Future<DocumentReference?> createChat(Map<String, dynamic> data) async {
     try {
-      final _chat = await _dataBase.collection(chatCollection).add(_data);
-      return _chat;
+      final chat = await _dataBase.collection(chatCollection).add(data);
+      return chat;
     } catch (error) {
       debugPrint('$error');
     }
