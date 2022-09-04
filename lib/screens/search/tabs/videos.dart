@@ -6,7 +6,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/widgets/post.dart';
+import 'package:sportsapp/widgets/news_tile.dart';
 
 class Videos extends StatefulWidget {
   const Videos({Key? key}) : super(key: key);
@@ -35,7 +35,7 @@ class _VideosState extends State<Videos> with AutomaticKeepAliveClientMixin {
                       image: DecorationImage(
                         image: CachedNetworkImageProvider(errorListener: () {
                           print('error');
-                        }, "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"),
+                        }, "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"),
                         fit: BoxFit.cover,
                         colorFilter: ColorFilter.mode(
                             Colors.black.withOpacity(0.3), BlendMode.darken),

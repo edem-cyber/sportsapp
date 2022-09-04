@@ -3,8 +3,15 @@ import 'package:sportsapp/base.dart';
 import 'package:sportsapp/screens/authentication/forgot_password/forgot_password.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
+import 'package:sportsapp/screens/comments_page/comments_page.dart';
+import 'package:sportsapp/screens/edit_profile/edit_profile.dart';
+import 'package:sportsapp/screens/friends_page/friends_page.dart';
 import 'package:sportsapp/screens/home/home.dart';
 import 'package:sportsapp/screens/leagues/leagues.dart';
+import 'package:sportsapp/screens/privacy_policy/privacy_policy.dart';
+import 'package:sportsapp/screens/profile/profile.dart';
+import 'package:sportsapp/screens/settings/settings.dart';
+import 'package:sportsapp/screens/single_league_page/single_league_page.dart';
 import 'package:sportsapp/screens/splash/splash_screen.dart';
 import 'package:sportsapp/screens/welcome/welcome.dart';
 
@@ -19,7 +26,14 @@ final Map<String, WidgetBuilder> routes = {
   News.routeName: (context) => News(
         scrollController: ScrollController(),
       ),
-  Leagues.routeName: (context) => const Leagues(),
+  LeagueScreen.routeName: (context) => const LeagueScreen(),
   Welcome.routeName: (context) => const Welcome(),
   ForgotPassword.routeName: (context) => const ForgotPassword(),
+  FriendsPage.routeName: (context) => const FriendsPage(),
+  EditProfile.routeName: (context) => const EditProfile(),
+  Profile.routeName: (context) => const Profile(),
+  Settings.routeName: (context) => const Settings(),
+  CommentsPage.routeName: (context) => const CommentsPage(),
+  LeaguePage.routeName: (context) => const LeaguePage(),
+  PrivacyPolicy.routeName: (context) => const PrivacyPolicy(),
 };

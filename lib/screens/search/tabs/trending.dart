@@ -2,11 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/widgets/post.dart';
+import 'package:sportsapp/widgets/news_tile.dart';
 
 class Trending extends StatefulWidget {
   const Trending({Key? key}) : super(key: key);
@@ -15,7 +16,8 @@ class Trending extends StatefulWidget {
   State<Trending> createState() => _TrendingState();
 }
 
-class _TrendingState extends State<Trending> with AutomaticKeepAliveClientMixin {
+class _TrendingState extends State<Trending>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -28,6 +30,25 @@ class _TrendingState extends State<Trending> with AutomaticKeepAliveClientMixin 
         return snapshot.hasData
             ? ListView(
                 children: [
+                  // CachedNetworkImage(
+                  //   imageUrl:
+                  //       "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+                  //   errorWidget: ((context, url, error) => const Center(
+                  //         child: Icon(Icons.error),
+                  //       )),
+                  //   placeholder: ((context, url) => Shimmer.fromColors(
+                  //         baseColor: kTextLightColor,
+                  //         highlightColor: const Color(0xFFFFFFFF),
+                  //         child: Container(
+                  //           height: 20,
+                  //           width: MediaQuery.of(context).size.width,
+                  //           decoration: BoxDecoration(
+                  //             color: Colors.grey[300],
+                  //             borderRadius: BorderRadius.circular(6),
+                  //           ),
+                  //         ),
+                  //       )),
+                  // ),
                   Container(
                     height: 200,
                     decoration: BoxDecoration(
@@ -35,7 +56,7 @@ class _TrendingState extends State<Trending> with AutomaticKeepAliveClientMixin 
                       image: DecorationImage(
                         image: CachedNetworkImageProvider(errorListener: () {
                           print('error');
-                        }, "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80"),
+                        }, "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"),
                         fit: BoxFit.cover,
                         colorFilter: ColorFilter.mode(
                             Colors.black.withOpacity(0.3), BlendMode.darken),

@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/helper/storage_manage.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
+import 'package:sportsapp/providers/CountryProvider.dart';
+import 'package:sportsapp/providers/LeaguesProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
@@ -183,39 +185,46 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // var themeProvider = Provider.of<ThemeProvider>(context);
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<ThemeProvider>(
-            create: (_) => ThemeProvider(),
-          ),
-          ChangeNotifierProvider<AuthProvider>(
-            create: (_) => AuthProvider(),
-          ),
-          ChangeNotifierProvider<NavigationService>(
-            create: (_) => NavigationService(),
-          ),
-          // ChangeNotifierProvider<DataClass>(
-          //   create: (_) => DataClass(),
-          // StreamProvider(
-          //   create: (context) =>
-          //       context.read<AuthProvider>().
-          //    initialData: null,: null,
-          // ),
-          // )
-        ],
-        child: Consumer<ThemeProvider>(
-          builder: (context, ThemeProvider themeProvider, child) {
-            return GetMaterialApp(
-              key: mtAppKey,
-              navigatorKey: NavigationService.navigatorKey,
-              title: 'Toppick',
-              debugShowCheckedModeBanner: false,
-              initialRoute: SignIn.routeName,
-              //set theme preference from shared prefs
-              routes: routes,
-              theme: themeProvider.isDarkMode ? dark : light,
-            );
-          },
-        ));
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (_) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) => AuthProvider(),
+        ),
+        ChangeNotifierProvider<NavigationService>(
+          create: (_) => NavigationService(),
+        ),
+        ChangeNotifierProvider<CountriesProvider>(
+          create: (_) => CountriesProvider(),
+        ),
+        ChangeNotifierProvider<LeaguesProvider>(
+          create: (_) => LeaguesProvider(),
+        ),
+        // ChangeNotifierProvider<DataClass>(
+        //   create: (_) => DataClass(),
+        // StreamProvider(
+        //   create: (context) =>
+        //       context.read<AuthProvider>().
+        //    initialData: null,: null,
+        // ),
+        // )
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, ThemeProvider themeProvider, child) {
+          return GetMaterialApp(
+            key: mtAppKey,
+            navigatorKey: NavigationService.navigatorKey,
+            title: 'Toppick',
+            debugShowCheckedModeBanner: false,
+            initialRoute: SignIn.routeName,
+            //set theme preference from shared prefs
+            routes: routes,
+            theme: themeProvider.isDarkMode ? dark : light,
+          );
+        },
+      ),
+    );
   }
 }
 

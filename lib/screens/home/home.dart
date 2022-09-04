@@ -13,11 +13,12 @@ class News extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var authProvider = Provider.of<AuthProvider>(context);
+    var authProvider = Provider.of<AuthProvider>(context, listen: true);
 
     return Scaffold(
       appBar: SmallAppBar(
         url: authProvider.user!.photoURL ?? AppImage.defaultProfilePicture,
+        action: () => Scaffold.of(context).openDrawer(),
       ),
       body: Body(
         scrollController: scrollController,

@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -95,17 +93,6 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // UserModel? _userFromFirebase(User? user) {
-  //   return user != null
-  //       ? UserModel(
-  //           uid: user.uid,
-  //           email: user.email!,
-  //           // name: user.name!,
-  //           photoURL: user.photoURL ?? AppImage.defaultProfilePicture,
-  //           username: user.displayName ?? user.email!.split('@')[0],
-  //         )
-  //       : null;
-  // }
   Stream<User?> get authState => _auth.idTokenChanges();
 
   // User? _user;
@@ -159,7 +146,7 @@ class AuthProvider with ChangeNotifier {
                 }
               }
               //* Automatic navigates to the home page
-              // _navigationService.signInWithAnimation(Base.routeName);
+              _navigationService.signInWithAnimation(Base.routeName);
             },
           );
         } else {
@@ -350,7 +337,7 @@ class AuthProvider with ChangeNotifier {
               title: "Success",
               message: "Signed In",
               icon: const Icon(Icons.check, color: Colors.green));
-          _navigationService.signInWithAnimation(Base.routeName);
+          // _navigationService.signInWithAnimation(Base.routeName);
         }
       } else {
         appNotification(
@@ -435,11 +422,12 @@ class AuthProvider with ChangeNotifier {
   List<Article> news = [];
 
   Future<List<Article>> getPosts() async {
-    var apiKey = "800dce9aa1334456ac941842fa55edf8";
+    // var apiKey = "800dce9aa1334456ac941842fa55edf8";
+    var apiKey = "37b3f6b92d2a4434a249e02fd8938841";
     // "https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=800dce9aa1334456ac941842fa55edf8");
 
     Uri url = Uri.parse(
-        "https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=800dce9aa1334456ac941842fa55edf8");
+        "https://newsapi.org/v2/top-headlines?category=sports&q=football&language=en&apiKey=$apiKey");
     var response = await http.get(url);
     print("RESPONSE STATUS: ${response.statusCode}");
     // print("RESPONSE BODY: ${response.body}");
@@ -499,34 +487,3 @@ class AuthProvider with ChangeNotifier {
   //   notifyListeners();
   // }
 }
-
-SnackbarController signedOutNotification(String message) => Get.snackbar(
-      showProgressIndicator: false,
-      shouldIconPulse: false,
-      animationDuration: const Duration(milliseconds: 600),
-      "Success",
-      message,
-      colorText: kWhite,
-      mainButton: TextButton(
-        onPressed: () {
-          Get.back();
-        },
-        child: const Text(
-          "Cancel",
-          // style: TextStyle(color: kTertiaryColor),
-        ),
-      ),
-      duration: const Duration(milliseconds: 1300),
-      // messageText: Text('Item removed'),
-      backgroundColor: kBlack,
-      icon: const AspectRatio(
-        aspectRatio: 1,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          // child: CircularProgressIndicator(
-          //   color: kWhite,
-          // ),
-        ),
-      ),
-      snackPosition: SnackPosition.TOP,
-    );

@@ -206,7 +206,9 @@ class _SignFormState extends State<SignForm> {
                 ),
               ),
             ),
-            const Expanded(child: Divider()),
+            const Expanded(
+              child: Divider(),
+            ),
           ]),
           const SizedBox(height: 18),
           SocialCard(

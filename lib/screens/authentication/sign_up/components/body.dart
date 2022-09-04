@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/widgets/no_account_text.dart';
-import 'package:sportsapp/widgets/social_card.dart';
 import 'sign_up_form.dart';
 
 class Body extends StatelessWidget {

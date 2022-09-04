@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
@@ -24,83 +26,98 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
 
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: Padding(
-            padding:
-                const EdgeInsets.only(left: 20, right: 0, top: 0, bottom: 0),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, right: 0, top: 0, bottom: 0),
+          child: GestureDetector(
+            onTap: () => Scaffold.of(context).openDrawer(),
             child: CircleAvatar(
               // ignore: prefer_if_null_operators
-              backgroundImage: NetworkImage(authProvider.user!.photoURL ??
-                  AppImage.defaultProfilePicture),
+              backgroundImage: CachedNetworkImageProvider(
+                authProvider.user!.photoURL ?? AppImage.defaultProfilePicture,
+                errorListener: () {
+                  Shimmer.fromColors(
+                    baseColor: const Color(0xFF8F8F8F),
+                    highlightColor: Colors.white,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      color: Colors.white,
+                    ),
+                  );
+                },
+              ),
               radius: 15,
             ),
           ),
-          actions: const <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: 0, right: 20, top: 0, bottom: 0),
-              child: CircleAvatar(
-                // ignore: prefer_if_null_operators
-                // backgroundImage: NetworkImage(authProvider.user!.photoURL ??
-                //     AppImage.defaultProfilePicture),
-                foregroundColor: Colors.transparent,
-                backgroundColor: Colors.transparent,
-                radius: 15,
-              ),
-            ),
-          ],
-          title: Container(
-            decoration: BoxDecoration(
-              color: kGrey.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: TextField(
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'Search Toppick',
-                hintStyle: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: kTextLightColor, fontSize: 14),
-              ),
+        ),
+        actions: const <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left: 0, right: 20, top: 0, bottom: 0),
+            child: CircleAvatar(
+              // ignore: prefer_if_null_operators
+              // backgroundImage: NetworkImage(authProvider.user!.photoURL ??
+              //     AppImage.defaultProfilePicture),
+              foregroundColor: Colors.transparent,
+              backgroundColor: Colors.transparent,
+              radius: 15,
             ),
           ),
-          //,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(kTextTabBarHeight),
-            child: Container(
-              // height: 0,
-              padding: const EdgeInsets.only(left: 25, bottom: 0),
-              width: MediaQuery.of(context).size.width,
-
-              child: TabBar(
-                tabs: const [
-                  Tab(
-                    text: 'For you',
-                  ),
-                  Tab(
-                    text: 'Trending',
-                  ),
-                  Tab(
-                    text: 'Videos',
-                  ),
-                ],
-                splashFactory: NoSplash.splashFactory,
-                labelColor: themeProvider.isDarkMode ? kWhite : kBlack,
-                unselectedLabelColor: kTextLightColor,
-                indicatorColor: kBlue,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicatorWeight: 3,
-                unselectedLabelStyle: Theme.of(context).textTheme.bodySmall,
-                labelStyle: Theme.of(context).tabBarTheme.labelStyle,
-                isScrollable: true,
-                labelPadding:
-                    const EdgeInsets.only(left: 10, right: 30, bottom: 0),
-                controller: tabController,
-              ),
+        ],
+        title: Container(
+          decoration: BoxDecoration(
+            color: kGrey.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: TextField(
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: 'Search Toppick',
+              hintStyle: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .copyWith(color: kTextLightColor, fontSize: 14),
             ),
-          )),
+          ),
+        ),
+        //,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(kTextTabBarHeight),
+          child: Container(
+            // height: 0,
+            padding: const EdgeInsets.only(left: 25, bottom: 0),
+            width: MediaQuery.of(context).size.width,
+
+            child: TabBar(
+              tabs: const [
+                Tab(
+                  text: 'For you',
+                ),
+                Tab(
+                  text: 'Trending',
+                ),
+                Tab(
+                  text: 'Videos',
+                ),
+              ],
+              splashFactory: NoSplash.splashFactory,
+              labelColor: themeProvider.isDarkMode ? kWhite : kBlack,
+              unselectedLabelColor: kTextLightColor,
+              indicatorColor: kBlue,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorWeight: 3,
+              unselectedLabelStyle: Theme.of(context).textTheme.bodySmall,
+              labelStyle: Theme.of(context).tabBarTheme.labelStyle,
+              isScrollable: true,
+              labelPadding:
+                  const EdgeInsets.only(left: 10, right: 30, bottom: 0),
+              controller: tabController,
+            ),
+          ),
+        ),
+      ),
       body: Body(
         tabController: tabController,
       ),

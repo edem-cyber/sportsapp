@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/widgets/post.dart';
-import 'package:sportsapp/services/getposts.dart';
+import 'package:sportsapp/widgets/news_tile.dart';
 
 class Body extends StatefulWidget {
   //scroll controller
@@ -14,21 +14,22 @@ class Body extends StatefulWidget {
   const Body({Key? key, required this.scrollController}) : super(key: key);
 
   @override
-  _BodyState createState() => _BodyState();
+  State<Body> createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
   // late bool _loading;
   // var newslist = [];
-  late Stream<List<Article>> stream;
+  // late Stream<List<Article>> stream;
 
   @override
   void initState() {
     super.initState();
     //IF YOU WANT TO USE THE STREAM, YOU NEED TO ADD THE PROVIDER TO THE SCREEN
     // var getPosts = Provider.of<AuthProvider>(context, listen: false).getPosts();
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+     authProvider.getPosts();
     // stream = getPosts.stream;
-
     // return logexpertClient.objectsState.read(object.id);
   }
 
@@ -36,9 +37,9 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
-    var getPosts = authProvider.getPosts();
+    final getPosts = authProvider.getPosts().asStream();
     // if (authProvider.user != null) {
-      stream = getPosts.asStream();
+    // stream = getPosts.asStream();
     //   // stream = Stream.periodic(const Duration(seconds: 40)).asyncMap((_) async {
     //   //   print('REQUESTING POSTS');
     //   //   return await getPosts;
@@ -59,32 +60,36 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
         // padding: const EdgeInsets.symmetric(horizontal: 15),
         child: StreamBuilder<List<Article>>(
       initialData: const [],
-      stream: stream,
+      stream: getPosts,
       builder: (context, snapshot) {
         return snapshot.hasData
             ? Scrollbar(
                 controller: widget.scrollController,
                 thumbVisibility: true,
+                interactive: true,
                 child: ListView.separated(
                     controller: widget.scrollController,
                     itemBuilder: (_, int index) {
                       final item = snapshot.data![index];
-                      final image = item.urlToImage;
+                      final image =
+                          item.urlToImage ?? AppImage.defaultProfilePicture;
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15, vertical: 10),
                         child: NewsTile(
-                          imgUrl: image ?? "",
+                          imgUrl: image,
                           title: item.title ?? "",
                           desc: item.description ?? "",
                           content: item.content ?? "",
                           posturl: item.articleUrl ?? "",
+                          // isPostLiked: false,
+                          // currentUid: authProvider.user!.uid,
                         ),
                       );
                     },
                     separatorBuilder: (context, index) {
-                      return Divider(
-                        color: kGrey.withOpacity(0.5),
+                      return const Divider(
+                        color: kGrey,
                       );
                     },
                     itemCount: snapshot.data!.length),

@@ -13,7 +13,7 @@ class SignUpForm extends StatefulWidget {
   const SignUpForm({Key? key}) : super(key: key);
 
   @override
-  _SignUpFormState createState() => _SignUpFormState();
+  State<SignUpForm> createState() => _SignUpFormState();
 }
 
 class _SignUpFormState extends State<SignUpForm> {
@@ -262,19 +262,19 @@ class _SignUpFormState extends State<SignUpForm> {
 
   Widget buildAvatar() {
     return GestureDetector(
-        onTap: () {
-          // _getFromGallery();
-          pickImage();
-        },
-        child: imageFile != null
-            ? CircleAvatar(
-                backgroundImage: FileImage(File(imageFile!.path)),
-                radius: 50,
-              )
-            : const CircleAvatar(
-                backgroundImage: AssetImage(AppImage.defaultProfilePicture2),
-                radius: 50,
-              ));
+      onTap: () {
+        pickImage();
+      },
+      child: imageFile != null
+          ? CircleAvatar(
+              backgroundImage: FileImage(File(imageFile!.path)),
+              radius: 50,
+            )
+          : const CircleAvatar(
+              backgroundImage: AssetImage(AppImage.defaultProfilePicture2),
+              radius: 50,
+            ),
+    );
   }
 
   // void _getFromCamera() async {
@@ -415,18 +415,11 @@ class _SignUpFormState extends State<SignUpForm> {
                   String? value = await getDownload();
 
                   authProvider.signUp(
+                    value ?? "",
+                    _usernameController.text,
                     _emailController.text,
                     _passwordController.text,
-                    _usernameController.text,
-                    value ?? "",
                   );
-
-                  print("second print ${authProvider.isLoading}");
-
-                  //if mounted
-                  // if (!mounted) return;
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //     builder: (_) => const Base(), fullscreenDialog: true));
                 } else if (passwordMatch) {
                   addError(error: kPassMatchError);
                 } else {

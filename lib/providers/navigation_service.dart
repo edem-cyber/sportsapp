@@ -35,6 +35,15 @@ class NavigationService extends ChangeNotifier {
     );
   }
 
+  void openFullScreenDialog(Widget page) {
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (context) => page,
+        fullscreenDialog: true,
+      ),
+    );
+  }
+
   void goBack() {
     // Go back to the previous page/screen
     navigatorKey.currentState?.pop();

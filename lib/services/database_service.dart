@@ -12,48 +12,10 @@ const String messagesCollection = 'Messages';
 class DatabaseService {
   DatabaseService();
   final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
-
-  // Create User
-  // Future<void> createUser(
-  //     String _uid, String _email, String _name, String _photoURL) async {
-  //   try {
-  //     // * Going to the collections (User) the to the user uid and overrides the values of the fields
-  //     await _dataBase.collection(userCollection).doc(_uid).set(
-  //       {
-  //         'name': _name,
-  //         'email': _email,
-  //         'image': _photoURL,
-  //         'last_active': DateTime.now().toUtc(),
-  //       },
-  //     );
-  //   } catch (error) {
-  //     debugPrint('$error');
-  //   }
-  // }
-
-  // Future<void> createUser({
-  //   required String uid,
-  //   required String name,
-  //   required String email,
-  //   String? photoURL,
-  // }) async {
-  //   try {
-  //     // * Going to the collections (User) the to the user uid and overrides the values of the fields
-  //     await _dataBase.collection(userCollection).doc(uid).set(
-  //       {
-  //         'name': name,
-  //         'email': email,
-  //         'image': photoURL ?? '',
-  //         'last_active': DateTime.now().toUtc(),
-  //       },
-  //     );
-  //   } catch (error) {
-  //     debugPrint('$error');
-  //   }
-  // }
+  // var postsRef = FirebaseFirestore.instance.collection(userCollection);
 
   Future<bool> isDuplicateUniqueName(String? username) async {
-    QuerySnapshot query = await FirebaseFirestore.instance
+    QuerySnapshot query = await _dataBase
         .collection(userCollection)
         .where('username', isEqualTo: username)
         .get();
@@ -197,6 +159,14 @@ class DatabaseService {
   }
 
   // Stream<List> getFollowedTopics() {}
+  // Stream<List> getUsersWhoLikedPost() {
+  //   var 
+  //   return postsRef
+  //       .document(ownerId)
+  //       .collection('userPosts')
+  //       .document(postId)
+  //       .updateData({'likes.$currentUserId': false});
+  // }
 
   Stream<List> getAllPosts(String uid) {
     return _dataBase

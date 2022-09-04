@@ -6,8 +6,11 @@
         "mtapp",
         "newslist",
         "posturl",
+        "prefs",
         "publshed",
         "sportsapp",
+        "themeprovider",
+        "UPLOADPFP",
         "usercredential"
     ]
 }

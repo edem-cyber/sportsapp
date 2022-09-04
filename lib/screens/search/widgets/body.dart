@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
+// import 'package:provider/provider.dart';
+// import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/screens/search/tabs/for_you.dart';
 import 'package:sportsapp/screens/search/tabs/trending.dart';
 import 'package:sportsapp/screens/search/tabs/videos.dart';
@@ -23,7 +23,7 @@ class _BodyState extends State<Body> {
     // TabController tabController = TabController(length: 3, vsync: this);
 
     //tab bar controller
-    var themeProvider = Provider.of<ThemeProvider>(context);
+    // var themeProvider = Provider.of<ThemeProvider>(context);
     // final postModel = Provider.of<DataClass>(context);
     return Column(
       children: [
