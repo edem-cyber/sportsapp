@@ -34,7 +34,7 @@ class _LeaguePageState extends State<LeaguePage> with TickerProviderStateMixin {
           ),
           const SizedBox(
             width: 15,
-          )
+          ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kTextTabBarHeight),

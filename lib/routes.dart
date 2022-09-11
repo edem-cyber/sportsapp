@@ -19,7 +19,7 @@ import 'package:sportsapp/screens/welcome/welcome.dart';
 
 final Map<String, WidgetBuilder> routes = {
   SplashScreen.routeName: (context) => const SplashScreen(),
-  Base.routeName: (context) => const Base(),
+  Base.routeName: (context) =>  Base(),
   // AuthWrapper.routeName: (context) => const AuthWrapper(),
   SignIn.routeName: (context) => const SignIn(),
   SignUp.routeName: (context) => const SignUp(),

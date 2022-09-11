@@ -17,7 +17,7 @@ class CommentsPage extends StatelessWidget {
       appBar: AppBar(
         leading: GestureDetector(
           onTap: navigationService.goBack,
-          child: Icon(Icons.arrow_back),
+          child: const Icon(Icons.arrow_back),
         ),
         backgroundColor: kLightBlue,
         elevation: 0,

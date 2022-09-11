@@ -11,7 +11,7 @@ class TableScreen extends StatefulWidget {
 
   const TableScreen({Key? key, required this.code}) : super(key: key);
   @override
-  _TableScreenState createState() => _TableScreenState();
+  State<TableScreen> createState() => _TableScreenState();
 }
 
 class _TableScreenState extends State<TableScreen> {

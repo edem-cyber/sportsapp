@@ -57,8 +57,9 @@ dependencies:
   image_picker: ^0.8.4+4
   share_plus: ^4.0.10
   device_info_plus: ^4.0.1
-  package_info_plus: ^1.4.3
-  sticky_headers: ^0.3.0+2
+  # package_info_plus: ^1.4.3
+  # sticky_headers: ^0.3.0+2
+  persistent_bottom_nav_bar: ^4.0.2
   
 
   
