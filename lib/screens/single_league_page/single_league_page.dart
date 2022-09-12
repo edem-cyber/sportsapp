@@ -3,13 +3,18 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/screens/single_league_page/widgets/table_screen.dart';
+import 'package:sportsapp/screens/search/tabs/for_you.dart';
+import 'package:sportsapp/screens/search/tabs/trending.dart';
+import 'package:sportsapp/screens/single_league_page/tabs/fixtures/fixtures.dart';
+import 'package:sportsapp/screens/single_league_page/tabs/league_table.dart';
+// import 'package:sportsapp/screens/single_league_page/widgets/leaguestats.dart';
 // import 'package:sportsapp/screens/friends_pasge/widgets/body.dart';
 
 class LeaguePage extends StatefulWidget {
   //routename
   static const routeName = '/league-page';
-  const LeaguePage({Key? key}) : super(key: key);
+  final String? code;
+  const LeaguePage({Key? key, this.code}) : super(key: key);
 
   @override
   State<LeaguePage> createState() => _LeaguePageState();
@@ -23,19 +28,19 @@ class _LeaguePageState extends State<LeaguePage> with TickerProviderStateMixin {
 
     return Scaffold(
       appBar: AppBar(
-        elevation: 1,
+        elevation: 0,
         automaticallyImplyLeading: true,
-        // title: Text("LeaguePage"),
-        actions: [
-          SvgPicture.asset(
-            "assets/icons/settings.svg",
-            color: kBlack,
-            width: 20,
-          ),
-          const SizedBox(
-            width: 15,
-          ),
-        ],
+        title: const Text("Premier League"),
+        // actions: [
+        // SvgPicture.asset(
+        //   "assets/icons/settings.svg",
+        //   color: kBlack,
+        //   width: 20,
+        // ),
+        // const SizedBox(
+        //   width: 15,
+        // ),
+        // ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kTextTabBarHeight),
           child: Container(
@@ -45,10 +50,10 @@ class _LeaguePageState extends State<LeaguePage> with TickerProviderStateMixin {
             child: TabBar(
               tabs: const [
                 Tab(
-                  text: 'Friends',
+                  text: 'Table',
                 ),
                 Tab(
-                  text: 'Requests',
+                  text: 'Fixtures',
                 ),
               ],
               splashFactory: NoSplash.splashFactory,
@@ -70,7 +75,30 @@ class _LeaguePageState extends State<LeaguePage> with TickerProviderStateMixin {
       // body: Body(
       //   tabController: tabController,
       // ),
-      // body: const TableScreen(code: ""),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: TabBarView(
+                controller: tabController,
+                // viewportFraction: 0.8,
+                // controller: tabController,
+                children: [
+                  LeagueTable(
+                    // code: '',
+                    code: widget.code ?? '',
+                  ),
+                  FixturesTab(
+                    // code: '',
+                    code: widget.code ?? '',
+                  ),
+                  // const Trending(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

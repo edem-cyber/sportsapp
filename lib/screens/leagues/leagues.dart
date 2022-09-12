@@ -6,7 +6,7 @@ import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/screens/single_league_page/widgets/table_screen.dart';
+import 'package:sportsapp/screens/single_league_page/single_league_page.dart';
 import 'package:sportsapp/screens/leagues/components/demo_leagues.dart';
 import 'package:sportsapp/screens/leagues/components/league_item.dart';
 
@@ -94,7 +94,7 @@ class _LeagueScreenState extends State<LeagueScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TableScreen(
+                  builder: (context) => LeaguePage(
                     code: demoLeagues[index]['leagueCode']!,
                   ),
                 ),

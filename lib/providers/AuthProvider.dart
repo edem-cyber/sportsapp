@@ -422,8 +422,8 @@ class AuthProvider with ChangeNotifier {
   List<Article> news = [];
 
   Future<List<Article>> getPosts() async {
-    // var apiKey = "800dce9aa1334456ac941842fa55edf8";
-    var apiKey = "37b3f6b92d2a4434a249e02fd8938841";
+    var apiKey = "800dce9aa1334456ac941842fa55edf8";
+    // var apiKey = "37b3f6b92d2a4434a249e02fd8938841";
     // "https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=800dce9aa1334456ac941842fa55edf8");
 
     Uri url = Uri.parse(

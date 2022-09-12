@@ -14,6 +14,7 @@ const kTextColor = Color(0xFF444444);
 const kTextLightColor = Color(0xFFB4B4B4);
 const kGrey = Color(0xFF757575);
 const kWhite = Color(0xFFFFFFFF);
+const kDeepPurple = Color(0xFF2B002F);
 const kWarning = Color(0xFFFF4646);
 const kAnimationDuration = Duration(milliseconds: 200);
 const headingStyle = TextStyle(

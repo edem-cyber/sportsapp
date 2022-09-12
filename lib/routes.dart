@@ -8,6 +8,7 @@ import 'package:sportsapp/screens/edit_profile/edit_profile.dart';
 import 'package:sportsapp/screens/friends_page/friends_page.dart';
 import 'package:sportsapp/screens/home/home.dart';
 import 'package:sportsapp/screens/leagues/leagues.dart';
+import 'package:sportsapp/screens/match_news_page/match_news_page.dart';
 import 'package:sportsapp/screens/privacy_policy/privacy_policy.dart';
 import 'package:sportsapp/screens/profile/profile.dart';
 import 'package:sportsapp/screens/settings/settings.dart';
@@ -19,7 +20,7 @@ import 'package:sportsapp/screens/welcome/welcome.dart';
 
 final Map<String, WidgetBuilder> routes = {
   SplashScreen.routeName: (context) => const SplashScreen(),
-  Base.routeName: (context) =>  Base(),
+  Base.routeName: (context) => Base(),
   // AuthWrapper.routeName: (context) => const AuthWrapper(),
   SignIn.routeName: (context) => const SignIn(),
   SignUp.routeName: (context) => const SignUp(),
@@ -34,6 +35,7 @@ final Map<String, WidgetBuilder> routes = {
   Profile.routeName: (context) => const Profile(),
   Settings.routeName: (context) => const Settings(),
   CommentsPage.routeName: (context) => const CommentsPage(),
+  MatchNewsPage.routeName: (context) => const MatchNewsPage(),
   LeaguePage.routeName: (context) => const LeaguePage(),
   PrivacyPolicy.routeName: (context) => const PrivacyPolicy(),
 };
