@@ -28,7 +28,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
     //IF YOU WANT TO USE THE STREAM, YOU NEED TO ADD THE PROVIDER TO THE SCREEN
     // var getPosts = Provider.of<AuthProvider>(context, listen: false).getPosts();
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
-     authProvider.getPosts();
+    authProvider.getPosts();
     // stream = getPosts.stream;
     // return logexpertClient.objectsState.read(object.id);
   }
@@ -82,7 +82,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                           desc: item.description ?? "",
                           content: item.content ?? "",
                           posturl: item.articleUrl ?? "",
-                          // isPostLiked: false,
+                          isLiked: false,
                           // currentUid: authProvider.user!.uid,
                         ),
                       );

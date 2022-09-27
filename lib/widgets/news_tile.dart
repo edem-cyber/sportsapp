@@ -17,7 +17,8 @@ class NewsTile extends StatelessWidget {
   final String title, desc, content, posturl;
   final String? imgUrl;
   final Function()? onTap;
-  // late bool isPostLiked;
+  var isLiked;
+  // late bool isLiked;
 
   NewsTile({
     Key? key,
@@ -27,7 +28,7 @@ class NewsTile extends StatelessWidget {
     required this.content,
     required this.posturl,
     this.onTap,
-    // required this.isPostLiked,
+    required this.isLiked,
     // required this.currentUid
   }) : super(key: key);
 
@@ -201,8 +202,8 @@ class NewsTile extends StatelessWidget {
                     dotSecondaryColor: kBlue,
                   ),
                   likeBuilder: (bool isLiked) {
-                    // isPostLiked = isLiked;
-                    // isLiked = isPostLiked;
+                    // isLiked = isLiked;
+                    // isLiked = isLiked;
                     return SvgPicture.asset(
                       'assets/icons/heart.svg',
                       color: isLiked

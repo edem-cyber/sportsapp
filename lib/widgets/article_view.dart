@@ -137,8 +137,8 @@ class ArticleView extends StatelessWidget {
                     dotSecondaryColor: kBlue,
                   ),
                   likeBuilder: (bool isLiked) {
-                    // isPostLiked = isLiked;
-                    // isLiked = isPostLiked;
+                    // isLiked = isLiked;
+                    // isLiked = isLiked;
                     return SvgPicture.asset(
                       'assets/icons/heart.svg',
                       color: isLiked
