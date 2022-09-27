@@ -187,7 +187,7 @@ class MyListView extends StatelessWidget {
         );
       },
       separatorBuilder: (BuildContext context, int index) {
-        return Divider(
+        return const Divider(
           color: kGrey,
         );
       },

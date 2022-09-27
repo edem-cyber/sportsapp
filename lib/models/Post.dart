@@ -72,6 +72,8 @@ class Article {
     data['content'] = content;
     return data;
   }
+
+  static fromMap(Map<String, dynamic> data) {}
 }
 
 class Source {

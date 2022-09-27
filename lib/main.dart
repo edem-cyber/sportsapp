@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/helper/storage_manage.dart';
+import 'package:sportsapp/providers/Bookmarks.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/CountryProvider.dart';
 import 'package:sportsapp/providers/LeaguesProvider.dart';
@@ -194,6 +195,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<NavigationService>(
           create: (_) => NavigationService(),
+        ),
+        ChangeNotifierProvider<BookmarkModel>(
+          create: (_) => BookmarkModel(),
         ),
         ChangeNotifierProvider<CountriesProvider>(
           create: (_) => CountriesProvider(),

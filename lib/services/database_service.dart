@@ -22,9 +22,14 @@ class DatabaseService {
     return query.docs.isNotEmpty;
   }
 
+
+
   Future addUserInfoToDB(String uid, Map<String, dynamic> userInfoMap) {
     return _dataBase.collection(userCollection).doc(uid).set(userInfoMap);
   }
+
+  //firestore function to add to likes
+  
 
   //Update User
   Future<void> updateUser(String uid, Map<String, dynamic> userInfoMap) async {
@@ -89,6 +94,8 @@ class DatabaseService {
         .orderBy('sent_time', descending: false)
         .snapshots();
   }
+
+
 
   // * Add messages to the firestore databse
   Future<void> addMessagesToChat(String chatId, ChatMessage message) async {
@@ -176,4 +183,8 @@ class DatabaseService {
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
+
+
+
+  getCollection({required String uid, required collectionName}) {}
 }
