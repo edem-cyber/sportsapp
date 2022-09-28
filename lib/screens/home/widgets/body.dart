@@ -6,7 +6,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/widgets/news_tile.dart';
+import 'package:sportsapp/screens/home/widgets/news_tile.dart';
 
 class Body extends StatefulWidget {
   //scroll controller
@@ -60,6 +60,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
         // padding: const EdgeInsets.symmetric(horizontal: 15),
         child: StreamBuilder<List<Article>>(
       initialData: const [],
+      
       stream: getPosts,
       builder: (context, snapshot) {
         return snapshot.hasData

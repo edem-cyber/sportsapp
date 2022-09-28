@@ -60,6 +60,7 @@ dependencies:
   # package_info_plus: ^1.4.3
   # sticky_headers: ^0.3.0+2
   persistent_bottom_nav_bar: ^4.0.2
+  webview_flutter: ^3.0.4
   
 
   

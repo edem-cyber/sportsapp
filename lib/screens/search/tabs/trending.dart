@@ -7,7 +7,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/widgets/news_tile.dart';
+import 'package:sportsapp/screens/home/widgets/news_tile.dart';
 
 class Trending extends StatefulWidget {
   const Trending({Key? key}) : super(key: key);
@@ -157,6 +157,7 @@ class _TrendingState extends State<Trending>
                           desc: item.description ?? "",
                           content: item.content ?? "",
                           posturl: item.articleUrl ?? "",
+                          isLiked: false,
                         ),
                       );
                     },

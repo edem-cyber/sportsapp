@@ -116,6 +116,7 @@ class AuthProvider with ChangeNotifier {
     getDeviceInfo().then((value) {
       if (value != null) {
         var mystring = value.toString();
+        //get
         print("DEVICE INFO HERE: $mystring");
       }
     });

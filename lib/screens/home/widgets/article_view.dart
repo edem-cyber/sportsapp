@@ -8,6 +8,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class ArticleView extends StatelessWidget {
   // In the constructor, require a Todo.
@@ -88,7 +89,7 @@ class ArticleView extends StatelessWidget {
                   child: Icon(Icons.error),
                 ),
               ),
-              imageUrl: imgUrl,
+              imageUrl: imgUrl.startsWith("//") ? "https:$imgUrl" : imgUrl,
               placeholder: (context, url) => AspectRatio(
                 aspectRatio: 2,
                 child: Shimmer.fromColors(
@@ -121,6 +122,11 @@ class ArticleView extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
+            //webview of the article
+            // WebView(
+            //   initialUrl: postUrl,
+            //   javascriptMode: JavascriptMode.unrestricted,
+            // ),
             Row(
               children: [
                 LikeButton(
@@ -188,7 +194,7 @@ class ArticleView extends StatelessWidget {
                 //       fit: BoxFit.contain),
                 // ),
               ],
-            )
+            ),
           ],
         ),
       ),

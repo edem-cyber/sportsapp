@@ -9,7 +9,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
-import 'package:sportsapp/widgets/article_view.dart';
+import 'package:sportsapp/screens/home/widgets/article_view.dart';
 import 'package:share_plus/share_plus.dart';
 
 class NewsTile extends StatelessWidget {
@@ -17,7 +17,7 @@ class NewsTile extends StatelessWidget {
   final String title, desc, content, posturl;
   final String? imgUrl;
   final Function()? onTap;
-  var isLiked;
+  bool isLiked;
   // late bool isLiked;
 
   NewsTile({
@@ -75,6 +75,7 @@ class NewsTile extends StatelessWidget {
         Provider.of<NavigationService>(context, listen: false);
     return GestureDetector(
       onTap: () {
+        debugPrint("IMAGE URL IS: $imgUrl");
         _navigationService.navigateToPage(
           ArticleView(
             postUrl: posturl,
@@ -123,7 +124,7 @@ class NewsTile extends StatelessWidget {
                   child: Icon(Icons.error),
                 ),
               ),
-              imageUrl: imgUrl ?? "",
+              imageUrl: imgUrl!.startsWith("//") ? "https:$imgUrl" : imgUrl ?? "",
               placeholder: (context, url) => AspectRatio(
                 aspectRatio: 2,
                 child: Shimmer.fromColors(

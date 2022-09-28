@@ -52,10 +52,14 @@ class Article {
     title = json['title'];
     author = json['author'];
     description = json['description'];
+
     urlToImage = json['urlToImage'];
     publishedAt = DateTime.parse(json['publishedAt']);
     content = json['content'];
-    articleUrl = json['url'];
+    articleUrl = json['url'].toString().startsWith('//')
+        ? 'https:${json['url']}'
+        : json['url'];
+    // articleUrl = json['url'];
   }
 
   Map<String, dynamic> toJson() {

@@ -6,7 +6,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/widgets/news_tile.dart';
+import 'package:sportsapp/screens/home/widgets/news_tile.dart';
 
 class Videos extends StatefulWidget {
   const Videos({Key? key}) : super(key: key);
@@ -136,6 +136,7 @@ class _VideosState extends State<Videos> with AutomaticKeepAliveClientMixin {
                           desc: item.description ?? "",
                           content: item.content ?? "",
                           posturl: item.articleUrl ?? "",
+                          isLiked: false,
                         ),
                       );
                     },
