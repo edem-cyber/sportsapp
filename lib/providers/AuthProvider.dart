@@ -457,6 +457,22 @@ class AuthProvider with ChangeNotifier {
     return news;
   }
 
+  likeUnlikePost(String posturl) {
+    _databaseService.likeUnlikePost(_auth.currentUser!.uid, posturl);
+  }
+
+  // isPostLiked(String posturl) {
+  //   return _databaseService.isPostLiked(_auth.currentUser!.uid, posturl);
+  // }
+
+  // likePost(String posturl) {
+  //   _databaseService.likePost(posturl, _auth.currentUser!.uid);
+  // }
+
+  // unlikePost(String posturl) {
+  //   _databaseService.unlikePost(posturl, _auth.currentUser!.uid);
+  // }
+
   // Future<bool> signInWithGoogle() async {
   //   try {
   //     _status = Status.Authenticating;

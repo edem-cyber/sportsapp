@@ -124,7 +124,8 @@ class NewsTile extends StatelessWidget {
                   child: Icon(Icons.error),
                 ),
               ),
-              imageUrl: imgUrl!.startsWith("//") ? "https:$imgUrl" : imgUrl ?? "",
+              imageUrl:
+                  imgUrl!.startsWith("//") ? "https:$imgUrl" : imgUrl ?? "",
               placeholder: (context, url) => AspectRatio(
                 aspectRatio: 2,
                 child: Shimmer.fromColors(
@@ -190,9 +191,11 @@ class NewsTile extends StatelessWidget {
             Row(
               children: [
                 LikeButton(
-                  // onTap: ((isLiked) async {
-                  //   return !isLiked;
-                  // }),
+                  onTap: ((isLiked) async {
+                    print("IS LIKED: $isLiked");
+                    // isLiked = authProvider.isPostLiked(posturl);
+                    authProvider.likeUnlikePost(posturl);
+                  }),
                   size: 15,
                   circleColor: const CircleColor(
                     start: kBlue,
@@ -203,6 +206,7 @@ class NewsTile extends StatelessWidget {
                     dotSecondaryColor: kBlue,
                   ),
                   likeBuilder: (bool isLiked) {
+                    // isLiked = authProvider.isPostLiked(posturl);
                     // isLiked = isLiked;
                     // isLiked = isLiked;
                     return SvgPicture.asset(

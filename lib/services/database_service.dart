@@ -6,6 +6,7 @@ import 'package:sportsapp/models/ChatMessageModel.dart';
 // Models
 
 const String userCollection = 'Users';
+const String postCollection = 'liked_posts';
 const String chatCollection = 'Chats';
 const String messagesCollection = 'Messages';
 
@@ -38,24 +39,8 @@ class DatabaseService {
     }
   }
 
-  Future getUserFromDB(String uid) {
-    return _dataBase.collection(userCollection).doc(uid).get();
-  }
-
-  //* Getting the User from Firebase Cloud Store
-  Future<DocumentSnapshot> getUser(String uid, {String? name}) {
-    return _dataBase.collection(userCollection).doc(uid).get();
-  }
-
-  Future<QuerySnapshot> getUsers({String? name}) {
-    Query query = _dataBase.collection(userCollection);
-    if (name != null) {
-      query = query.where('name', isGreaterThanOrEqualTo: name).where(
-            'name',
-            isLessThanOrEqualTo: name + 'z',
-          );
-    }
-    return query.get();
+  Future getUser(String uid) async {
+    return await _dataBase.collection(userCollection).doc(uid).get();
   }
 
 //* Getting the chats from the users
@@ -186,6 +171,82 @@ class DatabaseService {
       debugPrint('Get liked posts error: $e');
     }
   }
+
+  // Future<bool> isPostLiked(String postUrl, String uid) async {
+  //   try {
+  //     final likedPosts = await _dataBase
+  //         .collection(userCollection)
+  //         .doc(postUrl)
+  //         .collection(postCollection)
+  //         .doc(uid)
+  //         .get();
+
+  //     return likedPosts.exists;
+  //   } catch (e) {
+  //     debugPrint('Is post liked error: $e');
+  //     return false;
+  //   }
+  //   // try {
+  //   //   _dataBase.collection(userCollection).doc(uid).get().then(
+  //   //     (value) {
+  //   //       if (value.data()![postCollection].contains(postUrl)) {
+  //   //         return true;
+  //   //       } else {
+  //   //         return false;
+  //   //       }
+  //   //     },
+  //   //   );
+  //   // } catch (e) {
+  //   //   debugPrint('Get liked posts error: $e');
+  //   // }
+  //   // return false;
+  // }
+
+  Future<void> likeUnlikePost(String posturl, String uid) async {
+    getUser(uid).then(
+      (value) {
+        if (value.data()![postCollection].contains(posturl)) {
+          _dataBase.collection(userCollection).doc(uid).update({
+            postCollection: FieldValue.arrayRemove([posturl])
+          });
+        } else {
+          _dataBase.collection(userCollection).doc(uid).update({
+            postCollection: FieldValue.arrayUnion([posturl])
+          });
+        }
+      },
+    );
+  }
+
+  // void likePost(String posturl, String uid) {
+  //   //check if post is already liked
+  //   isPostLiked(uid, posturl).then(
+  //     (value) {
+  //       if (value == false) {
+  //         //if liked, unlike
+  //         _dataBase.collection(userCollection).doc(uid).update(
+  //           {
+  //             postCollection: FieldValue.arrayRemove([posturl])
+  //           },
+  //         );
+  //       }
+  //     },
+  //   );
+  // }
+
+  // void unlikePost(String postUrl, String uid) {
+  //   isPostLiked(uid, postUrl).then(
+  //     (value) {
+  //       if (value == true) {
+  //         _dataBase.collection(userCollection).doc(uid).update(
+  //           {
+  //             postCollection: FieldValue.arrayRemove([postUrl])
+  //           },
+  //         );
+  //       }
+  //     },
+  //   );
+  // }
 
   // getCollection({required String uid, required collectionName}) {}
 }

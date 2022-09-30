@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:like_button/like_button.dart';
@@ -10,7 +12,7 @@ import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ArticleView extends StatelessWidget {
+class ArticleView extends StatefulWidget {
   // In the constructor, require a Todo.
   const ArticleView(
       {super.key,
@@ -28,6 +30,14 @@ class ArticleView extends StatelessWidget {
   final String desc;
   final String imgUrl;
 
+  @override
+  State<ArticleView> createState() => _ArticleViewState();
+}
+
+class _ArticleViewState extends State<ArticleView> {
+  var loadingPercentage = 0;
+  bool isLoading = true;
+  late WebViewController webViewController;
   @override
   Widget build(BuildContext context) {
     var shareOptions = [
@@ -68,6 +78,7 @@ class ArticleView extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: ListView(
+          shrinkWrap: true,
           children: [
             CachedNetworkImage(
               imageBuilder: (context, imageProvider) => AspectRatio(
@@ -89,7 +100,9 @@ class ArticleView extends StatelessWidget {
                   child: Icon(Icons.error),
                 ),
               ),
-              imageUrl: imgUrl.startsWith("//") ? "https:$imgUrl" : imgUrl,
+              imageUrl: widget.imgUrl.startsWith("//")
+                  ? "https:${widget.imgUrl}"
+                  : widget.imgUrl,
               placeholder: (context, url) => AspectRatio(
                 aspectRatio: 2,
                 child: Shimmer.fromColors(
@@ -110,23 +123,82 @@ class ArticleView extends StatelessWidget {
               height: 20,
             ),
             Text(
-              title,
+              widget.title,
               style: Theme.of(context).textTheme.titleSmall,
             ),
-            Text(desc),
+            Text(widget.desc),
             // ElevatedButton(
             //     onPressed: () {
             //       print(desc);
             //     },
             //     child: Text("hit me")),
             const SizedBox(
-              height: 20,
+              height: 40,
             ),
             //webview of the article
-            // WebView(
-            //   initialUrl: postUrl,
-            //   javascriptMode: JavascriptMode.unrestricted,
-            // ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Stack(
+                children: [
+                  WebView(
+                    // ignore: prefer_collection_literals
+                    gestureRecognizers: Set()
+                      ..add(
+                        Factory<VerticalDragGestureRecognizer>(
+                          () => VerticalDragGestureRecognizer(),
+                        ), // or null
+                      ),
+                    key: const Key("webview1"),
+                    onProgress: (progress) {
+                      if (!mounted) {
+                        return;
+                      }
+                      setState(() {
+                        loadingPercentage = progress;
+                        if (loadingPercentage == 100) {
+                          isLoading = false;
+                        }
+                      });
+                      // setState(() {
+                      //   loadingPercentage = progress;
+                      // });
+                    },
+                    onPageFinished: (finish) {
+                      setState(() {
+                        isLoading = false;
+                        loadingPercentage = 100;
+                      });
+                    },
+                    initialUrl: widget.postUrl,
+                    javascriptMode: JavascriptMode.unrestricted,
+                    onWebViewCreated: (controller) {
+                      webViewController = controller;
+                    },
+                    navigationDelegate: (NavigationRequest request) {
+                      if (request.url.contains(widget.postUrl)) {
+                        return NavigationDecision.navigate;
+                      } else {
+                        return NavigationDecision.prevent;
+                      }
+                    },
+                  ),
+                  isLoading
+                      ? Shimmer.fromColors(
+                          baseColor: kTextLightColor,
+                          highlightColor: Colors.white,
+                          child: Container(
+                            // width: 40,
+                            height: MediaQuery.of(context).size.height * 0.8,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const SizedBox(),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 40,
+            ),
             Row(
               children: [
                 LikeButton(
@@ -172,7 +244,7 @@ class ArticleView extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Share.share(postUrl);
+                    Share.share(widget.postUrl);
                   },
                   child: SvgPicture.asset(
                     shareOptions[1]['icon'] as String,
@@ -195,6 +267,9 @@ class ArticleView extends StatelessWidget {
                 // ),
               ],
             ),
+            const SizedBox(
+              height: 40,
+            )
           ],
         ),
       ),
