@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sportsapp/models/ChatMessageModel.dart';
+import 'package:sportsapp/models/Post.dart';
 
 // Models
 
@@ -15,7 +16,7 @@ class DatabaseService {
   final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
   // var postsRef = FirebaseFirestore.instance.collection(userCollection);
 
-  Future<bool> isDuplicateUniqueName(String? username) async {
+  Future<bool> isDuplicateUniqueName({String? username}) async {
     QuerySnapshot query = await _dataBase
         .collection(userCollection)
         .where('username', isEqualTo: username)
@@ -23,14 +24,16 @@ class DatabaseService {
     return query.docs.isNotEmpty;
   }
 
-  Future addUserInfoToDB(String uid, Map<String, dynamic> userInfoMap) {
+  Future addUserInfoToDB(
+      {required String uid, required Map<String, dynamic> userInfoMap}) {
     return _dataBase.collection(userCollection).doc(uid).set(userInfoMap);
   }
 
   //firestore function to add to likes
 
   //Update User
-  Future<void> updateUser(String uid, Map<String, dynamic> userInfoMap) async {
+  Future<void> updateUser(
+      {required String uid, required Map<String, dynamic> userInfoMap}) async {
     try {
       // * Going to the collections (User) the to the user uid and overrides the values of the fields
       await _dataBase.collection(userCollection).doc(uid).update(userInfoMap);
@@ -39,23 +42,23 @@ class DatabaseService {
     }
   }
 
-  Future getUser(String uid) async {
+  Future getUser({required String uid}) async {
     return await _dataBase.collection(userCollection).doc(uid).get();
   }
 
 //* Getting the chats from the users
-  Stream<QuerySnapshot> getChatsForsUser(String uid) {
-    return _dataBase
-        .collection(chatCollection)
-        .where(
-          'members',
-          arrayContains: uid,
-        )
-        .snapshots();
-  }
+  // Stream<QuerySnapshot> getChatsForsUser(String uid) {
+  //   return _dataBase
+  //       .collection(chatCollection)
+  //       .where(
+  //         'members',
+  //         arrayContains: uid,
+  //       )
+  //       .snapshots();
+  // }
 
   //* Update to the last chat sent
-  Future<QuerySnapshot> getLastMessageFroChat(String chatID) {
+  Future<QuerySnapshot> getLastMessageFroChat({required String chatID}) {
     return _dataBase
         .collection(chatCollection)
         .doc(chatID)
@@ -68,29 +71,29 @@ class DatabaseService {
         .get();
   }
 
-  Stream<QuerySnapshot> streamMessagesForChatPage(String chatId) {
-    return _dataBase
-        .collection(chatCollection)
-        .doc(chatId)
-        .collection(messagesCollection)
-        .orderBy('sent_time', descending: false)
-        .snapshots();
-  }
+  // Stream<QuerySnapshot> streamMessagesForChatPage(String chatId) {
+  //   return _dataBase
+  //       .collection(chatCollection)
+  //       .doc(chatId)
+  //       .collection(messagesCollection)
+  //       .orderBy('sent_time', descending: false)
+  //       .snapshots();
+  // }
 
-  // * Add messages to the firestore databse
-  Future<void> addMessagesToChat(String chatId, ChatMessage message) async {
-    try {
-      await _dataBase
-          .collection(chatCollection)
-          .doc(chatId)
-          .collection(messagesCollection)
-          .add(
-            message.toJson(),
-          );
-    } catch (error) {
-      debugPrint('$error');
-    }
-  }
+  // // * Add messages to the firestore databse
+  // Future<void> addMessagesToChat(String chatId, ChatMessage message) async {
+  //   try {
+  //     await _dataBase
+  //         .collection(chatCollection)
+  //         .doc(chatId)
+  //         .collection(messagesCollection)
+  //         .add(
+  //           message.toJson(),
+  //         );
+  //   } catch (error) {
+  //     debugPrint('$error');
+  //   }
+  // }
 
   Future<void> updateChatData(String chatId, Map<String, dynamic> data) async {
     try {
@@ -101,7 +104,7 @@ class DatabaseService {
   }
 
 //* Update time
-  Future<void> updateUserLastSeenTime(String uid) async {
+  Future<void> updateUserLastSeenTime({required String uid}) async {
     try {
       await _dataBase.collection(userCollection).doc(uid).update(
         {
@@ -145,78 +148,99 @@ class DatabaseService {
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
-  // Stream<List> getFollowedTopics() {}
-  // Stream<List> getUsersWhoLikedPost() {
-  //   var
-  //   return postsRef
-  //       .document(ownerId)
-  //       .collection('userPosts')
-  //       .document(postId)
-  //       .updateData({'likes.$currentUserId': false});
-  // }
-
-  Stream<List> getAllPosts(String uid) {
-    return _dataBase
-        .collection('Posts')
-        .where('uid', isEqualTo: uid)
-        .orderBy('created_at', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
-  }
-
-  Future<void> getLikedPosts(String uid) async {
-    try {
-      await _dataBase.collection(userCollection).doc(uid).get();
-    } catch (e) {
-      debugPrint('Get liked posts error: $e');
-    }
-  }
-
-  // Future<bool> isPostLiked(String postUrl, String uid) async {
+  // Future<bool> setBookmarks(
+  //     {required String sourceName,
+  //     required String imageUrl,
+  //     required String title,
+  //     required String description,
+  //     required String url,
+  //     required String author,
+  //     required String publishDate,
+  //     required String uid}) async {
+  //   // FirebaseFirestore _firestore = FirebaseFirestore.instance;
   //   try {
-  //     final likedPosts = await _dataBase
+  //     await _dataBase
   //         .collection(userCollection)
-  //         .doc(postUrl)
-  //         .collection(postCollection)
   //         .doc(uid)
-  //         .get();
-
-  //     return likedPosts.exists;
+  //         .collection(postCollection)
+  //         .doc(title)
+  //         .set({
+  //       "sourceName": sourceName,
+  //       "imageUrl": imageUrl,
+  //       "title": title,
+  //       "description": description,
+  //       "url": url,
+  //       "author": author,
+  //       "publishDate": publishDate,
+  //     });
+  //     return true;
   //   } catch (e) {
-  //     debugPrint('Is post liked error: $e');
   //     return false;
   //   }
-  //   // try {
-  //   //   _dataBase.collection(userCollection).doc(uid).get().then(
-  //   //     (value) {
-  //   //       if (value.data()![postCollection].contains(postUrl)) {
-  //   //         return true;
-  //   //       } else {
-  //   //         return false;
-  //   //       }
-  //   //     },
-  //   //   );
-  //   // } catch (e) {
-  //   //   debugPrint('Get liked posts error: $e');
-  //   // }
-  //   // return false;
   // }
 
-  Future<void> likeUnlikePost(String posturl, String uid) async {
-    getUser(uid).then(
-      (value) {
-        if (value.data()![postCollection].contains(posturl)) {
-          _dataBase.collection(userCollection).doc(uid).update({
-            postCollection: FieldValue.arrayRemove([posturl])
-          });
-        } else {
-          _dataBase.collection(userCollection).doc(uid).update({
-            postCollection: FieldValue.arrayUnion([posturl])
-          });
-        }
-      },
-    );
+  // Future<bool> likePost(String uid, String postUrl) async {
+  //   try {
+  //     await _dataBase
+  //         .collection(userCollection)
+  //         .doc(uid)
+  //         .collection(postCollection)
+  //         .doc(postUrl)
+  //         .set({
+  //       "postUrl": postUrl,
+  //     });
+  //     return true;
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
+
+  Future<void> likePost({required String uid, required Article article}) async {
+    // print("POST URL IS: $postUrl");
+    print("UID IS: $uid");
+    //add to liked posts array
+    await _dataBase
+        .collection(userCollection)
+        .doc(uid)
+        .update(
+          {
+            postCollection: FieldValue.arrayUnion(
+              [
+                article.toJson(),
+              ],
+            )
+          },
+        )
+        .then((value) => print("Liked Post Added"))
+        .catchError(
+          (error) => print("Failed to add liked post: $error"),
+        );
+    // await _dataBase.collection(userCollection).doc(uid).update({
+    //   "liked_posts": FieldValue.arrayUnion([postUrl])
+    // });
   }
+
+  Future<void> unlikePost({required String uid, required article}) async {
+    print('unlikePost');
+    await _dataBase
+        .collection(userCollection)
+        .doc(uid)
+        .update(
+          {
+            postCollection: FieldValue.arrayRemove(
+              [
+                article.toJson(),
+              ],
+            )
+          },
+        )
+        .then((value) => print("Liked Post Removed"))
+        .catchError(
+          (error) => print("Failed to remove liked post: $error"),
+        );
+  }
+
+  // void updateUserIsNew(String uid, bool bool) {}
 
   // void likePost(String posturl, String uid) {
   //   //check if post is already liked
@@ -247,6 +271,66 @@ class DatabaseService {
   //     },
   //   );
   // }
+
+  // Stream<List> getFollowedTopics() {}
+  // Stream<List> getUsersWhoLikedPost() {
+  //   var
+  //   return postsRef
+  //       .document(ownerId)
+  //       .collection('userPosts')
+  //       .document(postId)
+  //       .updateData({'likes.$currentUserId': false});
+  // }
+
+  // Stream<List> getAllPosts(String uid) {
+  //   return _dataBase
+  //       .collection('Posts')
+  //       .where('uid', isEqualTo: uid)
+  //       .orderBy('created_at', descending: true)
+  //       .snapshots()
+  //       .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  // }
+
+  // Future<void> getLikedPosts(String uid) async {
+  //   try {
+  //     await _dataBase.collection(userCollection).doc(uid).get();
+  //   } catch (e) {
+  //     debugPrint('Get liked posts error: $e');
+  //   }
+  // }
+
+  Future<bool> isLiked(
+      {required Article article, required String uid}) async {
+    try {
+      final likedPosts = await _dataBase
+          .collection(userCollection)
+          .doc(uid)
+          .collection(postCollection)
+          .doc(article.articleUrl)
+          .get();
+
+      return likedPosts.exists;
+    } catch (e) {
+      debugPrint('Is post liked error: $e');
+      return false;
+    }
+    // try {
+    //   _dataBase.collection(userCollection).doc(uid).get().then(
+    //     (value) {
+    //       if (value.data()![postCollection].contains(postUrl)) {
+    //         return true;
+    //       } else {
+    //         return false;
+    //       }
+    //     },
+    //   );
+    // } catch (e) {
+    //   debugPrint('Get liked posts error: $e');
+    // }
+    // return false;
+  }
+
+  // bool isLiked({required String uid, required Article article}) {}
 
   // getCollection({required String uid, required collectionName}) {}
 }

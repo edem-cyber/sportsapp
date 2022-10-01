@@ -131,20 +131,15 @@ class AuthProvider with ChangeNotifier {
     authState.listen(
       (fireUser) {
         if (fireUser != null) {
-          _databaseService.updateUserLastSeenTime(fireUser.uid);
-          _databaseService.getUser(fireUser.uid).then(
+          _databaseService.updateUserLastSeenTime(uid: fireUser.uid);
+          print("UID IN LISTEN METHOD: $fireUser.uid");
+          _databaseService.getUser(uid: fireUser.uid).then(
             (snapshot) {
               // * Check if the documentSnapshot exists or not.
               if (snapshot.exists) {
                 final userData = snapshot.data() as Map<String, dynamic>?;
                 //* Check if the document object is null or not
-                if (userData != null) {
-                  // user = UserModel.fromMap(userData);
-                  // _userFromFirebase = user;
-                  // _userFromFirebase(_user);
-                  // print(_user);
-                  // print('User data IS : ${user!.toJson()}');
-                }
+                if (userData != null) {}
               }
               //* Automatic navigates to the home page
               _navigationService.signInWithAnimation(Base.routeName);
@@ -232,7 +227,7 @@ class AuthProvider with ChangeNotifier {
         email: email.trim(),
         password: password,
       );
-      if (!await _databaseService.isDuplicateUniqueName(username)) {
+      if (!await _databaseService.isDuplicateUniqueName(username: username)) {
         // UniqueName is duplicate
         // return 'Unique name already exists';
 
@@ -248,7 +243,7 @@ class AuthProvider with ChangeNotifier {
         };
 
         await _databaseService.addUserInfoToDB(
-            _auth.currentUser!.uid, userInfoMap);
+            uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
       } else {
         // UniqueName is duplicate
         // return 'Unique name already exists';
@@ -312,13 +307,13 @@ class AuthProvider with ChangeNotifier {
           ),
         );
 
-        if (!await _databaseService
-            .isDuplicateUniqueName(_googleSignInAccount?.displayName)) {
+        if (!await _databaseService.isDuplicateUniqueName(
+            username: _googleSignInAccount?.displayName)) {
           // UniqueName is duplicate
           // return 'Unique name already exists';
 
           await _databaseService.addUserInfoToDB(
-              _auth.currentUser!.uid, userInfoMap);
+              uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
         } else {
           // UniqueName is duplicate
           // return 'Unique name already exists';
@@ -330,7 +325,7 @@ class AuthProvider with ChangeNotifier {
 
           //UPDATE USER INFO
           await _databaseService.updateUser(
-              _auth.currentUser!.uid, userInfoMap);
+              uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
         }
 
         if (!usercredential.isBlank!) {
@@ -457,8 +452,24 @@ class AuthProvider with ChangeNotifier {
     return news;
   }
 
-  likeUnlikePost(String posturl) {
-    _databaseService.likeUnlikePost(_auth.currentUser!.uid, posturl);
+  // likeUnlikePost(String posturl) {
+  //   // _databaseService.likeUnlikePost(
+  //   //     uid: _auth.currentUser!.uid, posturl: posturl);
+
+  // }
+
+  //bookmark post
+  likePost(Article article) {
+    _databaseService.likePost(uid: _auth.currentUser!.uid, article: article);
+  }
+
+  unlikePost(Article article) {
+    _databaseService.unlikePost(uid: _auth.currentUser!.uid, article: article);
+  }
+
+  isLiked(Article article) {
+    return _databaseService.isLiked(
+        uid: _auth.currentUser!.uid, article: article);
   }
 
   // isPostLiked(String posturl) {

@@ -127,12 +127,7 @@ class _ForYouState extends State<ForYou> with AutomaticKeepAliveClientMixin {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: NewsTile(
-                          imgUrl: image ?? "",
-                          title: item.title ?? "",
-                          desc: item.description ?? "",
-                          content: item.content ?? "",
-                          posturl: item.articleUrl ?? "",
-                          isLiked: false,
+                         article: item, isLiked: false,
                         ),
                       );
                     },

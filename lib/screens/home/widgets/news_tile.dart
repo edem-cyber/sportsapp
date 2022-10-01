@@ -6,6 +6,7 @@ import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
+import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
@@ -14,21 +15,23 @@ import 'package:share_plus/share_plus.dart';
 
 class NewsTile extends StatelessWidget {
   // final String currentUid;
-  final String title, desc, content, posturl;
-  final String? imgUrl;
+  // final String title, desc, content, posturl;
+  // final String? imgUrl;
+  final Article article;
   final Function()? onTap;
   bool isLiked;
   // late bool isLiked;
 
   NewsTile({
     Key? key,
-    required this.imgUrl,
-    required this.desc,
-    required this.title,
-    required this.content,
-    required this.posturl,
+    // required this.imgUrl,
+    // required this.desc,
+    // required this.title,
+    // required this.content,
+    // required this.posturl,
     this.onTap,
     required this.isLiked,
+    required this.article,
     // required this.currentUid
   }) : super(key: key);
 
@@ -75,14 +78,14 @@ class NewsTile extends StatelessWidget {
         Provider.of<NavigationService>(context, listen: false);
     return GestureDetector(
       onTap: () {
-        debugPrint("IMAGE URL IS: $imgUrl");
+        debugPrint("IMAGE URL IS: $article.urlToImage");
         _navigationService.navigateToPage(
           ArticleView(
-            postUrl: posturl,
-            title: title,
-            desc: desc,
-            content: content,
-            imgUrl: imgUrl ?? "",
+            postUrl: article.articleUrl!,
+            title: article.title!,
+            desc: article.description!,
+            content: article.content!,
+            imgUrl: article.urlToImage ?? "",
           ),
         );
         // Navigator.push(
@@ -124,8 +127,9 @@ class NewsTile extends StatelessWidget {
                   child: Icon(Icons.error),
                 ),
               ),
-              imageUrl:
-                  imgUrl!.startsWith("//") ? "https:$imgUrl" : imgUrl ?? "",
+              imageUrl: article.urlToImage!.startsWith("//")
+                  ? "https:$article.urlToImage"
+                  : article.urlToImage ?? "",
               placeholder: (context, url) => AspectRatio(
                 aspectRatio: 2,
                 child: Shimmer.fromColors(
@@ -145,9 +149,9 @@ class NewsTile extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            title.isNotEmpty
+            article.title!.isNotEmpty
                 ? Text(
-                    title,
+                    article.title!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headline6!,
@@ -167,9 +171,9 @@ class NewsTile extends StatelessWidget {
             const SizedBox(
               height: 4,
             ),
-            desc.isNotEmpty || desc != null
+            article.description!.isNotEmpty || article.description! != null
                 ? Text(
-                    desc,
+                    article.description!,
                     maxLines: 2,
                     style: Theme.of(context).textTheme.bodyMedium,
                   )
@@ -192,9 +196,15 @@ class NewsTile extends StatelessWidget {
               children: [
                 LikeButton(
                   onTap: ((isLiked) async {
-                    print("IS LIKED: $isLiked");
-                    // isLiked = authProvider.isPostLiked(posturl);
-                    authProvider.likeUnlikePost(posturl);
+                    // authProvider.likePost(article);
+                    //set isliked to user's like
+                    isLiked = await authProvider.isLiked(article);
+                    isLiked = !isLiked;
+                    if (isLiked) {
+                      authProvider.likePost(article);
+                    } else {
+                      authProvider.unlikePost(article);
+                    }
                   }),
                   size: 15,
                   circleColor: const CircleColor(
@@ -206,9 +216,6 @@ class NewsTile extends StatelessWidget {
                     dotSecondaryColor: kBlue,
                   ),
                   likeBuilder: (bool isLiked) {
-                    // isLiked = authProvider.isPostLiked(posturl);
-                    // isLiked = isLiked;
-                    // isLiked = isLiked;
                     return SvgPicture.asset(
                       'assets/icons/heart.svg',
                       color: isLiked
@@ -236,7 +243,7 @@ class NewsTile extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Share.share(posturl);
+                    Share.share(article.articleUrl!);
                   },
                   child: SvgPicture.asset(
                     shareOptions[1]['icon'] as String,

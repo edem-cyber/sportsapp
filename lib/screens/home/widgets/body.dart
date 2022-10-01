@@ -60,7 +60,6 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
         // padding: const EdgeInsets.symmetric(horizontal: 15),
         child: StreamBuilder<List<Article>>(
       initialData: const [],
-      
       stream: getPosts,
       builder: (context, snapshot) {
         return snapshot.hasData
@@ -78,12 +77,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15, vertical: 10),
                         child: NewsTile(
-                          imgUrl: image,
-                          title: item.title ?? "",
-                          desc: item.description ?? "",
-                          content: item.content ?? "",
-                          posturl: item.articleUrl ?? "",
-                          isLiked: false,
+                          article: item, isLiked: false,
                           // currentUid: authProvider.user!.uid,
                         ),
                       );
