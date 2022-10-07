@@ -37,20 +37,20 @@ class NewsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int getLikeCount(likes) {
-      // if no likes, return 0
-      if (likes == null) {
-        return 0;
-      }
-      int count = 0;
-      // if the key is explicitly set to true, add a like
-      likes.values.forEach((val) {
-        if (val == true) {
-          count += 1;
-        }
-      });
-      return count;
-    }
+    // int getLikeCount(likes) {
+    //   // if no likes, return 0
+    //   if (likes == null) {
+    //     return 0;
+    //   }
+    //   int count = 0;
+    //   // if the key is explicitly set to true, add a like
+    //   likes.values.forEach((val) {
+    //     if (val == true) {
+    //       count += 1;
+    //     }
+    //   });
+    //   return count;
+    // }
 
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
     var shareOptions = [
@@ -196,15 +196,14 @@ class NewsTile extends StatelessWidget {
               children: [
                 LikeButton(
                   onTap: ((isLiked) async {
-                    // authProvider.likePost(article);
-                    //set isliked to user's like
-                    isLiked = await authProvider.isLiked(article);
-                    isLiked = !isLiked;
-                    if (isLiked) {
-                      authProvider.likePost(article);
-                    } else {
-                      authProvider.unlikePost(article);
-                    }
+                    // isLiked = !isLiked;
+                    authProvider.likePost(article);
+                    // authProvider.isPostLiked(article);
+                    // var isPostLikedInDb =
+                    //     await authProvider.isPostLiked(article);
+                    // isLiked = isPostLikedInDb;
+                    // print("IS LIKED: $isLiked");
+                    // authProvider.getLikedPostsArray();
                   }),
                   size: 15,
                   circleColor: const CircleColor(
@@ -216,6 +215,7 @@ class NewsTile extends StatelessWidget {
                     dotSecondaryColor: kBlue,
                   ),
                   likeBuilder: (bool isLiked) {
+                    
                     return SvgPicture.asset(
                       'assets/icons/heart.svg',
                       color: isLiked

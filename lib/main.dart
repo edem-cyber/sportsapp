@@ -196,9 +196,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<NavigationService>(
           create: (_) => NavigationService(),
         ),
-        ChangeNotifierProvider<BookmarkModel>(
-          create: (_) => BookmarkModel(),
-        ),
+        // ChangeNotifierProvider<BookmarkModel>(
+        //   create: (_) => BookmarkModel(),
+        // ),
         ChangeNotifierProvider<CountriesProvider>(
           create: (_) => CountriesProvider(),
         ),

@@ -452,25 +452,24 @@ class AuthProvider with ChangeNotifier {
     return news;
   }
 
-  // likeUnlikePost(String posturl) {
-  //   // _databaseService.likeUnlikePost(
-  //   //     uid: _auth.currentUser!.uid, posturl: posturl);
-
-  // }
-
   //bookmark post
   likePost(Article article) {
     _databaseService.likePost(uid: _auth.currentUser!.uid, article: article);
   }
 
-  unlikePost(Article article) {
-    _databaseService.unlikePost(uid: _auth.currentUser!.uid, article: article);
-  }
-
-  isLiked(Article article) {
-    return _databaseService.isLiked(
+  Future<bool> isPostLiked(Article article) {
+    return _databaseService.isPostLiked(
         uid: _auth.currentUser!.uid, article: article);
   }
+
+  getLikedPostsArray() {
+    _databaseService.getLikedPostsArray(uid: _auth.currentUser!.uid);
+  }
+
+  // isLiked(Article article) {
+  //   return _databaseService.isLiked(
+  //       uid: _auth.currentUser!.uid, article: article);
+  // }
 
   // isPostLiked(String posturl) {
   //   return _databaseService.isPostLiked(_auth.currentUser!.uid, posturl);
