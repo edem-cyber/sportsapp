@@ -4,12 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
+import 'package:sportsapp/screens/bookmarks/bookmarks.dart';
 import 'package:sportsapp/screens/friends_page/friends_page.dart';
 import 'package:sportsapp/screens/home/home.dart';
 import 'package:sportsapp/screens/leagues/leagues.dart';
@@ -98,7 +98,7 @@ class _BaseState extends State<Base> {
         'page': const LeagueScreen(),
       },
     ];
-   
+
     var themeProvder = Provider.of<ThemeProvider>(context, listen: true);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var _navigationService =
@@ -260,6 +260,22 @@ class _BaseState extends State<Base> {
                               ),
                               onTap: () {
                                 navigateFromDrawer(Settings.routeName);
+                              },
+                            ),
+                            ListTile(
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 35),
+                              dense: true,
+                              leading: SvgPicture.asset(
+                                "assets/icons/bookmark.svg",
+                                height: 20,
+                              ),
+                              title: const Text(
+                                "Bookmarks",
+                                style: TextStyle(color: kWhite),
+                              ),
+                              onTap: () {
+                                navigateFromDrawer(Bookmarks.routeName);
                               },
                             ),
                             ListTile(

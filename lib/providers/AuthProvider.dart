@@ -238,7 +238,7 @@ class AuthProvider with ChangeNotifier {
           'photoURL': photoURL,
           'lastSeen': DateTime.now(),
           'createdAt': DateTime.now(),
-          'updatedAt': DateTime.now(),
+          'likes': []
           // 'userDeviceInfo': deviceInfo.iosInfo,
         };
 
@@ -297,6 +297,9 @@ class AuthProvider with ChangeNotifier {
         'username': _googleSignInAccount?.displayName,
         'password': _googleSignInAccount?.id,
         'photoURL': _googleSignInAccount?.photoUrl,
+        'lastSeen': DateTime.now(),
+        'createdAt': DateTime.now(),
+        'likes': []
       };
 
       if (googleAuth != null) {
@@ -311,17 +314,17 @@ class AuthProvider with ChangeNotifier {
             username: _googleSignInAccount?.displayName)) {
           // UniqueName is duplicate
           // return 'Unique name already exists';
+          appNotification(
+            title: "Error",
+            message: "User already exists",
+            icon: const Icon(Icons.error, color: kWarning),
+          );
 
           await _databaseService.addUserInfoToDB(
               uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
         } else {
           // UniqueName is duplicate
           // return 'Unique name already exists';
-          // appNotification(
-          //   title: "Error",
-          //   message: "User already exists",
-          //   icon: const Icon(Icons.error, color: kWarning),
-          // );
 
           //UPDATE USER INFO
           await _databaseService.updateUser(
@@ -457,13 +460,18 @@ class AuthProvider with ChangeNotifier {
     _databaseService.likePost(uid: _auth.currentUser!.uid, article: article);
   }
 
-  Future<bool> isPostLiked(Article article) {
-    return _databaseService.isPostLiked(
+  unlikePost(Article article) {
+    _databaseService.unlikePost(uid: _auth.currentUser!.uid, article: article);
+  }
+
+  Future<bool> isPostInLikedArray(Article article) {
+    return _databaseService.isPostInLikedArray(
         uid: _auth.currentUser!.uid, article: article);
   }
 
   getLikedPostsArray() {
     _databaseService.getLikedPostsArray(uid: _auth.currentUser!.uid);
+    return _databaseService.getLikedPostsArray(uid: _auth.currentUser!.uid);
   }
 
   // isLiked(Article article) {

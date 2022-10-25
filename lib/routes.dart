@@ -3,6 +3,7 @@ import 'package:sportsapp/base.dart';
 import 'package:sportsapp/screens/authentication/forgot_password/forgot_password.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
+import 'package:sportsapp/screens/bookmarks/bookmarks.dart';
 import 'package:sportsapp/screens/comments_page/comments_page.dart';
 import 'package:sportsapp/screens/edit_profile/edit_profile.dart';
 import 'package:sportsapp/screens/friends_page/friends_page.dart';
@@ -38,4 +39,5 @@ final Map<String, WidgetBuilder> routes = {
   MatchNewsPage.routeName: (context) => const MatchNewsPage(),
   LeaguePage.routeName: (context) => const LeaguePage(),
   PrivacyPolicy.routeName: (context) => const PrivacyPolicy(),
+  Bookmarks.routeName: (context) => const Bookmarks()
 };

@@ -95,13 +95,33 @@ class DatabaseService {
   //   }
   // }
 
-  Future<void> updateChatData(String chatId, Map<String, dynamic> data) async {
-    try {
-      await _dataBase.collection(chatCollection).doc(chatId).update(data);
-    } catch (error) {
-      debugPrint('$error');
-    }
-  }
+  // Future<void> updateChatData(String chatId, Map<String, dynamic> data) async {
+  //   try {
+  //     await _dataBase.collection(chatCollection).doc(chatId).update(data);
+  //   } catch (error) {
+  //     debugPrint('$error');
+  //   }
+  // }
+
+//   // *Delete chat
+//   Future<void> deleteChat(String chatId) async {
+//     try {
+//       await _dataBase.collection(chatCollection).doc(chatId).delete();
+//     } catch (error) {
+//       debugPrint('$error');
+//     }
+//   }
+
+// // * Select and Create chat
+//   Future<DocumentReference?> createChat(Map<String, dynamic> data) async {
+//     try {
+//       final chat = await _dataBase.collection(chatCollection).add(data);
+//       return chat;
+//     } catch (error) {
+//       debugPrint('$error');
+//     }
+//     return null;
+//   }
 
 //* Update time
   Future<void> updateUserLastSeenTime({required String uid}) async {
@@ -114,26 +134,6 @@ class DatabaseService {
     } catch (e) {
       debugPrint('$e');
     }
-  }
-
-  // *Delete chat
-  Future<void> deleteChat(String chatId) async {
-    try {
-      await _dataBase.collection(chatCollection).doc(chatId).delete();
-    } catch (error) {
-      debugPrint('$error');
-    }
-  }
-
-// * Select and Create chat
-  Future<DocumentReference?> createChat(Map<String, dynamic> data) async {
-    try {
-      final chat = await _dataBase.collection(chatCollection).add(data);
-      return chat;
-    } catch (error) {
-      debugPrint('$error');
-    }
-    return null;
   }
 
   Stream<List> getPosts(
@@ -207,23 +207,21 @@ class DatabaseService {
     List<String> likeList = [];
 
     await _dataBase.collection(userCollection).doc(uid).get().then((value) {
-      likeList = List.from(value.data()!['liked_posts']);
+      likeList = List.from(value.data()![postDoc]);
     });
 
     debugPrint('LIKELIST: $likeList');
     return likeList;
   }
 
-  // List<Offset> pointlist = <Offset>[];
-
-  Future<bool> isPostLiked(
+  Future<bool> isPostInLikedArray(
       {required String uid, required Article article}) async {
     List<String> likeList = await getLikedPostsArray(uid: uid);
     var isLiked = likeList.contains(article.articleUrl);
     return isLiked;
   }
 
-  Future<bool> likePost({required String uid, required Article article}) async {
+  likePost({required String uid, required Article article}) async {
     // var isLiked = isPostLiked(uid: uid, article: article).then(
     //   (value) {
     //     return value;
@@ -237,15 +235,10 @@ class DatabaseService {
       (value) {
         //if the article url is in the list, remove it
         if (value.contains(article.articleUrl)) {
-          value.remove(article.articleUrl!);
-          _dataBase.collection(userCollection).doc(uid).update({
-            'liked_posts': value,
-          });
-        } else {
           //else if the article url is not in the list, add it
           value.add(article.articleUrl!);
           _dataBase.collection(userCollection).doc(uid).update({
-            'liked_posts': value,
+            postDoc: value,
           });
         }
       },
@@ -277,6 +270,21 @@ class DatabaseService {
     // await _dataBase.collection(userCollection).doc(uid).update({
     //   "liked_posts": FieldValue.arrayUnion([postUrl])
     // });
+  }
+
+  void unlikePost({required String uid, required Article article}) {
+    getLikedPostsArray(uid: uid).then(
+      (value) {
+        if (value.contains(article.articleUrl)) {
+          value.remove(article.articleUrl!);
+          _dataBase.collection(userCollection).doc(uid).update(
+            {
+              postDoc: value,
+            },
+          );
+        }
+      },
+    );
   }
 
   // bool isLiked({required String uid, required Article article}) {}
