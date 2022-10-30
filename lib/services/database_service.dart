@@ -71,6 +71,8 @@ class DatabaseService {
         .get();
   }
 
+//get likes from likes array
+
   // Stream<QuerySnapshot> streamMessagesForChatPage(String chatId) {
   //   return _dataBase
   //       .collection(chatCollection)
@@ -128,7 +130,7 @@ class DatabaseService {
     try {
       await _dataBase.collection(userCollection).doc(uid).update(
         {
-          'last_active': DateTime.now().toUtc(),
+          'last_active': DateTime.now(),
         },
       );
     } catch (e) {
@@ -220,6 +222,15 @@ class DatabaseService {
     var isLiked = likeList.contains(article.articleUrl);
     return isLiked;
   }
+
+  Stream<bool> isPostLikedList(
+      {required String uid, required Article article}) {
+    List<String> likeList = await getLikedPostsArray(uid: uid);
+    var isLiked = likeList.contains(article);
+    
+
+
+      }
 
   likePost({required String uid, required Article article}) async {
     // var isLiked = isPostLiked(uid: uid, article: article).then(

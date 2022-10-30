@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,13 +14,7 @@ import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/home/widgets/article_view.dart';
 import 'package:share_plus/share_plus.dart';
 
-class NewsTile extends StatelessWidget {
-  // final String currentUid;
-  // final String title, desc, content, posturl;
-  // final String? imgUrl;
-  final Article article;
-  final Function()? onTap;
-  bool isLiked;
+class NewsTile extends StatefulWidget {
   // late bool isLiked;
 
   NewsTile({
@@ -35,6 +30,19 @@ class NewsTile extends StatelessWidget {
     // required this.currentUid
   }) : super(key: key);
 
+  final Function()? onTap;
+  // final String currentUid;
+  // final String title, desc, content, posturl;
+  // final String? imgUrl;
+  final Article article;
+
+  bool isLiked;
+
+  @override
+  State<NewsTile> createState() => _NewsTileState();
+}
+
+class _NewsTileState extends State<NewsTile> {
   @override
   Widget build(BuildContext context) {
     // int getLikeCount(likes) {
@@ -52,14 +60,12 @@ class NewsTile extends StatelessWidget {
     //   return count;
     // }
 
+    // getLikesInFirebase() {
+
+    // }
+
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
     var shareOptions = [
-      // {
-      //   'icon': 'assets/icons/heart.svg',
-      //   'onPress': () {
-      //     debugPrint('heart');
-      //   },
-      // },
       {
         'icon': 'assets/icons/paper-plane.svg',
         'onPress': () {
@@ -78,29 +84,16 @@ class NewsTile extends StatelessWidget {
         Provider.of<NavigationService>(context, listen: false);
     return GestureDetector(
       onTap: () {
-        debugPrint("IMAGE URL IS: $article.urlToImage");
+        debugPrint("IMAGE URL IS: ${widget.article}.urlToImage");
         _navigationService.navigateToPage(
           ArticleView(
-            postUrl: article.articleUrl!,
-            title: article.title!,
-            desc: article.description!,
-            content: article.content!,
-            imgUrl: article.urlToImage ?? "",
+            postUrl: widget.article.articleUrl!,
+            title: widget.article.title!,
+            desc: widget.article.description!,
+            content: widget.article.content!,
+            imgUrl: widget.article.urlToImage ?? "",
           ),
         );
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     fullscreenDialog: true,
-        //     builder: (context) => ArticleView(
-        //       postUrl: posturl,
-        //       title: title,
-        //       desc: desc,
-        //       content: content,
-        //       imgUrl: imgUrl ?? "",
-        //     ),
-        //   ),
-        // );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -127,9 +120,9 @@ class NewsTile extends StatelessWidget {
                   child: Icon(Icons.error),
                 ),
               ),
-              imageUrl: article.urlToImage!.startsWith("//")
-                  ? "https:$article.urlToImage"
-                  : article.urlToImage ?? "",
+              imageUrl: widget.article.urlToImage!.startsWith("//")
+                  ? "https:${widget.article}.urlToImage"
+                  : widget.article.urlToImage ?? "",
               placeholder: (context, url) => AspectRatio(
                 aspectRatio: 2,
                 child: Shimmer.fromColors(
@@ -149,9 +142,9 @@ class NewsTile extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            article.title!.isNotEmpty
+            widget.article.title!.isNotEmpty
                 ? Text(
-                    article.title!,
+                    widget.article.title!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headline6!,
@@ -171,9 +164,10 @@ class NewsTile extends StatelessWidget {
             const SizedBox(
               height: 4,
             ),
-            article.description!.isNotEmpty || article.description! != null
+            widget.article.description!.isNotEmpty ||
+                    widget.article.description! != null
                 ? Text(
-                    article.description!,
+                    widget.article.description!,
                     maxLines: 2,
                     style: Theme.of(context).textTheme.bodyMedium,
                   )
@@ -194,14 +188,15 @@ class NewsTile extends StatelessWidget {
             ),
             Row(
               children: [
-                FutureBuilder<Object>(
+                StreamBuilder<Object>(
                     initialData: false,
-                    future: authProvider.isPostInLikedArray(article),
+                    stream: authProvider.isPostInLikedArray(widget.article),
                     builder: (context, snapshot) {
                       return LikeButton(
                         onTap: ((isLiked) async {
-                          // isLiked = !isLiked;
-                          authProvider.likePost(article);
+                          isLiked = !isLiked;
+                          print(isLiked);
+                          // authProvider.likePost(widget.article);
                           // authProvider.isPostLiked(article);
                           // var isPostLikedInDb =
                           //     await authProvider.isPostLiked(article);
@@ -282,7 +277,7 @@ class NewsTile extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Share.share(article.articleUrl!);
+                    Share.share(widget.article.articleUrl!);
                   },
                   child: SvgPicture.asset(
                     shareOptions[1]['icon'] as String,
