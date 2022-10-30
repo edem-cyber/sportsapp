@@ -190,7 +190,7 @@ class _NewsTileState extends State<NewsTile> {
               children: [
                 StreamBuilder<Object>(
                     initialData: false,
-                    stream: authProvider.isPostInLikedArray(widget.article),
+                    // stream: authProvider.isPostInLikedArray(widget.article),
                     builder: (context, snapshot) {
                       return LikeButton(
                         onTap: ((isLiked) async {
