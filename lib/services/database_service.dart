@@ -211,92 +211,94 @@ class DatabaseService {
     await _dataBase.collection(userCollection).doc(uid).get().then((value) {
       likeList = List.from(value.data()![postDoc]);
     });
+    // debugPrint('LIKELIST: $likeList');
 
-    debugPrint('LIKELIST: $likeList');
     return likeList;
   }
 
   Future<bool> isPostInLikedArray(
       {required String uid, required Article article}) async {
     List<String> likeList = await getLikedPostsArray(uid: uid);
-    var isLiked = likeList.contains(article.articleUrl);
+    bool isLiked = likeList.contains(article.articleUrl);
     return isLiked;
   }
 
-  Stream<bool> isPostLikedList(
-      {required String uid, required Article article}) {
-    List<String> likeList = await getLikedPostsArray(uid: uid);
-    var isLiked = likeList.contains(article);
-    
+  // Stream<bool> isPostLikedList(
+  //     {required String uid, required Article article}) {
+  //   List<String> likeList = await getLikedPostsArray(uid: uid);
+  //   var isLiked = likeList.contains(article);
+  //     }
 
-
-      }
-
-  likePost({required String uid, required Article article}) async {
+  likePost({required String uid, required Article article}) {
     // var isLiked = isPostLiked(uid: uid, article: article).then(
     //   (value) {
     //     return value;
     //   },
     // );
 
-    List<String> likeList = await getLikedPostsArray(uid: uid);
-
-    //loop through getLikedPostsArray and compare the article url to the list
-    getLikedPostsArray(uid: uid).then(
-      (value) {
-        //if the article url is in the list, remove it
-        if (value.contains(article.articleUrl)) {
-          //else if the article url is not in the list, add it
-          value.add(article.articleUrl!);
-          _dataBase.collection(userCollection).doc(uid).update({
-            postDoc: value,
-          });
-        }
-      },
-
-      //return .exists to check if the user is in the database
-      // return query.docs[0].exists;
-    );
-
-    print(likeList.contains(article.articleUrl));
-
-    return likeList.contains(article.articleUrl);
-
-    // await _dataBase
-    //     .collection(userCollection)
-    //     .doc(uid)
-    //     .update(
-    //       {
-    //         postDoc: FieldValue.arrayUnion(
-    //           [
-    //             article.articleUrl.toString(),
-    //           ],
-    //         )
-    //       },
-    //     )
-    //     .then((value) => print("Liked Post Added"))
-    //     .catchError(
-    //       (error) => print("Failed to add liked post: $error"),
-    //     );
+    _dataBase
+        .collection(userCollection)
+        .doc(uid)
+        .update(
+          {
+            postDoc: FieldValue.arrayUnion(
+              [
+                article.articleUrl.toString(),
+              ],
+            )
+          },
+        )
+        .then((value) => print("Liked Post Added"))
+        .catchError(
+          (error) => print("Failed to add liked post: $error"),
+        );
     // await _dataBase.collection(userCollection).doc(uid).update({
-    //   "liked_posts": FieldValue.arrayUnion([postUrl])
+    //   postDoc: FieldValue.arrayUnion([article.articleUrl.toString()])
     // });
   }
 
   void unlikePost({required String uid, required Article article}) {
-    getLikedPostsArray(uid: uid).then(
-      (value) {
-        if (value.contains(article.articleUrl)) {
-          value.remove(article.articleUrl!);
-          _dataBase.collection(userCollection).doc(uid).update(
-            {
-              postDoc: value,
-            },
-          );
-        }
-      },
-    );
+    // getLikedPostsArray(uid: uid).then(
+    //   (value) {
+    //     // print("hi");
+    //     if (value.contains(article.articleUrl)) {
+    //       value.remove(article.articleUrl!);
+    //       _dataBase.collection(userCollection).doc(uid).update(
+    //         {
+    //           postDoc: value,
+    //         },
+    //       );
+    //     }
+    //   },
+    // );
+    _dataBase
+        .collection(userCollection)
+        .doc(uid)
+        .update(
+          {
+            postDoc: FieldValue.arrayRemove(
+              [
+                article.articleUrl.toString(),
+              ],
+            )
+          },
+        )
+        .then((value) => print("Liked Post Removed"))
+        .catchError(
+          (error) => print("Failed to remove liked post: $error"),
+        );
   }
+
+  // Future<bool> toggleLikedPost(
+  //     {required String uid, required Article article}) async {
+  //   bool isLiked = await isPostInLikedArray(uid: uid, article: article);
+  //   if (isLiked) {
+  //     unlikePost(uid: uid, article: article);
+  //   } else {
+  //     likePost(uid: uid, article: article);
+  //   }
+  //   return !isLiked;
+  // }
 
   // bool isLiked({required String uid, required Article article}) {}
 

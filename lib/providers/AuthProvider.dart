@@ -455,11 +455,17 @@ class AuthProvider with ChangeNotifier {
     return news;
   }
 
-  //bookmark post
-  // likePost(Article article) {
-  //   try {
-  //     if(){}
-  //   } catch (e) {}
+  likePost(Article article) {
+    _databaseService.likePost(
+      article: article,
+      uid: _auth.currentUser!.uid,
+    );
+  }
+  // Future<bool> toggleLikedPost(Article article) async {
+  //   return await _databaseService.toggleLikedPost(
+  //     article: article,
+  //     uid: _auth.currentUser!.uid,
+  //   );
   // }
 
   unlikePost(Article article) {
@@ -476,17 +482,13 @@ class AuthProvider with ChangeNotifier {
     return _databaseService.getLikedPostsArray(uid: _auth.currentUser!.uid);
   }
 
-  // isLiked(Article article) {
-  //   return _databaseService.isLiked(
-  //       uid: _auth.currentUser!.uid, article: article);
-  // }
+  Future<bool> isLiked(Article article) {
+    return _databaseService.isPostInLikedArray(
+        uid: _auth.currentUser!.uid, article: article);
+  }
 
   // isPostLiked(String posturl) {
   //   return _databaseService.isPostLiked(_auth.currentUser!.uid, posturl);
-  // }
-
-  // likePost(String posturl) {
-  //   _databaseService.likePost(posturl, _auth.currentUser!.uid);
   // }
 
   // unlikePost(String posturl) {

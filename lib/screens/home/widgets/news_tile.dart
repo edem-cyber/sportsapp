@@ -35,7 +35,6 @@ class NewsTile extends StatefulWidget {
   // final String title, desc, content, posturl;
   // final String? imgUrl;
   final Article article;
-
   bool isLiked;
 
   @override
@@ -45,6 +44,8 @@ class NewsTile extends StatefulWidget {
 class _NewsTileState extends State<NewsTile> {
   @override
   Widget build(BuildContext context) {
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final getIsLiked = authProvider.isLiked(widget.article);
     // int getLikeCount(likes) {
     //   // if no likes, return 0
     //   if (likes == null) {
@@ -64,7 +65,6 @@ class _NewsTileState extends State<NewsTile> {
 
     // }
 
-    var authProvider = Provider.of<AuthProvider>(context, listen: false);
     var shareOptions = [
       {
         'icon': 'assets/icons/paper-plane.svg',
@@ -188,81 +188,64 @@ class _NewsTileState extends State<NewsTile> {
             ),
             Row(
               children: [
-                StreamBuilder<Object>(
-                    initialData: false,
-                    // stream: authProvider.isPostInLikedArray(widget.article),
-                    builder: (context, snapshot) {
-                      return LikeButton(
-                        onTap: ((isLiked) async {
-                          isLiked = !isLiked;
-                          print(isLiked);
-                          // authProvider.likePost(widget.article);
-                          // authProvider.isPostLiked(article);
-                          // var isPostLikedInDb =
-                          //     await authProvider.isPostLiked(article);
-                          // isLiked = isPostLikedInDb;
-                          // debugPrint("IS LIKED: $isLiked");
-                          // authProvider.getLikedPostsArray();
-                        }),
-                        size: 15,
-                        circleColor: const CircleColor(
-                          start: kBlue,
-                          end: kBlue,
-                        ),
-                        bubblesColor: const BubblesColor(
-                          dotPrimaryColor: kBlue,
-                          dotSecondaryColor: kBlue,
-                        ),
-                        likeBuilder: (bool isLiked) {
-                          return SvgPicture.asset(
-                            'assets/icons/heart.svg',
-                            color: isLiked
-                                ? kWarning
-                                : themeprovider.isDarkMode
-                                    ? kWhite
-                                    : kBlack,
-                            height: 15,
-                            width: 15,
-                          );
-                        },
-                        // likeCount: 665,
-                      );
-                    }),
-
-                // FutureBuilder(
-                //   future: authProvider.isPostInLikedArray(article),
-                //   initialData: false,
-                //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                //     return LikeButton(
-                //       onTap: ((isLiked) async {
-                //         isLiked = !isLiked;
-                //         await authProvider.likePost(article);
-                //         return isLiked;
-                //       }),
-                //       size: 15,
-                //       circleColor: const CircleColor(
-                //         start: kBlue,
-                //         end: kBlue,
-                //       ),
-                //       bubblesColor: const BubblesColor(
-                //         dotPrimaryColor: kBlue,
-                //         dotSecondaryColor: kBlue,
-                //       ),
-                //       likeBuilder: (bool isLiked) {
-                //         return SvgPicture.asset(
-                //           'assets/icons/heart.svg',
-                //           color: isLiked
-                //               ? kWarning
-                //               : themeprovider.isDarkMode
-                //                   ? kWhite
-                //                   : kBlack,
-                //           height: 15,
-                //           width: 15,
-                //         );
-                //       },
-                //     );
+                // StreamBuilder<bool>(
+                //   stream: getIsLiked,
+                //   builder: (context, snapshot) {
+                //     return snapshot.hasData
+                //         ? IconButton(
+                //             onPressed: () {
+                //               if (snapshot.data!) {
+                //                 authProvider.unlikePost(widget.article);
+                //               } else {
+                //                 authProvider.likePost(widget.article);
+                //               }
+                //             },
+                //             icon: Icon(
+                //               snapshot.data!
+                //                   ? Icons.favorite
+                //                   : Icons.favorite_border,
+                //               color: snapshot.data!
+                //                   ? Colors.red
+                //                   : themeprovider.isDarkMode
+                //                       ? Colors.black
+                //                       : Colors.black,
+                //             ),
+                //           )
+                //         : const SizedBox();
                 //   },
                 // ),
+
+                StreamBuilder(
+                  stream: getIsLiked.asStream(),
+                  initialData: widget.isLiked,
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    return IconButton(
+                      onPressed: () {
+                        widget.isLiked = snapshot.data;
+
+                        if (widget.isLiked) {
+                          authProvider.unlikePost(widget.article);
+                        } else {
+                          authProvider.likePost(widget.article);
+                        }
+
+                        setState(() {
+                          widget.isLiked = !widget.isLiked;
+                        });
+                        // widget.isLiked = !widget.isLiked;
+                        // snapshot.data = !snapshot.data;
+                      },
+                      icon: Icon(
+                        snapshot.data ? Icons.favorite : Icons.favorite_border,
+                        color: snapshot.data
+                            ? Colors.red
+                            : themeprovider.isDarkMode
+                                ? Colors.blue
+                                : Colors.black,
+                      ),
+                    );
+                  },
+                ),
                 const SizedBox(
                   width: 15,
                 ),
@@ -314,4 +297,40 @@ class _NewsTileState extends State<NewsTile> {
 //                                 ? kWhite
 //                                 : kBlue,
 //                         size: 15,
+//                       );
+
+// ikeButton(
+//                         onTap: ((isLiked) async {
+//                           isLiked = !isLiked;
+//                           print(isLiked);
+//                           // authProvider.likePost(widget.article);
+//                           // authProvider.isPostLiked(article);
+//                           // var isPostLikedInDb =
+//                           //     await authProvider.isPostLiked(article);
+//                           // isLiked = isPostLikedInDb;
+//                           // debugPrint("IS LIKED: $isLiked");
+//                           // authProvider.getLikedPostsArray();
+//                         }),
+//                         size: 15,
+//                         circleColor: const CircleColor(
+//                           start: kBlue,
+//                           end: kBlue,
+//                         ),
+//                         bubblesColor: const BubblesColor(
+//                           dotPrimaryColor: kBlue,
+//                           dotSecondaryColor: kBlue,
+//                         ),
+//                         likeBuilder: (bool isLiked) {
+//                           return SvgPicture.asset(
+//                             'assets/icons/heart.svg',
+//                             color: isLiked
+//                                 ? kWarning
+//                                 : themeprovider.isDarkMode
+//                                     ? kWhite
+//                                     : kBlack,
+//                             height: 15,
+//                             width: 15,
+//                           );
+//                         },
+//                         // likeCount: 665,
 //                       );
