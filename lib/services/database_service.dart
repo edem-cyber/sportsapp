@@ -1,12 +1,12 @@
 // Packages
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sportsapp/models/ChatMessageModel.dart';
 import 'package:sportsapp/models/Post.dart';
 
 // Models
 
 const String userCollection = 'Users';
+const String userNamesCollection = 'Usernames';
 const String postDoc = 'liked_posts';
 const String chatCollection = 'Chats';
 const String messagesCollection = 'Messages';
@@ -17,32 +17,53 @@ class DatabaseService {
   // var postsRef = FirebaseFirestore.instance.collection(userCollection);
 
   Future<bool> isDuplicateUniqueName({String? username}) async {
-    QuerySnapshot query = await _dataBase
-        .collection(userCollection)
-        .where('username', isEqualTo: username)
-        .get();
-    return query.docs.isNotEmpty;
+    var usernameDoc =
+        await _dataBase.collection(userNamesCollection).doc(username).get();
+    return usernameDoc.exists;
   }
 
   Future addUserInfoToDB(
       {required String uid, required Map<String, dynamic> userInfoMap}) {
+    //add username to username collection
+    _dataBase.collection('Usernames').doc(userInfoMap['username']).set({
+      'uid': uid,
+    });
     return _dataBase.collection(userCollection).doc(uid).set(userInfoMap);
   }
+
+  //search username in username collection
+
+  //check if username is in username collection in firebase
+  // Future<bool> isUsernameInDB({String? username}) async {
+  //   QuerySnapshot query = await _dataBase
+  //       .collection("Usernames")
+  //       .where('username', isEqualTo: username)
+  //       .get();
+  //   return query.docs.isNotEmpty;
+  // }
 
   //firestore function to add to likes
 
   //Update User
   Future<void> updateUser(
-      {required String uid, required Map<String, dynamic> userInfoMap}) async {
+      {required String uid,
+      String? displayName,
+      String? bio,
+      String? photoUrl}) async {
     try {
       // * Going to the collections (User) the to the user uid and overrides the values of the fields
-      await _dataBase.collection(userCollection).doc(uid).update(userInfoMap);
+      await _dataBase.collection(userCollection).doc(uid).update({
+        'displayName': displayName,
+        'bio': bio,
+        'photoURL': photoUrl,
+      });
     } catch (error) {
       debugPrint('$error');
     }
   }
 
-  Future getUser({required String uid}) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUser(
+      {required String uid}) async {
     return await _dataBase.collection(userCollection).doc(uid).get();
   }
 
@@ -258,19 +279,6 @@ class DatabaseService {
   }
 
   void unlikePost({required String uid, required Article article}) {
-    // getLikedPostsArray(uid: uid).then(
-    //   (value) {
-    //     // print("hi");
-    //     if (value.contains(article.articleUrl)) {
-    //       value.remove(article.articleUrl!);
-    //       _dataBase.collection(userCollection).doc(uid).update(
-    //         {
-    //           postDoc: value,
-    //         },
-    //       );
-    //     }
-    //   },
-    // );
     _dataBase
         .collection(userCollection)
         .doc(uid)
@@ -279,6 +287,28 @@ class DatabaseService {
             postDoc: FieldValue.arrayRemove(
               [
                 article.articleUrl.toString(),
+              ],
+            )
+          },
+        )
+        .then((value) => print("Liked Post Removed"))
+        .catchError(
+          (error) => print("Failed to remove liked post: $error"),
+        );
+  }
+
+  void removeFromDb({
+    required String uid,
+    required String postUrl,
+  }) {
+    _dataBase
+        .collection(userCollection)
+        .doc(uid)
+        .update(
+          {
+            postDoc: FieldValue.arrayRemove(
+              [
+                postUrl.toString(),
               ],
             )
           },

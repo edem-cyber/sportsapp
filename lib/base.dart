@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +67,12 @@ class _BaseState extends State<Base> {
   //   // }
   // }
 
+  showPage(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final List pages = [
@@ -109,6 +116,8 @@ class _BaseState extends State<Base> {
       _navigationService.nagivateRoute(routeName);
     }
 
+    var userDataStream = authProvider.getUserData();
+
     //initialize the size config
     return WillPopScope(
       //forbidden swipe in iOS(my ThemeData(platform: TargetPlatform.iOS,)
@@ -116,7 +125,7 @@ class _BaseState extends State<Base> {
         return false;
       },
       child: Scaffold(
-        drawer: Container(
+        drawer: SizedBox(
           width: MediaQuery.of(context).size.width * 0.7,
           child: Drawer(
             backgroundColor: kBlue,
@@ -133,78 +142,109 @@ class _BaseState extends State<Base> {
                             const SizedBox(
                               height: 20,
                             ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: GestureDetector(
-                                //   navigateFromDrawer(Profile.routeName);
-                                onTap: () {
-                                  navigateFromDrawer(Profile.routeName);
-                                },
-                                child: UserAccountsDrawerHeader(
-                                  // onDetailsPressed: () {
-                                  //   navigateFromDrawer(Profile.routeName);
-                                  // },
-                                  decoration: const BoxDecoration(color: kBlue),
-                                  accountName: const Text(
-                                    "Larry Mills",
-                                    style:
-                                        TextStyle(color: kWhite, fontSize: 12),
-                                  ),
-                                  accountEmail: Column(
-                                    // mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: const [
-                                      Text(
-                                        "@LarryMillz",
-                                        style: TextStyle(
-                                          color: kWhite,
-                                          fontSize: 12,
+                            FutureBuilder<
+                                    DocumentSnapshot<Map<String, dynamic>>>(
+                                future: userDataStream,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                          ConnectionState.waiting ||
+                                      snapshot.error != null) {
+                                    return Container(
+                                      height:
+                                          MediaQuery.of(context).size.height,
+                                      width: MediaQuery.of(context).size.width,
+                                      alignment: Alignment.center,
+                                      child: const CupertinoActivityIndicator(),
+                                    );
+                                  }
+
+                                  if (snapshot.hasData) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: GestureDetector(
+                                        //   navigateFromDrawer(Profile.routeName);
+                                        onTap: () {
+                                          navigateFromDrawer(Profile.routeName);
+                                        },
+                                        child: UserAccountsDrawerHeader(
+                                          // onDetailsPressed: () {
+                                          //   navigateFromDrawer(Profile.routeName);
+                                          // },
+                                          decoration:
+                                              const BoxDecoration(color: kBlue),
+                                          accountName: Text(
+                                            snapshot.data!['display'] ??
+                                                'Error',
+                                            style: const TextStyle(
+                                                color: kWhite, fontSize: 12),
+                                          ),
+                                          accountEmail: Column(
+                                            // mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                snapshot.data!['username'],
+                                                style: const TextStyle(
+                                                  color: kWhite,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                              const Text(
+                                                "5123 Friends",
+                                                style: TextStyle(
+                                                  color: kWhite,
+                                                  fontSize: 12,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          currentAccountPicture:
+                                              CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            imageUrl: snapshot
+                                                    .data!['photoURL'] ??
+                                                AppImage.defaultProfilePicture2,
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              // width: 80.0,
+                                              // height: 80.0,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.cover),
+                                              ),
+                                            ),
+                                            placeholder: (context, url) =>
+                                                const Center(
+                                              child:
+                                                  CupertinoActivityIndicator(),
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          ),
+                                          // decoration:
+                                          // BoxDecoration(),
+                                          // otherAccountsPictures: [
+                                          //   CircleAvatar(
+                                          //     backgroundImage: NetworkImage(
+                                          //         'https://img.icons8.com/pastel-glyph/2x/user-male.png'),
+                                          //     backgroundColor: Colors.white,
+                                          //   ),
+                                          // ],
                                         ),
                                       ),
-                                      Text(
-                                        "5123 Friends",
-                                        style: TextStyle(
-                                          color: kWhite,
-                                          fontSize: 12,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  // currentAccountPictureSize:
-                                  //     const Size.fromRadius(40.0),
-                                  currentAccountPicture: CachedNetworkImage(
-                                    imageUrl: authProvider.user!.photoURL ??
-                                        AppImage.defaultProfilePicture,
-                                    imageBuilder: (context, imageProvider) =>
-                                        Container(
-                                      width: 80.0,
-                                      height: 80.0,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.contain),
-                                      ),
-                                    ),
-                                    placeholder: (context, url) => const Center(
-                                        child: CupertinoActivityIndicator()),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  ),
-                                  // decoration:
-                                  // BoxDecoration(),
-                                  // otherAccountsPictures: [
-                                  //   CircleAvatar(
-                                  //     backgroundImage: NetworkImage(
-                                  //         'https://img.icons8.com/pastel-glyph/2x/user-male.png'),
-                                  //     backgroundColor: Colors.white,
-                                  //   ),
-                                  // ],
-                                ),
-                              ),
-                            ),
+                                    );
+                                  }
+
+                                  return const Center(
+                                    child: Text("Error Retrieving Data"),
+                                  );
+                                }),
                             ListTile(
                               // horizontalTitleGap: 222,
                               contentPadding:
@@ -259,7 +299,7 @@ class _BaseState extends State<Base> {
                                 style: TextStyle(color: kWhite),
                               ),
                               onTap: () {
-                                navigateFromDrawer(Settings.routeName);
+                                navigateFromDrawer(SettingsPage.routeName);
                               },
                             ),
                             ListTile(
@@ -291,7 +331,7 @@ class _BaseState extends State<Base> {
                                 style: TextStyle(color: kWhite),
                               ),
                               onTap: () {
-                                navigateFromDrawer(Settings.routeName);
+                                navigateFromDrawer(SettingsPage.routeName);
                               },
                             ),
                             const Expanded(child: SizedBox()),
@@ -367,21 +407,10 @@ class _BaseState extends State<Base> {
             if (kDebugMode) {
               print("INDEX IS : $index");
             }
-            setState(
-              () {
-                if (_currentIndex == 0 &&
-                    scrollController.hasClients &&
-                    scrollController.offset != 0) {
-                  scrollController.animateTo(
-                    0,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeOut,
-                  );
-                }
-                //check if coming from a different page
-                _currentIndex = index;
-              },
-            );
+            setState(() {
+              _currentIndex = index;
+            });
+            // showPage(index);
           },
         ),
         // tabBuilder: (BuildContext context, int index) {

@@ -61,6 +61,9 @@ dependencies:
   # sticky_headers: ^0.3.0+2
   persistent_bottom_nav_bar: ^4.0.2
   webview_flutter: ^3.0.4
+  intl: ^0.17.0
+  url_launcher: ^6.1.6
+  cloud_functions: ^3.3.9
   
 
   

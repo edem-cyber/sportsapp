@@ -60,8 +60,8 @@ class _SignUpFormState extends State<SignUpForm> {
       TextEditingController(text: "edem.agbakpe@icloud.com");
 
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _fullNameController =
-      TextEditingController(text: "Edem.com");
+  final TextEditingController _displayNameController =
+      TextEditingController(text: "Edem Agbakpe");
 
   final TextEditingController _passwordController =
       TextEditingController(text: "1234567");
@@ -87,26 +87,31 @@ class _SignUpFormState extends State<SignUpForm> {
   //   }
   // }
 
-  Future<void> uploadPfP() async {
-    File uplaodFile = File(imageFile!.path);
-    try {
-      await storage.ref("profile_pics/${uplaodFile.path}").putFile(
-            uplaodFile,
-          );
-    } catch (e) {
-      debugPrint("UPLOADPFP FUNCTION: $e");
-    }
+  Future<String?> uploadPfP() async {
+    File uploadedFile = File(imageFile!.path);
+    //VAR DATETIME TO miliseconds
+    var now = DateTime.now().millisecondsSinceEpoch;
+    TaskSnapshot? taskSnapshot =
+        await storage.ref("images/profile_pics/$now").putFile(
+              uploadedFile,
+            );
+
+    // try {
+    //   // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    // } catch (e) {
+    //   debugPrint("UPLOADPFP FUNCTION: $e");
+    // }
+
+    return taskSnapshot.ref.getDownloadURL();
   }
 
-  Future<String?> getDownload() async {
-    File? uploadedFile = File(imageFile!.path);
-    var ref = await storage
-        .ref()
-        .child('profile_pics/${uploadedFile.path}')
-        .getDownloadURL();
-
-    return ref;
-  }
+  // Future<String?> getDownload() async {
+  //   var now = DateTime.now().millisecondsSinceEpoch;
+  //   File? uploadedFile = File(imageFile!.path);
+  //   var ref =
+  //       await storage.ref().child('images/profile_pics/$now}').getDownloadURL();
+  //   return ref;
+  // }
 
   // Future<String> getDownload() async {
   //   File? uploadFile = File(imageFile!.path);
@@ -151,13 +156,16 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  TextFormField buildFullNameFormField() {
+  TextFormField buildDisplayNameFormField() {
     return TextFormField(
-      controller: _fullNameController,
+      controller: _displayNameController,
       validator: (value) {
         if (value!.isEmpty) {
-          return "Full Name is required";
+          return "Display Name is required";
+        } else if (value.length < 3) {
+          return "Display Name must be at least 3 characters";
         }
+
         return null;
       },
       decoration: const InputDecoration(
@@ -178,6 +186,7 @@ class _SignUpFormState extends State<SignUpForm> {
         } else if (emailValidatorRegExp.hasMatch(value)) {
           removeError(error: kInvalidEmailError);
         }
+
         return;
       },
       validator: (value) {
@@ -337,15 +346,11 @@ class _SignUpFormState extends State<SignUpForm> {
           //     color: kGrey.withOpacity(0.1),
           //     borderRadius: BorderRadius.circular(32),
           //   ),
-          //   child: buildFullNameFormField(),
+          //   child: buildDisplayNameFormField(),
           // ),
           // const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-            // decoration: const BoxDecoration(
-            //   // color: kGrey.withOpacity(0.1),
-            //   // borderRadius: BorderRadius.circular(32),
-            // ),
             child: buildAvatar(),
           ),
           const SizedBox(height: 10),
@@ -356,6 +361,14 @@ class _SignUpFormState extends State<SignUpForm> {
               borderRadius: BorderRadius.circular(32),
             ),
             child: buildUsernameFormField(),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+            decoration: BoxDecoration(
+              color: kGrey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: buildDisplayNameFormField(),
           ),
           const SizedBox(height: 10),
           Container(
@@ -405,21 +418,24 @@ class _SignUpFormState extends State<SignUpForm> {
                   // authProvider.setIsLoading(true);
                   print(authProvider.isLoading);
                   // authProvider.signUp(
-                  //   // : _fullNameController.text,
+                  //   // : _displayNameController.text,
                   //   _emailController.text,
                   //   _passwordController.text,
                   //   _usernameController.text,
                   // );
                   // .then((value) => authProvider.setIsLoading(false));
-                  await uploadPfP().then((value) async {});
-                  String? value = await getDownload();
-
-                  authProvider.signUp(
-                    value ?? "",
-                    _usernameController.text,
-                    _emailController.text,
-                    _passwordController.text,
-                  );
+                  try {
+                    // await uploadPfP().then((value) async {});
+                    String? value = await uploadPfP();
+                    authProvider.signUp(
+                        displayName: _displayNameController.text,
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                        username: _usernameController.text,
+                        photoURL: value ?? " ");
+                  } catch (e) {
+                    print(e);
+                  }
                 } else if (passwordMatch) {
                   addError(error: kPassMatchError);
                 } else {

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
+import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/authentication/auth_button.dart';
 import 'package:sportsapp/widgets/form_error.dart';
 
@@ -54,8 +55,8 @@ class _BodyState extends State<Body> {
       TextEditingController(text: "edem.agbakpe@icloud.com");
 
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _fullNameController =
-      TextEditingController(text: "Edem.com");
+  final TextEditingController _displayNameController =
+      TextEditingController(text: "Edem Agbakpe");
   final TextEditingController _bioController =
       TextEditingController(text: "I love BENZEMA!");
 
@@ -77,25 +78,22 @@ class _BodyState extends State<Body> {
   //   }
   // }
 
-  Future<void> uploadPfP() async {
-    File uplaodFile = File(imageFile!.path);
-    try {
-      await storage.ref("profile_pics/${uplaodFile.path}").putFile(
-            uplaodFile,
-          );
-    } catch (e) {
-      debugPrint("UPLOADPFP FUNCTION: $e");
-    }
-  }
+  Future<String?> uploadPfP() async {
+    File uploadedFile = File(imageFile!.path);
+    //VAR DATETIME TO miliseconds
+    var now = DateTime.now().millisecondsSinceEpoch;
+    TaskSnapshot? taskSnapshot =
+        await storage.ref("images/profile_pics/$now").putFile(
+              uploadedFile,
+            );
 
-  Future<String?> getDownload() async {
-    File? uploadedFile = File(imageFile!.path);
-    var ref = await storage
-        .ref()
-        .child('profile_pics/${uploadedFile.path}')
-        .getDownloadURL();
+    // try {
+    //   // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    // } catch (e) {
+    //   debugPrint("UPLOADPFP FUNCTION: $e");
+    // }
 
-    return ref;
+    return taskSnapshot.ref.getDownloadURL();
   }
 
   // Future<String> getDownload() async {
@@ -108,18 +106,21 @@ class _BodyState extends State<Body> {
   //   return ref;
   // }
 
-  TextFormField buildFullNameFormField() {
+  TextFormField buildDisplayNameFormField() {
     return TextFormField(
-      controller: _fullNameController,
+      controller: _displayNameController,
       validator: (value) {
         if (value!.isEmpty) {
           return "Display Name is required";
+        } else if (value.length < 3) {
+          return "Display Name must be at least 3 characters";
         }
+
         return null;
       },
       decoration: const InputDecoration(
         border: InputBorder.none,
-        hintText: "Enter Display Name",
+        hintText: "Enter Full Name",
         // floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
     );
@@ -142,7 +143,7 @@ class _BodyState extends State<Body> {
     );
   }
 
-  Widget buildAvatar() {
+  Widget buildAvatar(String? imageUrl) {
     return GestureDetector(
       onTap: () {
         pickImage();
@@ -159,9 +160,9 @@ class _BodyState extends State<Body> {
                 clipBehavior: Clip.none,
                 fit: StackFit.expand,
                 children: [
-                  const CircleAvatar(
-                    backgroundImage:
-                        AssetImage(AppImage.defaultProfilePicture2),
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        imageUrl ?? AppImage.defaultProfilePicture),
                     radius: 50,
                   ),
                   Positioned(
@@ -230,6 +231,8 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
+    var navigationService =
+        Provider.of<NavigationService>(context, listen: false);
 
     return Container(
       alignment: Alignment.center,
@@ -248,27 +251,14 @@ class _BodyState extends State<Body> {
               key: _formKey,
               child: Column(
                 children: [
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-                  //   decoration: BoxDecoration(
-                  //     color: kGrey.withOpacity(0.1),
-                  //     borderRadius: BorderRadius.circular(32),
-                  //   ),
-                  //   child: buildFullNameFormField(),
-                  // ),
-                  // const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 25),
-                    // decoration: const BoxDecoration(
-                    //   // color: kGrey.withOpacity(0.1),
-                    //   // borderRadius: BorderRadius.circular(32),
-                    // ),
-                    child: buildAvatar(),
+                    child: buildAvatar(
+                      authProvider.user!.photoURL,
+                    ),
                   ),
                   const SizedBox(height: 40),
-                  // const SizedBox(height: 10),
-                  // const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 25),
@@ -276,7 +266,7 @@ class _BodyState extends State<Body> {
                       color: kGrey.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(32),
                     ),
-                    child: buildFullNameFormField(),
+                    child: buildDisplayNameFormField(),
                   ),
                   const SizedBox(height: 10),
                   Container(
@@ -286,9 +276,40 @@ class _BodyState extends State<Body> {
                       color: kGrey.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(32),
                     ),
-                    child: buildFullNameFormField(),
+                    child: buildBioFormField(),
                   ),
                   const SizedBox(height: 18),
+
+                  //save button
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 25),
+                    // width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: kBlue,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 30),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32),
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          authProvider.setIsLoading(true);
+                          String? imageUrl = await uploadPfP();
+                          authProvider.updateUser(
+                            displayName: _displayNameController.text ,
+                            bio: _bioController.text,
+                            photoUrl: imageUrl,
+                          );
+                          authProvider.setIsLoading(false);
+                          navigationService.goBack();
+                        }
+                      },
+                      child: const Text("Save"),
+                    ),
+                  ),
                 ],
               ),
             ),

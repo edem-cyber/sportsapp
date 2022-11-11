@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sportsapp/base.dart';
+import 'package:sportsapp/main.dart';
 import 'package:sportsapp/screens/authentication/forgot_password/forgot_password.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
@@ -34,8 +35,9 @@ final Map<String, WidgetBuilder> routes = {
   FriendsPage.routeName: (context) => const FriendsPage(),
   EditProfile.routeName: (context) => const EditProfile(),
   Profile.routeName: (context) => const Profile(),
-  Settings.routeName: (context) => const Settings(),
+  SettingsPage.routeName: (context) => const SettingsPage(),
   CommentsPage.routeName: (context) => const CommentsPage(),
+  AuthWrapper.routeName: (context) => const AuthWrapper(),
   MatchNewsPage.routeName: (context) => const MatchNewsPage(),
   LeaguePage.routeName: (context) => const LeaguePage(),
   PrivacyPolicy.routeName: (context) => const PrivacyPolicy(),

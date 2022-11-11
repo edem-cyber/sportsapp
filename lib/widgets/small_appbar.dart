@@ -22,23 +22,32 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.only(left: 20, right: 0, top: 0, bottom: 0),
         child: GestureDetector(
           onTap: action,
-          child: CircleAvatar(
-            // ignore: prefer_if_null_operators
-            backgroundImage: CachedNetworkImageProvider(
-              url,
-              errorListener: () {
-                Shimmer.fromColors(
-                  baseColor: const Color(0xFF8F8F8F),
-                  highlightColor: Colors.white,
-                  child: Container(
-                    width: 40,
-                    height: 40,
+          child: ClipRect(
+            child: CachedNetworkImage(
+              imageUrl: url,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              placeholder: (context, url) => Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
                     color: Colors.white,
                   ),
-                );
-              },
+                ),
+              ),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
-            radius: 15,
           ),
         ),
       ),

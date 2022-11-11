@@ -17,48 +17,13 @@ class Body extends StatefulWidget {
   State<Body> createState() => _BodyState();
 }
 
-class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
-  // late bool _loading;
-  // var newslist = [];
-  // late Stream<List<Article>> stream;
-
-  @override
-  void initState() {
-    super.initState();
-    //IF YOU WANT TO USE THE STREAM, YOU NEED TO ADD THE PROVIDER TO THE SCREEN
-    // var getPosts = Provider.of<AuthProvider>(context, listen: false).getPosts();
-    var authProvider = Provider.of<AuthProvider>(context, listen: false);
-    authProvider.getPosts();
-    // stream = getPosts.stream;
-    // return logexpertClient.objectsState.read(object.id);
-  }
-
+class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    // super.build(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
     final getPosts = authProvider.getPosts().asStream();
-    // if (authProvider.user != null) {
-    // stream = getPosts.asStream();
-    //   // stream = Stream.periodic(const Duration(seconds: 40)).asyncMap((_) async {
-    //   //   print('REQUESTING POSTS');
-    //   //   return await getPosts;
-    //   //   // return logexpertClient.objectsState.read(object.id);
-    //   // });
-    // } else {
-    //   stream = Stream.value([]);
-    //   return Center(
-    //     child: Text(
-    //       'Error: Sign in to see posts',
-    //       style: Theme.of(context).textTheme.bodyLarge,
-    //     ),
-    //   );
-    // }
-    // var scrollController = ScrollController();
-    // final postModel = Provider.of<DataClass>(context);
-    return Container(
-        // padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: StreamBuilder<List<Article>>(
+    return StreamBuilder<List<Article>>(
       initialData: const [],
       stream: getPosts,
       builder: (context, snapshot) {
@@ -101,10 +66,6 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                 ),
               );
       },
-    ));
+    );
   }
-
-  @override
-  // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,11 +14,17 @@ import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/notification.dart';
 import 'package:http/http.dart' as http;
+//import cloud functions
+import 'package:cloud_functions/cloud_functions.dart';
 
 class AuthProvider with ChangeNotifier {
   //initialize shared preferences
   // FirebaseAuth _auth;
   late final FirebaseAuth _auth;
+  //cloud function instance firestore
+  final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+    'addUser',
+  );
   // late StorageManager _storageManager;
   late final DatabaseService _databaseService;
   DatabaseService get databaseService => _databaseService;
@@ -142,7 +149,7 @@ class AuthProvider with ChangeNotifier {
                 if (userData != null) {}
               }
               //* Automatic navigates to the home page
-              _navigationService.signInWithAnimation(Base.routeName);
+              // _navigationService.signInWithAnimation(Base.routeName);
             },
           );
         } else {
@@ -180,11 +187,6 @@ class AuthProvider with ChangeNotifier {
           message: "Signed In",
           icon: const Icon(Icons.check, color: Colors.green));
       _navigationService.signInWithAnimation(Base.routeName);
-
-      // debugPrint("PRINT DEVICE INFO : ${_deviceInfo.iosInfo}");
-      // debugPrint("PRINT DEVICE INFO : ${_deviceInfo.androidInfo}");
-      // debugPrint("PRINT DEVICE INFO : ${_deviceInfo.webBrowserInfo}");
-      debugPrint("PRINT DEVICE INFO : ${_deviceInfo.windowsInfo}");
     } on FirebaseAuthException catch (e) {
       var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
       appNotification(
@@ -216,8 +218,13 @@ class AuthProvider with ChangeNotifier {
   //         .length >
   // 0;
 
-  Future<void> signUp(
-      String email, String password, String username, String photoURL) async {
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String username,
+    required String displayName,
+    String? photoURL,
+  }) async {
     setIsLoading(true);
 
     try {
@@ -231,15 +238,21 @@ class AuthProvider with ChangeNotifier {
         // UniqueName is duplicate
         // return 'Unique name already exists';
 
+        var userNameWithAt = '@$username';
+
+        //update user photo with firebase
+        await usercredential.user!.updatePhotoURL(photoURL);
+
         var userInfoMap = {
           'email': email,
-          'username': username,
+          'username': userNameWithAt,
+          'display': displayName,
+          'bio': '',
           'password': password,
-          'photoURL': photoURL,
+          'photoURL': photoURL ?? '',
           'lastSeen': DateTime.now(),
           'createdAt': DateTime.now(),
           'likes': []
-          // 'userDeviceInfo': deviceInfo.iosInfo,
         };
 
         await _databaseService.addUserInfoToDB(
@@ -263,7 +276,7 @@ class AuthProvider with ChangeNotifier {
       }
       setIsLoading(false);
 
-      // _navigationService.signInWithAnimation(Base.routeName);
+      _navigationService.signInWithAnimation(Base.routeName);
 
       // return _userFromFirebase(_auth.currentUser);
     } catch (e) {
@@ -283,18 +296,35 @@ class AuthProvider with ChangeNotifier {
     // return _userFromFirebase(_auth.currentUser);
   }
 
-  Future<User?> signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
     try {
       setIsLoading(true);
 
+      //check if username is duplicate
+      // if (!await _databaseService.isDuplicateUniqueName(username: username)) {
+
       _googleSignInAccount = await _googleSignIn!.signIn();
+      var userNameWithAt = _googleSignInAccount!.email.split('@')[0];
 
       final GoogleSignInAuthentication? googleAuth =
           await _googleSignInAccount?.authentication;
 
+      // if (await _databaseService.isDuplicateUniqueName(
+      //     username: "@${_googleSignInAccount!.email.split('@')[0]}")) {
+      //   appNotification(
+      //     title: "Error",
+      //     message: "User already exists",
+      //     icon: const Icon(Icons.error, color: kWarning),
+      //   );
+      // setIsLoading(false);
+      // return;
+      // } else {
+
       var userInfoMap = {
         'email': _googleSignInAccount?.email,
-        'username': _googleSignInAccount?.displayName,
+        'username': "@${_googleSignInAccount!.email.split('@')[0]}",
+        'display': _googleSignInAccount?.displayName,
+        'bio': '',
         'password': _googleSignInAccount?.id,
         'photoURL': _googleSignInAccount?.photoUrl,
         'lastSeen': DateTime.now(),
@@ -310,33 +340,15 @@ class AuthProvider with ChangeNotifier {
           ),
         );
 
-        if (!await _databaseService.isDuplicateUniqueName(
-            username: _googleSignInAccount?.displayName)) {
-          // UniqueName is duplicate
-          // return 'Unique name already exists';
-          appNotification(
-            title: "Error",
-            message: "User already exists",
-            icon: const Icon(Icons.error, color: kWarning),
-          );
-
-          await _databaseService.addUserInfoToDB(
-              uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
-        } else {
-          // UniqueName is duplicate
-          // return 'Unique name already exists';
-
-          //UPDATE USER INFO
-          await _databaseService.updateUser(
-              uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
-        }
+        await _databaseService.addUserInfoToDB(
+            uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
 
         if (!usercredential.isBlank!) {
           appNotification(
               title: "Success",
               message: "Signed In",
               icon: const Icon(Icons.check, color: Colors.green));
-          // _navigationService.signInWithAnimation(Base.routeName);
+          _navigationService.signInWithAnimation(Base.routeName);
         }
       } else {
         appNotification(
@@ -344,14 +356,7 @@ class AuthProvider with ChangeNotifier {
           message: "Missing Google Auth Token",
           icon: const Icon(Icons.error, color: kWarning),
         );
-        // setIsLoading(false);
-
-        // _isLoading = false;
-        // notifyListeners();
-        // throw FirebaseAuthException(
-        //   code: 'ERROR_MISSING_GOOGLE_AUTH_TOKEN',
-        //   message: 'Missing Google Auth Token',
-        // );
+        // }
       }
     } catch (e) {
       print(e);
@@ -421,8 +426,8 @@ class AuthProvider with ChangeNotifier {
   List<Article> news = [];
 
   Future<List<Article>> getPosts() async {
-    var apiKey = "800dce9aa1334456ac941842fa55edf8";
-    // var apiKey = "37b3f6b92d2a4434a249e02fd8938841";
+    // var apiKey = "800dce9aa1334456ac941842fa55edf8";
+    var apiKey = "37b3f6b92d2a4434a249e02fd8938841";
     // "https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=800dce9aa1334456ac941842fa55edf8");
 
     Uri url = Uri.parse(
@@ -455,6 +460,24 @@ class AuthProvider with ChangeNotifier {
     return news;
   }
 
+  updateUser({String? displayName, String? bio, String? photoUrl}) {
+    _auth.currentUser!.updateProfile(
+      displayName: displayName,
+      photoURL: photoUrl,
+    );
+    _databaseService.updateUser(
+        displayName: displayName, bio: bio, photoUrl: photoUrl, uid: user!.uid);
+
+    if (photoUrl != null) {
+      user!.updatePhotoURL(photoUrl);
+    }
+    if (displayName != null) {
+      user!.updateDisplayName(displayName);
+    }
+
+    notifyListeners();
+  }
+
   likePost(Article article) {
     _databaseService.likePost(
       article: article,
@@ -472,19 +495,31 @@ class AuthProvider with ChangeNotifier {
     _databaseService.unlikePost(uid: _auth.currentUser!.uid, article: article);
   }
 
+  removeFromDb(String articleUrl) {
+    return _databaseService.removeFromDb(
+        uid: _auth.currentUser!.uid, postUrl: articleUrl);
+  }
+
   Future<bool> isPostInLikedArray(Article article) {
     return _databaseService.isPostInLikedArray(
         uid: _auth.currentUser!.uid, article: article);
   }
 
-  getLikedPostsArray() {
-    _databaseService.getLikedPostsArray(uid: _auth.currentUser!.uid);
-    return _databaseService.getLikedPostsArray(uid: _auth.currentUser!.uid);
+  Future<List<String>> getLikedPostsArray() async {
+    List<String> list = await _databaseService.getLikedPostsArray(
+      uid: _auth.currentUser!.uid,
+    );
+    return list;
   }
 
   Future<bool> isLiked(Article article) {
     return _databaseService.isPostInLikedArray(
         uid: _auth.currentUser!.uid, article: article);
+  }
+
+  //future function to get user data from firebase
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserData() async {
+    return await _databaseService.getUser(uid: _auth.currentUser!.uid);
   }
 
   // isPostLiked(String posturl) {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sportsapp/screens/settings/widgets/body.dart';
 
-class Settings extends StatelessWidget {
+class SettingsPage extends StatelessWidget {
   //routename
   static const routeName = '/settings';
-  const Settings({Key? key}) : super(key: key);
+  const SettingsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

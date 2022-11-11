@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:provider/provider.dart';
+import 'package:sportsapp/base.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/CountryProvider.dart';
@@ -217,7 +220,7 @@ class MyApp extends StatelessWidget {
             navigatorKey: NavigationService.navigatorKey,
             title: 'Toppick',
             debugShowCheckedModeBanner: false,
-            initialRoute: SignIn.routeName,
+            initialRoute: AuthWrapper.routeName,
             //set theme preference from shared prefs
             routes: routes,
             theme: themeProvider.isDarkMode ? dark : light,
@@ -229,26 +232,31 @@ class MyApp extends StatelessWidget {
 }
 
 //auth wrapper
-// class AuthWrapper extends StatelessWidget {
-//   //ROUTENAME
-//   static const String routeName = '/';
-//   const AuthWrapper({Key? key}) : super(key: key);
+class AuthWrapper extends StatelessWidget {
+  //ROUTENAME
+  static const String routeName = '/';
+  const AuthWrapper({Key? key}) : super(key: key);
 
-//   @override
-//   Widget build(BuildContext context) {
-//     //auth provider
-//     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-//     return StreamBuilder<UserModel?>(
-//       stream: authProvider.user,
-//       builder: (context, snapshot) {
-//         if (snapshot.hasData) {
-//           //PRINT USER DATA
-//           debugPrint(snapshot.data.toString());
-//           return const Base();
-//         } else {
-//           return const SplashScreen();
-//         }
-//       },
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    //auth provider
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    return StreamBuilder(
+      stream: authProvider.authState,
+      builder: (context, AsyncSnapshot<User?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          final user = snapshot.data;
+          if (user == null) {
+            return const SignIn();
+          }
+          return const Base();
+        }
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      },
+    );
+  }
+}

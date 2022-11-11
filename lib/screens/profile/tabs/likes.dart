@@ -24,7 +24,7 @@ class _LikesTabState extends State<LikesTab> {
     var navigationService = Provider.of<NavigationService>(context);
     final getLikedPostsArray = authProvider.getLikedPostsArray().asStream();
     void removeListTile(String postUrl) {
-      authProvider.removeFromDb(postUrl);
+      // authProvider.removeFromDb(postUrl);
     }
 
     return Column(
@@ -54,8 +54,8 @@ class _LikesTabState extends State<LikesTab> {
                             actions: [
                               CupertinoDialogAction(
                                 onPressed: () {
-                                  authProvider
-                                      .removeFromDb(snapshot.data![index]);
+                                  // authProvider
+                                  //     .removeFromDb(snapshot.data![index]);
                                   // navigationService.goBack();
                                   Navigator.of(context).pop(true);
                                 },
@@ -70,7 +70,7 @@ class _LikesTabState extends State<LikesTab> {
                         );
                       },
                       onDismissed: (direction) {
-                        authProvider.removeFromDb(snapshot.data![index]);
+                        // authProvider.removeFromDb(snapshot.data![index]);
                       },
                       background: Container(
                         color: kWarning,

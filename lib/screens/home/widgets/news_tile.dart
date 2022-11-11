@@ -15,8 +15,6 @@ import 'package:sportsapp/screens/home/widgets/article_view.dart';
 import 'package:share_plus/share_plus.dart';
 
 class NewsTile extends StatefulWidget {
-  // late bool isLiked;
-
   NewsTile({
     Key? key,
     // required this.imgUrl,
@@ -27,7 +25,6 @@ class NewsTile extends StatefulWidget {
     this.onTap,
     required this.isLiked,
     required this.article,
-    // required this.currentUid
   }) : super(key: key);
 
   final Function()? onTap;
@@ -35,7 +32,10 @@ class NewsTile extends StatefulWidget {
   // final String title, desc, content, posturl;
   // final String? imgUrl;
   final Article article;
-  bool isLiked;
+
+  late bool isLiked;
+
+  // bool isLiked;
 
   @override
   State<NewsTile> createState() => _NewsTileState();
@@ -45,7 +45,7 @@ class _NewsTileState extends State<NewsTile> {
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final getIsLiked = authProvider.isLiked(widget.article);
+    var getIsLiked = authProvider.isLiked(widget.article);
     // int getLikeCount(likes) {
     //   // if no likes, return 0
     //   if (likes == null) {
@@ -84,7 +84,7 @@ class _NewsTileState extends State<NewsTile> {
         Provider.of<NavigationService>(context, listen: false);
     return GestureDetector(
       onTap: () {
-        debugPrint("IMAGE URL IS: ${widget.article}.urlToImage");
+        debugPrint("IMAGE URL IS: ${widget.article.urlToImage}");
         _navigationService.navigateToPage(
           ArticleView(
             postUrl: widget.article.articleUrl!,
@@ -121,7 +121,7 @@ class _NewsTileState extends State<NewsTile> {
                 ),
               ),
               imageUrl: widget.article.urlToImage!.startsWith("//")
-                  ? "https:${widget.article}.urlToImage"
+                  ? "https:${widget.article.urlToImage}"
                   : widget.article.urlToImage ?? "",
               placeholder: (context, url) => AspectRatio(
                 aspectRatio: 2,
@@ -189,62 +189,73 @@ class _NewsTileState extends State<NewsTile> {
             Row(
               children: [
                 // StreamBuilder<bool>(
-                //   stream: getIsLiked,
-                //   builder: (context, snapshot) {
-                //     return snapshot.hasData
-                //         ? IconButton(
-                //             onPressed: () {
-                //               if (snapshot.data!) {
-                //                 authProvider.unlikePost(widget.article);
-                //               } else {
-                //                 authProvider.likePost(widget.article);
-                //               }
-                //             },
-                //             icon: Icon(
-                //               snapshot.data!
-                //                   ? Icons.favorite
-                //                   : Icons.favorite_border,
-                //               color: snapshot.data!
-                //                   ? Colors.red
-                //                   : themeprovider.isDarkMode
-                //                       ? Colors.black
-                //                       : Colors.black,
-                //             ),
-                //           )
-                //         : const SizedBox();
+                //   stream: getIsLiked.asStream(),
+                //   initialData: widget.isLiked,
+                //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+                //     if (snapshot.hasError ||
+                //         !snapshot.hasData ||
+                //         snapshot.data == null) {
+                //       return const Icon(Icons.favorite_border);
+                //     }
+                //     return IconButton(
+                //       onPressed: () {
+                //         widget.isLiked = snapshot.data;
+
+                //         if (widget.isLiked) {
+                //           authProvider.unlikePost(widget.article);
+                //         } else {
+                //           authProvider.likePost(widget.article);
+                //         }
+
+                //         setState(() {
+                //           widget.isLiked = !widget.isLiked;
+                //         });
+                //       },
+                //       icon: Icon(
+                //         snapshot.data ? Icons.favorite : Icons.favorite_border,
+                //         color: snapshot.data
+                //             ? Colors.red
+                //             : themeprovider.isDarkMode
+                //                 ? Colors.blue
+                //                 : Colors.black,
+                //       ),
+                //     );
                 //   },
                 // ),
 
-                StreamBuilder(
-                  stream: getIsLiked.asStream(),
-                  initialData: widget.isLiked,
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    return IconButton(
-                      onPressed: () {
-                        widget.isLiked = snapshot.data;
+                GestureDetector(
+                  onTap: () {
+                    if (widget.isLiked) {
+                      authProvider.unlikePost(widget.article);
+                    } else {
+                      authProvider.likePost(widget.article);
+                    }
 
-                        if (widget.isLiked) {
-                          authProvider.unlikePost(widget.article);
-                        } else {
-                          authProvider.likePost(widget.article);
-                        }
-
-                        setState(() {
-                          widget.isLiked = !widget.isLiked;
-                        });
-                        // widget.isLiked = !widget.isLiked;
-                        // snapshot.data = !snapshot.data;
-                      },
-                      icon: Icon(
-                        snapshot.data ? Icons.favorite : Icons.favorite_border,
-                        color: snapshot.data
-                            ? Colors.red
-                            : themeprovider.isDarkMode
-                                ? Colors.blue
-                                : Colors.black,
-                      ),
-                    );
+                    setState(() {
+                      widget.isLiked = !widget.isLiked;
+                    });
                   },
+                  child: StreamBuilder<bool>(
+                    stream: getIsLiked.asStream(),
+                    initialData: widget.isLiked,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active ||
+                          snapshot.hasData) {
+                        return Icon(
+                          snapshot.data
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: snapshot.data
+                              ? Colors.red
+                              : themeprovider.isDarkMode
+                                  ? Colors.blue
+                                  : Colors.black,
+                        );
+                      }
+                      return const Icon(Icons.favorite_border,
+                          color: Colors.blue);
+                    },
+                  ),
                 ),
                 const SizedBox(
                   width: 15,

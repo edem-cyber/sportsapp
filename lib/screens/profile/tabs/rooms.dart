@@ -12,6 +12,8 @@ class Rooms extends StatefulWidget {
 class _RoomsState extends State<Rooms> {
   @override
   Widget build(BuildContext context) {
-    return Center();
+    return const Center(
+      child: Text("Rooms"),
+    );
   }
 }
