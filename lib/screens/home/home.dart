@@ -5,12 +5,17 @@ import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/home/widgets/body.dart';
 import 'package:sportsapp/widgets/small_appbar.dart';
 
-class News extends StatelessWidget {
+class News extends StatefulWidget {
   //scroll controller
   final ScrollController scrollController;
   const News({Key? key, required this.scrollController}) : super(key: key);
   static const String routeName = '/home';
 
+  @override
+  State<News> createState() => _NewsState();
+}
+
+class _NewsState extends State<News> {
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
@@ -18,10 +23,15 @@ class News extends StatelessWidget {
     return Scaffold(
       appBar: SmallAppBar(
         url: authProvider.user!.photoURL ?? AppImage.defaultProfilePicture,
-        action: () => Scaffold.of(context).openDrawer(),
+        action: () {
+          // setState(() {
+          Scaffold.of(context).openDrawer();
+          // });
+        },
       ),
       body: Body(
-        scrollController: scrollController,
+        // key: const Key('homeBody'),
+        scrollController: widget.scrollController,
       ),
     );
   }

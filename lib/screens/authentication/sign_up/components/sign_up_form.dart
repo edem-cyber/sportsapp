@@ -7,6 +7,7 @@ import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/authentication/auth_button.dart';
+import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/widgets/form_error.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -88,21 +89,20 @@ class _SignUpFormState extends State<SignUpForm> {
   // }
 
   Future<String?> uploadPfP() async {
-    File uploadedFile = File(imageFile!.path);
-    //VAR DATETIME TO miliseconds
-    var now = DateTime.now().millisecondsSinceEpoch;
-    TaskSnapshot? taskSnapshot =
-        await storage.ref("images/profile_pics/$now").putFile(
-              uploadedFile,
-            );
-
-    // try {
-    //   // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-    // } catch (e) {
-    //   debugPrint("UPLOADPFP FUNCTION: $e");
-    // }
-
-    return taskSnapshot.ref.getDownloadURL();
+    try {
+      File? uploadedFile = File(imageFile!.path);
+      //VAR DATETIME TO miliseconds
+      var now = DateTime.now().millisecondsSinceEpoch;
+      TaskSnapshot? taskSnapshot =
+          await storage.ref("images/profile_pics/$now").putFile(
+                uploadedFile,
+              );
+      return taskSnapshot != null
+          ? await taskSnapshot.ref.getDownloadURL()
+          : "";
+    } catch (e) {
+      print("UPLOADPFP FUNCTION!!: $e");
+    }
   }
 
   // Future<String?> getDownload() async {
@@ -308,7 +308,7 @@ class _SignUpFormState extends State<SignUpForm> {
   //   });
   // }
 
-  void pickImage() async {
+  pickImage() async {
     final XFile? imageFile = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 25,
@@ -406,47 +406,39 @@ class _SignUpFormState extends State<SignUpForm> {
             color: kBlue,
             text: "Sign Up",
             press: () async {
-              // try {
-              //   // doSignIn();
-              //   // _formKey.currentState!.validate() ? doSignIn() : null;
-              // Navigator.of(context).push(MaterialPageRoute(
-              //     builder: (_) => const Base(), fullscreenDialog: true));
-              bool passwordMatch =
-                  _passwordController.text == _confirmPasswordController.text;
-              try {
-                if (_formKey.currentState!.validate()) {
-                  // authProvider.setIsLoading(true);
-                  print(authProvider.isLoading);
-                  // authProvider.signUp(
-                  //   // : _displayNameController.text,
-                  //   _emailController.text,
-                  //   _passwordController.text,
-                  //   _usernameController.text,
-                  // );
-                  // .then((value) => authProvider.setIsLoading(false));
-                  try {
-                    // await uploadPfP().then((value) async {});
-                    String? value = await uploadPfP();
-                    authProvider.signUp(
+              var isdupli =
+                  await authProvider.checkDuplicate(_usernameController.text);
+              if (isdupli == false) {
+                bool passwordMatch =
+                    _passwordController.text == _confirmPasswordController.text;
+                try {
+                  if (_formKey.currentState!.validate()) {
+                    try {
+                      String? value = await uploadPfP();
+                      await authProvider.signUp(
+                        photoURL: value ?? "",
                         displayName: _displayNameController.text,
                         email: _emailController.text,
                         password: _passwordController.text,
                         username: _usernameController.text,
-                        photoURL: value ?? " ");
-                  } catch (e) {
-                    print(e);
+                      );
+                    } catch (e) {
+                      debugPrint("error in uploadPfP");
+                    }
+                  } else if (passwordMatch) {
+                    addError(error: kPassMatchError);
+                  } else {
+                    addError(error: kPassNullError);
                   }
-                } else if (passwordMatch) {
-                  addError(error: kPassMatchError);
-                } else {
-                  addError(error: kPassNullError);
+                } on FirebaseException catch (e) {
+                  debugPrint("AUTH BUTTON FIREBASE EXCEPTION $e");
+                  // addError(error: kEmailNullError);
+                } catch (e) {
+                  debugPrint("AUTH BUTTON EXCEPTION $e");
+                  // addError(error: kEmailNullError);
                 }
-              } on FirebaseException catch (e) {
-                print("AUTH BUTTON FIREBASE EXCEPTION $e");
-                // addError(error: kEmailNullError);
-              } catch (e) {
-                print("AUTH BUTTON EXCEPTION $e");
-                // addError(error: kEmailNullError);
+              } else {
+                return;
               }
             },
           ),

@@ -1,8 +1,8 @@
 List<Map<String, String>> demoLeagues = [
   {
     'leagueId': "1",
-    'leagueName': 'Premier League',
-    'leagueCode': 'PL',
+    'name': 'Premier League',
+    'code': 'PL',
     'countryCode': 'England',
     'countryName': 'England',
     'logo': 'assets/icons/epl.png',
@@ -10,7 +10,7 @@ List<Map<String, String>> demoLeagues = [
   },
   // {
   //   'leagueId': "2",
-  //   'leagueName': 'Bundesliga',
+  //   'name': 'Bundesliga',
   //   'countryCode': 'Germany',
   //   'countryName': 'Germany',
   //   'logo': 'assets/icons/laliga.png',
@@ -18,8 +18,8 @@ List<Map<String, String>> demoLeagues = [
   // },
   {
     'leagueId': "3",
-    'leagueName': 'La Liga',
-    'leagueCode': 'PD',
+    'name': 'La Liga',
+    'code': 'PD',
     'countryCode': 'Spain',
     'countryName': 'Spain',
     'logo': 'assets/icons/laliga.png',
@@ -27,8 +27,8 @@ List<Map<String, String>> demoLeagues = [
   },
   {
     'leagueId': "4",
-    'leagueCode': 'SA',
-    'leagueName': 'Serie A',
+    'code': 'SA',
+    'name': 'Serie A',
     'countryCode': 'Italy',
     'countryName': 'Italy',
     'logo': 'assets/icons/seriea.png',
@@ -36,8 +36,8 @@ List<Map<String, String>> demoLeagues = [
   },
   {
     'leagueId': "5",
-    'leagueName': 'Ligue 1',
-    'leagueCode': 'FL1',
+    'name': 'Ligue 1',
+    'code': 'FL1',
     'countryCode': 'France',
     'countryName': 'France',
     'logo': 'assets/icons/ligue1.png',
@@ -45,8 +45,8 @@ List<Map<String, String>> demoLeagues = [
   },
   {
     'leagueId': "6",
-    'leagueCode': 'GPL',
-    'leagueName': 'Ghana Premier League',
+    'code': 'GPL',
+    'name': 'Ghana Premier League',
     'countryCode': 'Ghana',
     'countryName': 'Ghana',
     'logo': 'assets/icons/gpl.png',

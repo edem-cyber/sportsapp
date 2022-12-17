@@ -9,12 +9,14 @@ class Room extends StatelessWidget {
   final Function()? onTap;
 
   const Room(
-      {required this.desc,
+      {Key? key,
+      required this.desc,
       required this.title,
       required this.comments,
       required this.likes,
       required this.isRead,
-      this.onTap});
+      this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class Room extends StatelessWidget {
       child: Container(
         height: 85,
         decoration: BoxDecoration(
-          color: isRead ? kBlue.withOpacity(0.1) : kWhite,
+          color: isRead ? kBlue.withOpacity(0.1) : kBlue.withOpacity(0.1),
           border: Border(
             // top: BorderSide(width: 16.0, color: Colors.lightBlue.shade50),
             bottom: BorderSide(width: 1.0, color: kGrey.withOpacity(0.2)),

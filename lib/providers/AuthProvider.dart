@@ -120,13 +120,13 @@ class AuthProvider with ChangeNotifier {
     //     notifyListeners();
     //   }
     // });
-    getDeviceInfo().then((value) {
-      if (value != null) {
-        var mystring = value.toString();
-        //get
-        print("DEVICE INFO HERE: $mystring");
-      }
-    });
+    // getDeviceInfo().then((value) {
+    //   if (value != null) {
+    //     var mystring = value.toString();
+    //     //get
+    //     debugPrint("DEVICE INFO HERE: $mystring");
+    //   }
+    // });
 
     _auth = FirebaseAuth.instance;
     _databaseService = DatabaseService();
@@ -139,7 +139,7 @@ class AuthProvider with ChangeNotifier {
       (fireUser) {
         if (fireUser != null) {
           _databaseService.updateUserLastSeenTime(uid: fireUser.uid);
-          print("UID IN LISTEN METHOD: $fireUser.uid");
+          // debugPrint("UID IN LISTEN METHOD: $fireUser.uid");
           _databaseService.getUser(uid: fireUser.uid).then(
             (snapshot) {
               // * Check if the documentSnapshot exists or not.
@@ -218,6 +218,21 @@ class AuthProvider with ChangeNotifier {
   //         .length >
   // 0;
 
+  Future<bool> checkDuplicate(String username) async {
+    bool result = await _databaseService.isDuplicateUsername("@$username");
+    if (result == true) {
+      appNotification(
+        title: "Error",
+        message: "Username already taken",
+        icon: const Icon(
+          Icons.error,
+          color: kWarning,
+        ),
+      );
+    }
+    return result;
+  }
+
   Future<void> signUp({
     required String email,
     required String password,
@@ -228,45 +243,36 @@ class AuthProvider with ChangeNotifier {
     setIsLoading(true);
 
     try {
+      var userNameWithAt = '@$username';
+      bool isDuplicateUsername =
+          await _databaseService.isDuplicateUsername(userNameWithAt);
+
       //usercredential
       UserCredential usercredential =
           await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
-      if (!await _databaseService.isDuplicateUniqueName(username: username)) {
-        // UniqueName is duplicate
-        // return 'Unique name already exists';
 
-        var userNameWithAt = '@$username';
+      //update user photo with firebase
+      await usercredential.user!.updatePhotoURL(photoURL);
 
-        //update user photo with firebase
-        await usercredential.user!.updatePhotoURL(photoURL);
+      var userInfoMap = {
+        'email': email,
+        'username': userNameWithAt,
+        'displayName': displayName,
+        'bio': '',
+        'password': password,
+        'photoURL': photoURL ?? '',
+        'lastSeen': DateTime.now(),
+        'createdAt': DateTime.now(),
+        'likes': [],
+        'isAdmin': false,
+      };
+      await _databaseService.addUserInfoToDB(
+          uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
 
-        var userInfoMap = {
-          'email': email,
-          'username': userNameWithAt,
-          'display': displayName,
-          'bio': '',
-          'password': password,
-          'photoURL': photoURL ?? '',
-          'lastSeen': DateTime.now(),
-          'createdAt': DateTime.now(),
-          'likes': []
-        };
-
-        await _databaseService.addUserInfoToDB(
-            uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
-      } else {
-        // UniqueName is duplicate
-        // return 'Unique name already exists';
-        appNotification(
-          title: "Error",
-          message: "User already exists",
-          icon: const Icon(Icons.error, color: kWarning),
-        );
-      }
-
+      //save user to storage
       if (!usercredential.isBlank!) {
         appNotification(
             title: "Success",
@@ -274,6 +280,7 @@ class AuthProvider with ChangeNotifier {
             icon: const Icon(Icons.check, color: Colors.green));
         _navigationService.signInWithAnimation(Base.routeName);
       }
+
       setIsLoading(false);
 
       _navigationService.signInWithAnimation(Base.routeName);
@@ -288,12 +295,14 @@ class AuthProvider with ChangeNotifier {
         message: er,
         icon: const Icon(Icons.error, color: kWarning),
       );
+
+      //CHECK duplicate usernames
+      // if (e.code == 'username-already-in-use') {
+
       setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
-    print('Sign up print ${_auth.currentUser}');
-    // return _userFromFirebase(_auth.currentUser);
   }
 
   Future<void> signInWithGoogle() async {
@@ -323,13 +332,14 @@ class AuthProvider with ChangeNotifier {
       var userInfoMap = {
         'email': _googleSignInAccount?.email,
         'username': "@${_googleSignInAccount!.email.split('@')[0]}",
-        'display': _googleSignInAccount?.displayName,
+        'displayName': _googleSignInAccount?.displayName,
         'bio': '',
         'password': _googleSignInAccount?.id,
         'photoURL': _googleSignInAccount?.photoUrl,
         'lastSeen': DateTime.now(),
         'createdAt': DateTime.now(),
-        'likes': []
+        'likes': [],
+        'isAdmin': false,
       };
 
       if (googleAuth != null) {
@@ -426,8 +436,8 @@ class AuthProvider with ChangeNotifier {
   List<Article> news = [];
 
   Future<List<Article>> getPosts() async {
-    // var apiKey = "800dce9aa1334456ac941842fa55edf8";
-    var apiKey = "37b3f6b92d2a4434a249e02fd8938841";
+    var apiKey = "800dce9aa1334456ac941842fa55edf8";
+    // var apiKey = "37b3f6b92d2a4434a249e02fd8938841";
     // "https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=800dce9aa1334456ac941842fa55edf8");
 
     Uri url = Uri.parse(
@@ -438,24 +448,26 @@ class AuthProvider with ChangeNotifier {
 
     var jsonData = jsonDecode(response.body);
     // print("JSON DATA: ${jsonData}");
-    print("JSON STATUS: ${jsonData['status']}");
+    // print("JSON STATUS: ${jsonData['status']}");
     if (jsonData['status'] == "ok") {
-      jsonData["articles"].forEach((element) {
-        if (element['urlToImage'] != null && element['description'] != null) {
-          Article article = Article(
-            title: element['title'] ?? "",
-            description: element['description'] ?? "",
-            urlToImage: element['urlToImage'] ?? "",
-            content: element['content'] ?? "",
-            publishedAt: DateTime.parse(element['publishedAt']),
-            author: element['author'] ?? "",
-            articleUrl: element['url'] ?? "",
-          );
-          // print("ARTICLE: ${article.title}");
-          // print("NEWS LENGTH: ${news.length}");
-          news.add(article);
-        }
-      });
+      jsonData["articles"].forEach(
+        (element) {
+          if (element['urlToImage'] != null && element['description'] != null) {
+            Article article = Article(
+              title: element['title'] ?? "",
+              description: element['description'] ?? "",
+              urlToImage: element['urlToImage'] ?? "",
+              content: element['content'] ?? "",
+              publishedAt: DateTime.parse(element['publishedAt']),
+              author: element['author'] ?? "",
+              articleUrl: element['url'] ?? "",
+            );
+            // print("ARTICLE: ${article.title}");
+            // print("NEWS LENGTH: ${news.length}");
+            news.add(article);
+          }
+        },
+      );
     }
     return news;
   }
@@ -520,6 +532,55 @@ class AuthProvider with ChangeNotifier {
   //future function to get user data from firebase
   Future<DocumentSnapshot<Map<String, dynamic>>> getUserData() async {
     return await _databaseService.getUser(uid: _auth.currentUser!.uid);
+  }
+
+  // Future createPick() async {
+  //   //if user is not admin
+  //   var isAdminUser = false;
+  //   getUserData().then(
+  //     (value) {
+  //       if (value.data()!['isAdmin'] == true) {
+  //         isAdminUser = true;
+  //       }
+  //     },
+  //   );
+
+  //   return _databaseService.createPick();
+  // }
+
+  Future<bool> isAdmin() async {
+    var isAdminUser = false;
+    await getUserData().then(
+      (value) {
+        if (value.data()!['isAdmin'] == true) {
+          isAdminUser = true;
+        }
+      },
+    );
+    return isAdminUser;
+  }
+
+  Future<void> createPick({required String title, required String desc}) async {
+    //if user is not admin
+    // var isAdminUser = false;
+    isAdmin().then(
+      (value) {
+        if (value == true) {
+          // isAdminUser = true;
+          _databaseService.createPick(title: title, desc: desc);
+        }
+      },
+    );
+  }
+
+  Future<void> deletePick({required String id}) async {
+    //if user is not admin
+    // var isAdminUser = false;
+    _databaseService.deletePick(id: id);
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getAllPicks() {
+    return _databaseService.getAllPicks();
   }
 
   // isPostLiked(String posturl) {

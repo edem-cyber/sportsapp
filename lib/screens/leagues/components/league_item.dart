@@ -30,11 +30,12 @@ class LeagueItem extends StatelessWidget {
           children: <Widget>[
             SizedBox(
               width: _size.width * 0.2,
-              child: Image.asset(
-                image!,
-
-                // color: Colors.white,
-              ),
+              child: image != null
+                  ? SvgPicture.asset(
+                      image!,
+                      width: 30,
+                    )
+                  : Container(),
             ),
             const SizedBox(
               width: 10,

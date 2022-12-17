@@ -1,60 +1,116 @@
 class League {
-  String? leagueId;
+  int? id;
+  Area? area;
   String? name;
+  String? code;
   String? type;
-  String? country;
-  String? countryCode;
-  String? season;
-  String? seasonStart;
-  String? seasonEnd;
-  String? logo;
-  String? flag;
-  String? standings;
-  String? isCurrent;
+  String? emblem;
+  String? plan;
+  CurrentSeason? currentSeason;
+  int? numberOfAvailableSeasons;
+  String? lastUpdated;
 
   League(
-      {this.leagueId,
+      {this.id,
+      this.area,
       this.name,
+      this.code,
       this.type,
-      this.country,
-      this.countryCode,
-      this.season,
-      this.seasonStart,
-      this.seasonEnd,
-      this.logo,
-      this.flag,
-      this.standings,
-      this.isCurrent});
+      this.emblem,
+      this.plan,
+      this.currentSeason,
+      this.numberOfAvailableSeasons,
+      this.lastUpdated});
 
   League.fromJson(Map<String, dynamic> json) {
-    leagueId = json['league_id'] as String;
-    name = json['name'] as String;
-    type = json['type'] as String;
-    country = json['country'] as String;
-    countryCode = json['country_code'] as String;
-    season = json['season'] as String;
-    seasonStart = json['season_start'] as String;
-    seasonEnd = json['season_end'] as String;
-    logo = json['logo'] as String;
-    flag = json['flag'] as String;
-    standings = json['standings'] as String;
-    isCurrent = json['is_current'] as String;
+    id = json['id'];
+    area = json['area'] != null ? Area.fromJson(json['area']) : null;
+    name = json['name'];
+    code = json['code'];
+    type = json['type'];
+    emblem = json['emblem'];
+    plan = json['plan'];
+    currentSeason = json['currentSeason'] != null
+        ? CurrentSeason.fromJson(json['currentSeason'])
+        : null;
+    numberOfAvailableSeasons = json['numberOfAvailableSeasons'];
+    lastUpdated = json['lastUpdated'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['league_id'] = leagueId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (area != null) {
+      data['area'] = area!.toJson();
+    }
     data['name'] = name;
+    data['code'] = code;
     data['type'] = type;
-    data['country'] = country;
-    data['country_code'] = countryCode;
-    data['season'] = season;
-    data['season_start'] = seasonStart;
-    data['season_end'] = seasonEnd;
-    data['logo'] = logo;
+    data['emblem'] = emblem;
+    data['plan'] = plan;
+    if (currentSeason != null) {
+      data['currentSeason'] = currentSeason!.toJson();
+    }
+    data['numberOfAvailableSeasons'] = numberOfAvailableSeasons;
+    data['lastUpdated'] = lastUpdated;
+    return data;
+  }
+}
+
+class Area {
+  int? id;
+  String? name;
+  String? code;
+  String? flag;
+
+  Area({this.id, this.name, this.code, this.flag});
+
+  Area.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    code = json['code'];
+    flag = json['flag'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['code'] = code;
     data['flag'] = flag;
-    data['standings'] = standings;
-    data['is_current'] = isCurrent;
+    return data;
+  }
+}
+
+class CurrentSeason {
+  int? id;
+  String? startDate;
+  String? endDate;
+  int? currentMatchday;
+  String? winner;
+
+  CurrentSeason(
+      {this.id,
+      this.startDate,
+      this.endDate,
+      this.currentMatchday,
+      this.winner});
+
+  CurrentSeason.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    startDate = json['startDate'];
+    endDate = json['endDate'];
+    currentMatchday = json['currentMatchday'];
+    winner = json['winner'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['startDate'] = startDate;
+    data['endDate'] = endDate;
+    data['currentMatchday'] = currentMatchday;
+    data['winner'] = winner;
     return data;
   }
 }

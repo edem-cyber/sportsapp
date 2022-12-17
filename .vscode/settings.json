@@ -3,6 +3,7 @@
     "cmake.configureOnOpen": false,
     "cSpell.words": [
         "Firestore",
+        "getallleagues",
         "mtapp",
         "newslist",
         "posturl",

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
+import 'package:sportsapp/helper/constants.dart';
 // import 'package:sportsapp/helper/constants.dart';
 
 class LeagueTable extends StatefulWidget {
@@ -14,14 +15,17 @@ class LeagueTable extends StatefulWidget {
   State<LeagueTable> createState() => _LeagueTableState();
 }
 
-class _LeagueTableState extends State<LeagueTable> {
+class _LeagueTableState extends State<LeagueTable>
+    with AutomaticKeepAliveClientMixin {
   var _table = [];
+  // var token = "9b317099a8914002994c7d2ffbd43c7f";
+  var token = "be1eb21948af4c8fa080ee214406c4be";
 
   getTable() async {
     http.Response response = await http.get(
         Uri.parse(
             'http://api.football-data.org/v2/competitions/${widget.code}/standings'),
-        headers: {'X-Auth-Token': '800dce9aa1334456ac941842fa55edf8'});
+        headers: {'X-Auth-Token': token});
     String body = response.body;
     Map data = jsonDecode(body);
     List table = data['standings'][0]['table'];
@@ -42,18 +46,44 @@ class _LeagueTableState extends State<LeagueTable> {
                 child: Row(
                   children: [
                     team['position'].toString().length > 1
-                        ? Text('${team['position']} - ')
-                        : Text(" " + team['position'].toString() + ' - '),
+                        ? Text('${team['position']} ')
+                        : Text(" " + team['position'].toString() + '  '),
                     Row(
                       children: [
-                        SvgPicture.network(
-                          team['team']['crestUrl'],
-                          height: 30,
-                          width: 30,
+                        team['team']['crestUrl'].toString().contains(".svg")
+                            ? CircleAvatar(
+                                radius: 20,
+                                backgroundColor: kGrey,
+                                child: CircleAvatar(
+                                  radius: 18,
+                                  backgroundColor: kWhite,
+                                  child: SvgPicture.network(
+                                    team['team']['crestUrl'],
+                                    fit: BoxFit.cover,
+                                    width: 27,
+                                    // width: 20,
+                                  ),
+                                ),
+                              )
+                            : CircleAvatar(
+                                backgroundColor: kGrey,
+                                radius: 20,
+                                child: CircleAvatar(
+                                  radius: 18,
+                                  backgroundColor: kWhite,
+                                  child: Image.network(
+                                    fit: BoxFit.cover,
+                                    team['team']['crestUrl'].toString(),
+                                    width: 27,
+                                  ),
+                                ),
+                              ),
+                        const SizedBox(
+                          width: 10,
                         ),
                         team['team']['name'].toString().length > 11
                             ? Text(
-                                '${team['team']['name'].toString().substring(0, 11)}...')
+                                '${team['team']['name'].toString().substring(0, 10)}...')
                             : Text(team['team']['name'].toString()),
                       ],
                     ),
@@ -182,4 +212,7 @@ class _LeagueTableState extends State<LeagueTable> {
             ),
           );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

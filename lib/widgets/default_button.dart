@@ -34,7 +34,7 @@ class DefaultButton extends StatelessWidget {
         label: icon,
         icon:
             // Provider.of<AuthProvider>(context).isLoading()
-            //     ? const CircularProgressIndicator(
+            //     ? const CupertinoActivityIndicator(
             //         // valueColor: AlwaysStoppedAnimation<Color>(kPrimaryColor),
             //         color: kWhite,
             //       )

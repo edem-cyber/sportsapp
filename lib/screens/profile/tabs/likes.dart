@@ -107,7 +107,7 @@ class _LikesTabState extends State<LikesTab> {
                 },
               );
             } else {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CupertinoActivityIndicator());
             }
           },
         ),

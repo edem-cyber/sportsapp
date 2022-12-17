@@ -1,4 +1,7 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sportsapp/providers/ThemeProvider.dart';
+import 'package:sportsapp/screens/single_league_page/tabs/fixtures/fixtures.dart';
 
 // class MatchDay extends StatelessWidget {
 //   final int numberOfMatches;
@@ -34,3 +37,47 @@
 //     );
 //   }
 // }
+
+
+
+class MatchDay extends StatelessWidget {
+  const MatchDay({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    //theme provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return GestureDetector(
+      onTap: () {
+        // Navigator.pushNamed(context, MatchNewsPage.routeName);
+      },
+      child: ListView(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            "Sun 7 Aug 2022",
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const SingleMatch(),
+          const SizedBox(
+            height: 20,
+          ),
+          const SingleMatch(),
+          const SizedBox(
+            height: 20,
+          ),
+          const SingleMatch(),
+        ],
+      ),
+    );
+  }
+}

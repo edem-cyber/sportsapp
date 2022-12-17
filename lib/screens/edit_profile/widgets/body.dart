@@ -78,22 +78,39 @@ class _BodyState extends State<Body> {
   //   }
   // }
 
+  // Future<String?> uploadPfP() async {
+  //   File uploadedFile = File(imageFile!.path);
+  //   //VAR DATETIME TO miliseconds
+  //   var now = DateTime.now().millisecondsSinceEpoch;
+  //   TaskSnapshot? taskSnapshot =
+  //       await storage.ref("images/profile_pics/$now").putFile(
+  //             uploadedFile,
+  //           );
+
+  //   // try {
+  //   //   // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+  //   // } catch (e) {
+  //   //   debugPrint("UPLOADPFP FUNCTION: $e");
+  //   // }
+
+  //   return taskSnapshot.ref.getDownloadURL();
+  // }
+
   Future<String?> uploadPfP() async {
-    File uploadedFile = File(imageFile!.path);
-    //VAR DATETIME TO miliseconds
-    var now = DateTime.now().millisecondsSinceEpoch;
-    TaskSnapshot? taskSnapshot =
-        await storage.ref("images/profile_pics/$now").putFile(
-              uploadedFile,
-            );
-
-    // try {
-    //   // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-    // } catch (e) {
-    //   debugPrint("UPLOADPFP FUNCTION: $e");
-    // }
-
-    return taskSnapshot.ref.getDownloadURL();
+    try {
+      File? uploadedFile = File(imageFile!.path);
+      //VAR DATETIME TO miliseconds
+      var now = DateTime.now().millisecondsSinceEpoch;
+      TaskSnapshot? taskSnapshot =
+          await storage.ref("images/profile_pics/$now").putFile(
+                uploadedFile,
+              );
+      return taskSnapshot != null
+          ? await taskSnapshot.ref.getDownloadURL()
+          : "";
+    } catch (e) {
+      print("UPLOADPFP FUNCTION!!: $e");
+    }
   }
 
   // Future<String> getDownload() async {
@@ -137,7 +154,7 @@ class _BodyState extends State<Body> {
       },
       decoration: const InputDecoration(
         border: InputBorder.none,
-        hintText: "Enter Display Name",
+        hintText: "Enter Bio",
         // floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
     );
@@ -295,16 +312,28 @@ class _BodyState extends State<Body> {
                         ),
                       ),
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          authProvider.setIsLoading(true);
-                          String? imageUrl = await uploadPfP();
-                          authProvider.updateUser(
-                            displayName: _displayNameController.text ,
-                            bio: _bioController.text,
-                            photoUrl: imageUrl,
-                          );
-                          authProvider.setIsLoading(false);
-                          navigationService.goBack();
+                        try {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              String? value = await uploadPfP();
+                              await authProvider.updateUser(
+                                displayName: _displayNameController.text,
+                                bio: _bioController.text,
+                                photoUrl: value ?? "",
+                              );
+                            } catch (e) {
+                              debugPrint("error in uploadPfP");
+                            }
+                            navigationService.goBack();
+                          } else {
+                            debugPrint("form is not valid");
+                          }
+                        } on FirebaseException catch (e) {
+                          debugPrint("AUTH BUTTON FIREBASE EXCEPTION $e");
+                          // addError(error: kEmailNullError);
+                        } catch (e) {
+                          debugPrint("AUTH BUTTON EXCEPTION $e");
+                          // addError(error: kEmailNullError);
                         }
                       },
                       child: const Text("Save"),

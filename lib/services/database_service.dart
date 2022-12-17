@@ -9,6 +9,8 @@ const String userCollection = 'Users';
 const String userNamesCollection = 'Usernames';
 const String postDoc = 'liked_posts';
 const String chatCollection = 'Chats';
+const String roomsCollection = 'Rooms';
+
 const String messagesCollection = 'Messages';
 
 class DatabaseService {
@@ -16,18 +18,29 @@ class DatabaseService {
   final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
   // var postsRef = FirebaseFirestore.instance.collection(userCollection);
 
-  Future<bool> isDuplicateUniqueName({String? username}) async {
-    var usernameDoc =
-        await _dataBase.collection(userNamesCollection).doc(username).get();
-    return usernameDoc.exists;
+  // Future<bool> isDuplicateUsername(String username) async {
+  //   final QuerySnapshot result = await _dataBase
+  //       .collection(userNamesCollection)
+  //       .where('username', isEqualTo: username)
+  //       .get();
+  //   final List<DocumentSnapshot> documents = result.docs;
+  //   return documents.length == 1;
+  // }
+
+  Future<bool> isDuplicateUsername(String username) async {
+    final result = await _dataBase
+        .collection(userCollection)
+        .where('username', isEqualTo: username)
+        .get();
+    return result.docs.isNotEmpty;
   }
 
   Future addUserInfoToDB(
       {required String uid, required Map<String, dynamic> userInfoMap}) {
     //add username to username collection
-    _dataBase.collection('Usernames').doc(userInfoMap['username']).set({
-      'uid': uid,
-    });
+    // _dataBase.collection('usernames').doc(uid).set({
+    //   'username': userInfoMap['username'],
+    // });
     return _dataBase.collection(userCollection).doc(uid).set(userInfoMap);
   }
 
@@ -226,6 +239,8 @@ class DatabaseService {
   //       .get();
   //   return query.docs.length > 0;
 
+  
+
   Future<List<String>> getLikedPostsArray({required String uid}) async {
     List<String> likeList = [];
 
@@ -237,11 +252,31 @@ class DatabaseService {
     return likeList;
   }
 
+  Future createPick({required String title, required String desc}) {
+    return _dataBase.collection('Picks').add(
+      {
+        'title': title,
+        'desc': desc,
+        'created_at': DateTime.now(),
+      },
+    );
+  }
+
+  //delete pick from firestore
+  Future deletePick({required String id}) {
+    //search pick by index and delete it
+    return _dataBase.collection('Picks').doc(id).delete();
+  }
+
   Future<bool> isPostInLikedArray(
       {required String uid, required Article article}) async {
     List<String> likeList = await getLikedPostsArray(uid: uid);
     bool isLiked = likeList.contains(article.articleUrl);
     return isLiked;
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getAllPicks() async {
+    return await _dataBase.collection('Picks').get();
   }
 
   // Stream<bool> isPostLikedList(

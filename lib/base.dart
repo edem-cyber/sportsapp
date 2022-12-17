@@ -18,7 +18,9 @@ import 'package:sportsapp/screens/picks/picks.dart';
 import 'package:sportsapp/screens/profile/profile.dart';
 import 'package:sportsapp/screens/search/search.dart';
 import 'package:sportsapp/screens/settings/settings.dart';
+import 'package:sportsapp/screens/videos/videos.dart';
 import 'package:sportsapp/widgets/app_dialog.dart';
+// import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class Base extends StatefulWidget {
   static String routeName = "/base";
@@ -31,41 +33,8 @@ class Base extends StatefulWidget {
 
 class _BaseState extends State<Base> {
   final ScrollController scrollController = ScrollController();
-  var _currentIndex = 0;
-
-  // int _selectedIndex = 0;
-  // List<Widget> _widgetOptions = <Widget>[];
-
-  // @override
-  // void initState() {
-  //   _widgetOptions = <Widget>[
-  //     // News(
-  //     //   scrollController: ScrollController(),
-  //     // ),
-  //     Text('Profile'),
-  //   ];
-  // }
-
-  // void _onItemTapped(int index) {
-  //   setState(() {
-  //     _currentIndex = index;
-  //   });
-  //   if (index == 0 && scrollController.hasClients) {
-  //     scrollController.animateTo(
-  //       0,
-  //       duration: const Duration(milliseconds: 500),
-  //       curve: Curves.easeOut,
-  //     );
-  //   }
-
-  //   // if (index == 0 && scrollController.hasClients) {
-  //   //   scrollController.animateTo(
-  //   //     0,
-  //   //     duration: const Duration(milliseconds: 500),
-  //   //     curve: Curves.easeOut,
-  //   //   );
-  //   // }
-  // }
+  //change active page
+  var _currentIndex = 3;
 
   showPage(int index) {
     setState(() {
@@ -119,304 +88,319 @@ class _BaseState extends State<Base> {
     var userDataStream = authProvider.getUserData();
 
     //initialize the size config
-    return WillPopScope(
-      //forbidden swipe in iOS(my ThemeData(platform: TargetPlatform.iOS,)
-      onWillPop: () async {
-        return false;
-      },
-      child: Scaffold(
-        drawer: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.7,
-          child: Drawer(
-            backgroundColor: kBlue,
-            child: SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraint) {
-                  return SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(minHeight: constraint.maxHeight),
-                      child: IntrinsicHeight(
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(
+    return Scaffold(
+      drawer: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.7,
+        child: Drawer(
+          backgroundColor: kBlue,
+          child: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraint) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints:
+                        BoxConstraints(minHeight: constraint.maxHeight),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: <Widget>[
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                              future: userDataStream,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                        ConnectionState.waiting ||
+                                    snapshot.error != null) {
+                                  return Container(
+                                    height: MediaQuery.of(context).size.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    alignment: Alignment.center,
+                                    child: const CupertinoActivityIndicator(),
+                                  );
+                                }
+
+                                if (snapshot.data!.data() == null) {
+                                  return Container(
+                                    height: MediaQuery.of(context).size.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    alignment: Alignment.center,
+                                    child: const CupertinoActivityIndicator(),
+                                  );
+                                }
+
+                                if (snapshot.hasError) {
+                                  return Container(
+                                    height: MediaQuery.of(context).size.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    alignment: Alignment.center,
+                                    child: const CupertinoActivityIndicator(),
+                                  );
+                                }
+
+                                if (snapshot.hasData) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    child: GestureDetector(
+                                      //   navigateFromDrawer(Profile.routeName);
+                                      onTap: () {
+                                        navigateFromDrawer(Profile.routeName);
+                                      },
+                                      child: UserAccountsDrawerHeader(
+                                        // onDetailsPressed: () {
+                                        //   navigateFromDrawer(Profile.routeName);
+                                        // },
+                                        decoration:
+                                            const BoxDecoration(color: kBlue),
+                                        accountName: Text(
+                                          snapshot.data!['displayName'] ??
+                                              'Error',
+                                          style: const TextStyle(
+                                              color: kWhite, fontSize: 12),
+                                        ),
+                                        accountEmail: Column(
+                                          // mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              snapshot.data!['username'],
+                                              style: const TextStyle(
+                                                color: kWhite,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            const Text(
+                                              "5123 Friends",
+                                              style: TextStyle(
+                                                color: kWhite,
+                                                fontSize: 12,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        currentAccountPicture:
+                                            CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          imageUrl: snapshot
+                                                  .data!['photoURL'] ??
+                                              AppImage.defaultProfilePicture2,
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  Container(
+                                            // width: 80.0,
+                                            // height: 80.0,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover),
+                                            ),
+                                          ),
+                                          placeholder: (context, url) =>
+                                              const Center(
+                                            child: CupertinoActivityIndicator(),
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Container(
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  image: AssetImage(AppImage
+                                                      .defaultProfilePicture2),
+                                                  fit: BoxFit.cover),
+                                            ),
+                                          ),
+                                        ),
+                                        // decoration:
+                                        // BoxDecoration(),
+                                        // otherAccountsPictures: [
+                                        //   CircleAvatar(
+                                        //     backgroundImage: NetworkImage(
+                                        //         'https://img.icons8.com/pastel-glyph/2x/user-male.png'),
+                                        //     backgroundColor: Colors.white,
+                                        //   ),
+                                        // ],
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                return const Center(
+                                  child: Text("Error Retrieving Data"),
+                                );
+                              }),
+                          ListTile(
+                            // horizontalTitleGap: 222,
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 35),
+                            dense: true,
+                            leading: SvgPicture.asset("assets/icons/user.svg",
+                                height: 20),
+                            title: const Text(
+                              "Profile",
+                              style: TextStyle(color: kWhite),
+                            ),
+                            onTap: () {
+                              navigateFromDrawer(Profile.routeName);
+                            },
+                          ),
+                          ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 35),
+                            dense: true,
+                            leading: SvgPicture.asset(
+                              "assets/icons/comment.svg",
                               height: 20,
                             ),
-                            FutureBuilder<
-                                    DocumentSnapshot<Map<String, dynamic>>>(
-                                future: userDataStream,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.waiting ||
-                                      snapshot.error != null) {
-                                    return Container(
-                                      height:
-                                          MediaQuery.of(context).size.height,
-                                      width: MediaQuery.of(context).size.width,
-                                      alignment: Alignment.center,
-                                      child: const CupertinoActivityIndicator(),
-                                    );
-                                  }
-
-                                  if (snapshot.hasData) {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 20),
-                                      child: GestureDetector(
-                                        //   navigateFromDrawer(Profile.routeName);
-                                        onTap: () {
-                                          navigateFromDrawer(Profile.routeName);
-                                        },
-                                        child: UserAccountsDrawerHeader(
-                                          // onDetailsPressed: () {
-                                          //   navigateFromDrawer(Profile.routeName);
-                                          // },
-                                          decoration:
-                                              const BoxDecoration(color: kBlue),
-                                          accountName: Text(
-                                            snapshot.data!['display'] ??
-                                                'Error',
-                                            style: const TextStyle(
-                                                color: kWhite, fontSize: 12),
-                                          ),
-                                          accountEmail: Column(
-                                            // mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                snapshot.data!['username'],
-                                                style: const TextStyle(
-                                                  color: kWhite,
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                              const Text(
-                                                "5123 Friends",
-                                                style: TextStyle(
-                                                  color: kWhite,
-                                                  fontSize: 12,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          currentAccountPicture:
-                                              CachedNetworkImage(
-                                            fit: BoxFit.cover,
-                                            imageUrl: snapshot
-                                                    .data!['photoURL'] ??
-                                                AppImage.defaultProfilePicture2,
-                                            imageBuilder:
-                                                (context, imageProvider) =>
-                                                    Container(
-                                              // width: 80.0,
-                                              // height: 80.0,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                            placeholder: (context, url) =>
-                                                const Center(
-                                              child:
-                                                  CupertinoActivityIndicator(),
-                                            ),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(Icons.error),
-                                          ),
-                                          // decoration:
-                                          // BoxDecoration(),
-                                          // otherAccountsPictures: [
-                                          //   CircleAvatar(
-                                          //     backgroundImage: NetworkImage(
-                                          //         'https://img.icons8.com/pastel-glyph/2x/user-male.png'),
-                                          //     backgroundColor: Colors.white,
-                                          //   ),
-                                          // ],
-                                        ),
-                                      ),
-                                    );
-                                  }
-
-                                  return const Center(
-                                    child: Text("Error Retrieving Data"),
-                                  );
-                                }),
-                            ListTile(
-                              // horizontalTitleGap: 222,
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 35),
-                              dense: true,
-                              leading: SvgPicture.asset("assets/icons/user.svg",
-                                  height: 20),
-                              title: const Text(
-                                "Profile",
-                                style: TextStyle(color: kWhite),
-                              ),
-                              onTap: () {
-                                navigateFromDrawer(Profile.routeName);
-                              },
+                            title: const Text(
+                              "Topics",
+                              style: TextStyle(color: kWhite),
                             ),
-                            ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 35),
-                              dense: true,
-                              leading: SvgPicture.asset(
-                                "assets/icons/comment.svg",
-                                height: 20,
-                              ),
-                              title: const Text(
-                                "Topics",
-                                style: TextStyle(color: kWhite),
-                              ),
-                              onTap: () {},
+                            onTap: () {},
+                          ),
+                          ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 35),
+                            dense: true,
+                            leading: SvgPicture.asset(
+                                "assets/icons/settings.svg",
+                                height: 20),
+                            title: const Text(
+                              "Friend Requests",
+                              style: TextStyle(color: kWhite),
                             ),
-                            ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 35),
-                              dense: true,
-                              leading: SvgPicture.asset(
-                                  "assets/icons/settings.svg",
-                                  height: 20),
-                              title: const Text(
-                                "Friend Requests",
-                                style: TextStyle(color: kWhite),
-                              ),
-                              onTap: () {
-                                navigateFromDrawer(FriendsPage.routeName);
-                              },
+                            onTap: () {
+                              navigateFromDrawer(FriendsPage.routeName);
+                            },
+                          ),
+                          ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 35),
+                            dense: true,
+                            leading: SvgPicture.asset("assets/icons/y.svg"),
+                            title: const Text(
+                              "Videos",
+                              style: TextStyle(color: kWhite),
                             ),
-                            ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 35),
-                              dense: true,
-                              leading: SvgPicture.asset("assets/icons/y.svg"),
-                              title: const Text(
-                                "Videos",
-                                style: TextStyle(color: kWhite),
-                              ),
-                              onTap: () {
-                                navigateFromDrawer(SettingsPage.routeName);
-                              },
+                            onTap: () {
+                              navigateFromDrawer(Videos.routeName);
+                            },
+                          ),
+                          ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 35),
+                            dense: true,
+                            leading: SvgPicture.asset(
+                              "assets/icons/bookmark.svg",
+                              height: 20,
                             ),
-                            ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 35),
-                              dense: true,
-                              leading: SvgPicture.asset(
-                                "assets/icons/bookmark.svg",
-                                height: 20,
-                              ),
-                              title: const Text(
-                                "Bookmarks",
-                                style: TextStyle(color: kWhite),
-                              ),
-                              onTap: () {
-                                navigateFromDrawer(Bookmarks.routeName);
-                              },
+                            title: const Text(
+                              "Bookmarks",
+                              style: TextStyle(color: kWhite),
                             ),
-                            ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 35),
-                              dense: true,
-                              leading: SvgPicture.asset(
-                                "assets/icons/x.svg",
-                                height: 20,
-                              ),
-                              title: const Text(
-                                "Settings",
-                                style: TextStyle(color: kWhite),
-                              ),
-                              onTap: () {
-                                navigateFromDrawer(SettingsPage.routeName);
-                              },
+                            onTap: () {
+                              navigateFromDrawer(Bookmarks.routeName);
+                            },
+                          ),
+                          ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 35),
+                            dense: true,
+                            leading: SvgPicture.asset(
+                              "assets/icons/x.svg",
+                              height: 20,
                             ),
-                            const Expanded(child: SizedBox()),
-                            ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 35),
-                              dense: true,
-                              leading: const Icon(
-                                Icons.exit_to_app,
-                                color: kWhite,
-                              ),
-                              title: const Text(
-                                "Logout",
-                                style: TextStyle(color: kWhite),
-                              ),
-                              onTap: () {
-                                confirmDialog(
-                                  context,
-                                  "Are you sure you want to sign out?",
-                                  "Yes",
-                                  "No",
-                                  () {
-                                    authProvider.signOut();
-                                  },
-                                  () {
-                                    _navigationService.goBack();
-                                  },
-                                );
-                              },
-                            )
-                          ],
-                        ),
+                            title: const Text(
+                              "Settings",
+                              style: TextStyle(color: kWhite),
+                            ),
+                            onTap: () {
+                              navigateFromDrawer(SettingsPage.routeName);
+                            },
+                          ),
+                          const Expanded(child: SizedBox()),
+                          ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 35),
+                            dense: true,
+                            leading: const Icon(
+                              Icons.exit_to_app,
+                              color: kWhite,
+                            ),
+                            title: const Text(
+                              "Logout",
+                              style: TextStyle(color: kWhite),
+                            ),
+                            onTap: () {
+                              confirmDialog(
+                                context,
+                                "Are you sure you want to sign out?",
+                                "Yes",
+                                "No",
+                                () {
+                                  authProvider.signOut();
+                                },
+                                () {
+                                  _navigationService.goBack();
+                                },
+                              );
+                            },
+                          )
+                        ],
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ),
-        body: IndexedStack(
-          index: _currentIndex,
-          children: pages.map(
-            (page) {
-              return page['page'] as Widget;
-            },
-          ).toList(),
-        ),
-        bottomNavigationBar: CupertinoTabBar(
-          backgroundColor: kBlue,
-          iconSize: 30,
-          currentIndex: _currentIndex,
-          height: 60,
-          activeColor: kWhite,
-          inactiveColor: kLightBlue,
-          items: pages
-              .map(
-                (page) => BottomNavigationBarItem(
-                  icon: SvgPicture.asset(
-                    page['icon'],
-                    color: kLightBlue,
-                    height: (30),
-                  ),
-                  activeIcon: SvgPicture.asset(
-                    page['icon'],
-                    height: (30),
-                  ),
-                  label: "${page['title']}",
-                ),
-              )
-              .toList(),
-          onTap: (index) {
-            if (kDebugMode) {
-              print("INDEX IS : $index");
-            }
-            setState(() {
-              _currentIndex = index;
-            });
-            // showPage(index);
-          },
-        ),
-        // tabBuilder: (BuildContext context, int index) {
-        //   return pages[index]['page'];
-        // },
       ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: pages.map(
+          (page) {
+            return page['page'] as Widget;
+          },
+        ).toList(),
+      ),
+      bottomNavigationBar: CupertinoTabBar(
+        backgroundColor: kBlue,
+        iconSize: 30,
+        currentIndex: _currentIndex,
+        height: 60,
+        activeColor: kWhite,
+        inactiveColor: kLightBlue,
+        items: pages
+            .map(
+              (page) => BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  page['icon'],
+                  color: kLightBlue,
+                  height: (30),
+                ),
+                activeIcon: SvgPicture.asset(
+                  page['icon'],
+                  height: (30),
+                ),
+                label: "${page['title']}",
+              ),
+            )
+            .toList(),
+        onTap: (index) {
+          if (kDebugMode) {
+            print("INDEX IS : $index");
+          }
+
+          showPage(index);
+          // showPage(index);
+        },
+      ),
+      // tabBuilder: (BuildContext context, int index) {
+      //   return pages[index]['page'];
+      // },
     );
   }
 }

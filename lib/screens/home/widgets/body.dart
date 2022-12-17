@@ -22,10 +22,10 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     // super.build(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final getPosts = authProvider.getPosts().asStream();
-    return StreamBuilder<List<Article>>(
+    final getPosts = authProvider.getPosts();
+    return FutureBuilder<List<Article>>(
       initialData: const [],
-      stream: getPosts,
+      future: getPosts,
       builder: (context, snapshot) {
         return snapshot.hasData
             ? Scrollbar(

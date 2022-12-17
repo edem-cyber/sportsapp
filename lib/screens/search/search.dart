@@ -43,7 +43,7 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                     child: Container(
                       width: 40,
                       height: 40,
-                      color: Colors.white,
+                      color: kWhite,
                     ),
                   );
                 },

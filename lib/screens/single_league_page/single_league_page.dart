@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/screens/search/tabs/for_you.dart';
-import 'package:sportsapp/screens/search/tabs/trending.dart';
 import 'package:sportsapp/screens/single_league_page/tabs/fixtures/fixtures.dart';
 import 'package:sportsapp/screens/single_league_page/tabs/league_table.dart';
-// import 'package:sportsapp/screens/single_league_page/widgets/leaguestats.dart';
-// import 'package:sportsapp/screens/friends_pasge/widgets/body.dart';
 
-class LeaguePage extends StatefulWidget {
+class LeagueDetailsScreen extends StatefulWidget {
   //routename
-  static const routeName = '/league-page';
+  static const routeName = '/single-league-page';
   final String? code;
-  const LeaguePage({Key? key, this.code}) : super(key: key);
+  const LeagueDetailsScreen({Key? key, this.code}) : super(key: key);
 
   @override
-  State<LeaguePage> createState() => _LeaguePageState();
+  State<LeagueDetailsScreen> createState() => _LeaguePageState();
 }
 
-class _LeaguePageState extends State<LeaguePage> with TickerProviderStateMixin {
+class _LeaguePageState extends State<LeagueDetailsScreen>
+    with TickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+    print("CODE: ${widget.code}");
+  }
+
   @override
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<ThemeProvider>(context);
@@ -30,7 +32,10 @@ class _LeaguePageState extends State<LeaguePage> with TickerProviderStateMixin {
       appBar: AppBar(
         elevation: 0,
         automaticallyImplyLeading: true,
-        title: const Text("Premier League"),
+        title: const Text(
+          'League Details',
+        ),
+        
         // actions: [
         // SvgPicture.asset(
         //   "assets/icons/settings.svg",
@@ -44,7 +49,6 @@ class _LeaguePageState extends State<LeaguePage> with TickerProviderStateMixin {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(kTextTabBarHeight),
           child: Container(
-            // height: 0,
             padding: const EdgeInsets.only(left: 25, bottom: 0),
             width: MediaQuery.of(context).size.width,
             child: TabBar(

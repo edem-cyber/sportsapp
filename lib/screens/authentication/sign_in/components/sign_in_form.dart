@@ -151,32 +151,16 @@ class _SignFormState extends State<SignForm> {
             press: () {
               try {
                 if (_formKey.currentState!.validate()) {
-                  print(authProvider.isLoading);
                   authProvider.signIn(
                     _emailController.text,
                     _passwordController.text,
                   );
-                  // .then((value) => authProvider.setIsLoading(false));
-                  print("second print ${authProvider.isLoading}");
-
-                  //if mounted
-                  // if (!mounted) return;
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //     builder: (_) => const Base(), fullscreenDialog: true));
                 }
               } catch (e) {
                 debugPrint("Auth Button Error: $e");
               }
             },
           ),
-          // ElevatedButton(
-          //     onPressed: () {
-          //       appNotification(
-          //           title: "User is: ${authProvider.user?.email ?? "No User"}",
-          //           message: " message",
-          //           icon: const Icon(Icons.abc));
-          //     },
-          //     child: const Text("test")),
           const SizedBox(height: 10),
           NoAccountText(
             text: "I don’t have an account",

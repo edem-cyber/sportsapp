@@ -34,6 +34,7 @@ class EditProfile extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
+              
               navigationService.goBack();
             },
             child: Text(

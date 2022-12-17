@@ -39,7 +39,7 @@ final Map<String, WidgetBuilder> routes = {
   CommentsPage.routeName: (context) => const CommentsPage(),
   AuthWrapper.routeName: (context) => const AuthWrapper(),
   MatchNewsPage.routeName: (context) => const MatchNewsPage(),
-  LeaguePage.routeName: (context) => const LeaguePage(),
+  LeagueDetailsScreen.routeName: (context) => const LeagueDetailsScreen(),
   PrivacyPolicy.routeName: (context) => const PrivacyPolicy(),
   Bookmarks.routeName: (context) => const Bookmarks()
 };

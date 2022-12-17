@@ -82,7 +82,7 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
                 return Column(
                   children: [
                     Text(
-                      snapshot.data!['display'],
+                      snapshot.data!['displayName'],
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Text(snapshot.data!['username'],

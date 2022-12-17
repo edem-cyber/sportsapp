@@ -124,3 +124,22 @@ AppBarTheme darkAppBarTheme() {
     ).headline6,
   );
 }
+
+//list of league codes for the api
+List<String> leagueCodes = [
+  'PL',
+  'BL1',
+  'SA',
+  // 'PD',
+  // 'FL1',
+  // 'DED',
+  'CL',
+  'WC',
+  // 'EC',
+  'EL1',
+  'ELC',
+  'PD',
+  'SD',
+  'CDR'
+  // 'PPL',
+];
