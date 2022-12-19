@@ -79,6 +79,7 @@ class _NewsTileState extends State<NewsTile> {
         },
       },
     ];
+
     var themeprovider = Provider.of<ThemeProvider>(context, listen: false);
     var _navigationService =
         Provider.of<NavigationService>(context, listen: false);

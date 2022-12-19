@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
+import 'package:sportsapp/providers/LeaguesProvider.dart';
 // import 'package:sportsapp/helper/constants.dart';
 
 class LeagueTable extends StatefulWidget {
@@ -32,6 +34,12 @@ class _LeagueTableState extends State<LeagueTable>
     setState(() {
       _table = table;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getTable();
   }
 
   Widget buildTable() {
@@ -111,12 +119,6 @@ class _LeagueTableState extends State<LeagueTable>
     return Column(
       children: teams,
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getTable();
   }
 
   @override

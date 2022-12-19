@@ -30,11 +30,12 @@ class _LeagueScreenState extends State<LeagueScreen>
   var token = "be1eb21948af4c8fa080ee214406c4be";
 
   Future<List<League>> getallleagues() async {
-    // List<League> leagues = [];
     List<League> leaguesList = [];
     http.Response response = await http.get(
       Uri.parse('http://api.football-data.org/v4/competitions'),
-      headers: {"X-Auth-Token": token},
+      headers: {
+        "X-Auth-Token": token,
+      },
     );
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
@@ -147,7 +148,6 @@ class _LeagueScreenState extends State<LeagueScreen>
                 if (leagueCodes.contains(snapshot.data![index].code)) {
                   return ListTile(
                     minVerticalPadding: 30,
-
                     title: Text(
                       snapshot.data![index].name!,
                       style: Theme.of(context).textTheme.bodyLarge,

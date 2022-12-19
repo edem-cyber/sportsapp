@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sportsapp/screens/videos/widgets/body.dart';
 
-
 class Videos extends StatelessWidget {
-  //routename
   static const routeName = '/videos';
   const Videos({Key? key}) : super(key: key);
 

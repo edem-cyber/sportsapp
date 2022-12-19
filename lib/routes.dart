@@ -16,6 +16,7 @@ import 'package:sportsapp/screens/profile/profile.dart';
 import 'package:sportsapp/screens/settings/settings.dart';
 import 'package:sportsapp/screens/single_league_page/single_league_page.dart';
 import 'package:sportsapp/screens/splash/splash_screen.dart';
+import 'package:sportsapp/screens/videos/videos.dart';
 import 'package:sportsapp/screens/welcome/welcome.dart';
 
 //declare all named routes here
@@ -41,5 +42,6 @@ final Map<String, WidgetBuilder> routes = {
   MatchNewsPage.routeName: (context) => const MatchNewsPage(),
   LeagueDetailsScreen.routeName: (context) => const LeagueDetailsScreen(),
   PrivacyPolicy.routeName: (context) => const PrivacyPolicy(),
-  Bookmarks.routeName: (context) => const Bookmarks()
+  Bookmarks.routeName: (context) => const Bookmarks(),
+  Videos.routeName: (context) => const Videos()
 };

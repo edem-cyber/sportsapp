@@ -35,7 +35,6 @@ class _LeaguePageState extends State<LeagueDetailsScreen>
         title: const Text(
           'League Details',
         ),
-        
         // actions: [
         // SvgPicture.asset(
         //   "assets/icons/settings.svg",
