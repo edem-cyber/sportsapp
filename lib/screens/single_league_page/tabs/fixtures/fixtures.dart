@@ -86,8 +86,8 @@ class _FixturesTabState extends State<FixturesTab> {
                 itemBuilder: (context, index) {
                   var match = snapshot.data!['matches'][index];
                   return SingleMatch(
-                    homeTeam: match['homeTeam']['tla'].toString(),
-                    awayTeam: match['awayTeam']['tla'].toString(),
+                    homeTeam: match['homeTeam']['name'].toString(),
+                    awayTeam: match['awayTeam']['name'].toString(),
                     matchday: match['matchday'],
                     utcDate: match['utcDate'].toString(),
                     homeLogo: leaguesProvider.removeOuterStyleTags(
@@ -96,6 +96,14 @@ class _FixturesTabState extends State<FixturesTab> {
                         match['awayTeam']['crest'].toString()),
                   );
                 },
+              );
+            } else if (snapshot.hasError ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: Text(
+                  "Error: ${snapshot.error}",
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               );
             } else {
               return const Center(
