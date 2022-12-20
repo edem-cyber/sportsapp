@@ -14,7 +14,7 @@ class LeaguesProvider with ChangeNotifier {
   final List<League> _leagues = [];
   final List<League> _leaguesByCountry = [];
 
-    // var token = "9b317099a8914002994c7d2ffbd43c7f";
+  // var token = "9b317099a8914002994c7d2ffbd43c7f";
   var token = "be1eb21948af4c8fa080ee214406c4be";
 
   List<League> get leagues => [..._leagues];
@@ -88,6 +88,16 @@ class LeaguesProvider with ChangeNotifier {
 
   //   return result["competitions"];
   // }
+
+  String removeOuterStyleTags(String html) {
+    // Use a regular expression to find all style tags
+    RegExp exp = RegExp(r"<style[^>]*>[\s\S]*?</style>");
+
+    // Replace all style tags with an empty string
+    html = html.replaceAll(exp, '');
+
+    return html;
+  }
 
   //fetch league standings from football-data api
   Future<List<League>> fetchLeagueStandings(String code, int season) async {

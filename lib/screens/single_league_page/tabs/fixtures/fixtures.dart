@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Match.dart';
+import 'package:sportsapp/providers/LeaguesProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 //import http package
 import 'package:http/http.dart' as http;
@@ -51,9 +52,9 @@ class _FixturesTabState extends State<FixturesTab> {
 
     // print("EXTRACTED MATCHES: ${extractedMatches[0].homeTeam!.name}");
     // print("EXTRACTED MATCHES: ${extractedMatches[0].homeTeam}");
-    print("DATA: ${data["matches"][0]["matchday"]}");
+    print("DATA: ${data["matches"]}");
     //print tla of home team
-    print("DATA IMG: ${data["matches"][0]["homeTeam"]["tla"]}");
+    print("DATA IMG: ${data["matches"][0]["homeTeam"].name}");
 
     // print(x.keys);
     // for (var i in y) {
@@ -72,6 +73,7 @@ class _FixturesTabState extends State<FixturesTab> {
 
   @override
   Widget build(BuildContext context) {
+    var leaguesProvider = Provider.of<LeaguesProvider>(context);
     return Container(
       height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
@@ -84,12 +86,14 @@ class _FixturesTabState extends State<FixturesTab> {
                 itemBuilder: (context, index) {
                   var match = snapshot.data!['matches'][index];
                   return SingleMatch(
-                    homeTeam: match['homeTeam']['name'].toString(),
-                    awayTeam: match['awayTeam']['name'].toString(),
+                    homeTeam: match['homeTeam']['tla'].toString(),
+                    awayTeam: match['awayTeam']['tla'].toString(),
                     matchday: match['matchday'],
                     utcDate: match['utcDate'].toString(),
-                    homeLogo: match['homeTeam']['crest'].toString(),
-                    awayLogo: match['awayTeam']['crest'].toString(),
+                    homeLogo: leaguesProvider.removeOuterStyleTags(
+                        match['homeTeam']['crest'].toString()),
+                    awayLogo: leaguesProvider.removeOuterStyleTags(
+                        match['awayTeam']['crest'].toString()),
                   );
                 },
               );
@@ -163,18 +167,20 @@ class SingleMatch extends StatelessWidget {
         const SizedBox(
           width: 10,
         ),
-        Text(
-          // regex to remove time from date
-          //
-
-          parseMyDate(utcDate ?? ""),
-          style: themeProvider.isDarkMode
-              ? Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: kWhite,
-                  )
-              : Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: kBlack,
-                  ),
+        Container(
+          width: 60,
+          child: Text(
+            // regex to remove time from date
+            //
+            parseMyDate(utcDate ?? ""),
+            style: themeProvider.isDarkMode
+                ? Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: kWhite,
+                    )
+                : Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: kBlack,
+                    ),
+          ),
         ),
         const SizedBox(
           width: 10,
