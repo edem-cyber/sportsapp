@@ -23,6 +23,11 @@ class _LeaguePageState extends State<LeagueDetailsScreen>
     print("CODE: ${widget.code}");
   }
 
+  final ScrollController scrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
+
   @override
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<ThemeProvider>(context);
@@ -92,6 +97,7 @@ class _LeaguePageState extends State<LeagueDetailsScreen>
                     code: widget.code ?? '',
                   ),
                   FixturesTab(
+                    scrollController: scrollController,
                     // code: '',
                     code: widget.code ?? '',
                   ),

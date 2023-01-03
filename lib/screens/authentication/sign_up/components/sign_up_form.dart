@@ -7,7 +7,6 @@ import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/authentication/auth_button.dart';
-import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/widgets/form_error.dart';
 
 class SignUpForm extends StatefulWidget {

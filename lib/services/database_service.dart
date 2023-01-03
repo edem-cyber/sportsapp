@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sportsapp/models/Post.dart';
+import 'package:sportsapp/models/Reply.dart';
 
 // Models
 
@@ -37,25 +38,29 @@ class DatabaseService {
 
   Future addUserInfoToDB(
       {required String uid, required Map<String, dynamic> userInfoMap}) {
-    //add username to username collection
-    // _dataBase.collection('usernames').doc(uid).set({
-    //   'username': userInfoMap['username'],
-    // });
     return _dataBase.collection(userCollection).doc(uid).set(userInfoMap);
   }
 
-  //search username in username collection
-
-  //check if username is in username collection in firebase
-  // Future<bool> isUsernameInDB({String? username}) async {
-  //   QuerySnapshot query = await _dataBase
-  //       .collection("Usernames")
-  //       .where('username', isEqualTo: username)
-  //       .get();
-  //   return query.docs.isNotEmpty;
+  // void addReply(Reply reply) {
+  //   _dataBase.collection('replies').add(
+  //     {
+  //       'text': reply.text,
+  //       'author': reply.author,
+  //       'timestamp': reply.timestamp,
+  //       'postId': reply.postId,
+  //     },
+  //   );
   // }
 
-  //firestore function to add to likes
+  Future<void> addReply(Reply reply) async {
+    await _dataBase
+        .collection('Picks')
+        .doc(
+          reply.postId.toString(),
+        )
+        .collection('replies')
+        .add(reply.toJson());
+  }
 
   //Update User
   Future<void> updateUser(
@@ -239,8 +244,6 @@ class DatabaseService {
   //       .get();
   //   return query.docs.length > 0;
 
-  
-
   Future<List<String>> getLikedPostsArray({required String uid}) async {
     List<String> likeList = [];
 
@@ -278,6 +281,8 @@ class DatabaseService {
   Future<QuerySnapshot<Map<String, dynamic>>> getAllPicks() async {
     return await _dataBase.collection('Picks').get();
   }
+
+  //function to
 
   // Stream<bool> isPostLikedList(
   //     {required String uid, required Article article}) {
@@ -352,6 +357,10 @@ class DatabaseService {
         .catchError(
           (error) => print("Failed to remove liked post: $error"),
         );
+  }
+
+  sendPost({required String message, required String uid}) {
+    // _dataBase.collection("posts").doc()
   }
 
   // Future<bool> toggleLikedPost(

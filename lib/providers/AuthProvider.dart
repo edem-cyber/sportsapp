@@ -9,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sportsapp/base.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
+import 'package:sportsapp/models/Reply.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
@@ -581,6 +582,39 @@ class AuthProvider with ChangeNotifier {
 
   Future<QuerySnapshot<Map<String, dynamic>>> getAllPicks() {
     return _databaseService.getAllPicks();
+  }
+
+  sendMessage(
+    String message,
+  ) {
+    _databaseService.sendPost(
+      message: message,
+      uid: _auth.currentUser!.uid,
+    );
+  }
+
+  //add reply based on uid
+  addReply(Reply reply) {
+    _databaseService.addReply(reply);
+  }
+
+  Future<List<Reply>> getRepliesFromSingleDoc(String pickId) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('Picks')
+        .doc(pickId)
+        .collection('replies')
+        .get();
+
+    List<Reply> replies = [];
+    for (var doc in snapshot.docs) {
+      //convert to map string dynamic
+      // var data = doc.data();
+
+      replies.add(
+        Reply.fromJson(doc.data() as Map<String, dynamic>),
+      );
+    }
+    return replies;
   }
 
   // isPostLiked(String posturl) {

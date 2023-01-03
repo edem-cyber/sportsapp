@@ -33,73 +33,82 @@ class _BodyState extends State<Body> {
 
     // final postModel = Provider.of<DataClass>(context);
     return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        future: getAllPicks,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CupertinoActivityIndicator());
-          }
-          if (snapshot.hasError ||
-              !snapshot.hasData ||
-              snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text("No Picks"));
-          }
-
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Dismissible(
-                  dismissThresholds: const {
-                    DismissDirection.startToEnd: 0.8,
-                    DismissDirection.endToStart: 0.2,
-                  },
-                  key: UniqueKey(),
-                  confirmDismiss: (direction) {
-                    return showDialog(
-                        context: context,
-                        builder: (BuildContext context) => CupertinoAlertDialog(
-                              title: const Text("Confirm"),
-                              content: const Text("Delete this Pick?"),
-                              actions: <Widget>[
-                                CupertinoDialogAction(
-                                  onPressed: () {
-                                    setState(() {
-                                      authProvider.deletePick(
-                                          id: snapshot.data!.docs[index].id);
-                                    });
-                                    navigationService.goBack();
-                                  },
-                                  child: const Text("Confirm"),
-                                ),
-                                CupertinoDialogAction(
-                                  onPressed: () {
-                                    navigationService.goBack();
-                                    return;
-                                  },
-                                  child: const Text("Cancel"),
-                                )
-                              ],
-                            ));
-                  },
-                  background: Container(
-                    color: kWarning,
-                    child: const Icon(Icons.delete),
-                  ),
-                  child: Room(
-                      onTap: () {
-                        navigationService.nagivateRoute(CommentsPage.routeName);
-                      },
-                      desc: snapshot.data!.docs[index]['desc'],
-                      title: snapshot.data!.docs[index]['title'],
-                      comments: "$index",
-                      likes: "$index",
-                      isRead: true),
-                );
-              },
-            );
-          }
-
+      future: getAllPicks,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CupertinoActivityIndicator());
-        });
+        }
+        if (snapshot.hasError ||
+            !snapshot.hasData ||
+            snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text("No Picks"));
+        }
+
+        if (snapshot.hasData) {
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Dismissible(
+                dismissThresholds: const {
+                  DismissDirection.startToEnd: 0.8,
+                  DismissDirection.endToStart: 0.2,
+                },
+                key: UniqueKey(),
+                confirmDismiss: (direction) {
+                  return showDialog(
+                      context: context,
+                      builder: (BuildContext context) => CupertinoAlertDialog(
+                            title: const Text("Confirm"),
+                            content: const Text("Delete this Pick?"),
+                            actions: <Widget>[
+                              CupertinoDialogAction(
+                                onPressed: () {
+                                  setState(() {
+                                    authProvider.deletePick(
+                                        id: snapshot.data!.docs[index].id);
+                                  });
+                                  navigationService.goBack();
+                                },
+                                child: const Text("Confirm"),
+                              ),
+                              CupertinoDialogAction(
+                                onPressed: () {
+                                  navigationService.goBack();
+                                  return;
+                                },
+                                child: const Text("Cancel"),
+                              )
+                            ],
+                          ));
+                },
+                background: Container(
+                  color: kWarning,
+                  child: const Icon(Icons.delete),
+                ),
+                child: Room(
+                    onTap: () {
+                      // navigationService.nagivateRoute(CommentsPage.routeName);
+                      //navigate using material page route
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => CommentsPage(
+                          id: snapshot.data!.docs[index].id,
+                        ),
+                      ));
+                    },
+                    desc: snapshot.data!.docs[index]['desc'],
+                    title: snapshot.data!.docs[index]['title'],
+                    comments: "$index",
+                    likes: "$index",
+                    isRead: true),
+              );
+            },
+          );
+        }
+
+        return const Center(
+          child: CupertinoActivityIndicator(),
+        );
+      },
+    );
   }
 }
