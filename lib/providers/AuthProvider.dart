@@ -11,6 +11,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/models/Reply.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
+import 'package:sportsapp/screens/picks/picks.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/notification.dart';
@@ -444,7 +445,7 @@ class AuthProvider with ChangeNotifier {
     Uri url = Uri.parse(
         "https://newsapi.org/v2/top-headlines?category=sports&q=football&language=en&apiKey=$apiKey");
     var response = await http.get(url);
-    print("RESPONSE STATUS: ${response.statusCode}");
+    // print("RESPONSE STATUS: ${response.statusCode}");
     // print("RESPONSE BODY: ${response.body}");
 
     var jsonData = jsonDecode(response.body);
@@ -513,7 +514,7 @@ class AuthProvider with ChangeNotifier {
         uid: _auth.currentUser!.uid, postUrl: articleUrl);
   }
 
-  Future<bool> isPostInLikedArray(Article article) {
+  Future<bool> isPostInLikedArray(Article article) async {
     return _databaseService.isPostInLikedArray(
         uid: _auth.currentUser!.uid, article: article);
   }
@@ -589,13 +590,14 @@ class AuthProvider with ChangeNotifier {
   ) {
     _databaseService.sendPost(
       message: message,
-      uid: _auth.currentUser!.uid,
+      id: Timestamp.now().toString(),
+      photoURL: _auth.currentUser!.photoURL ?? "",
     );
   }
 
   //add reply based on uid
-  addReply(Reply reply) {
-    _databaseService.addReply(reply);
+  addReply(Reply reply, String pickId) {
+    _databaseService.addReply(reply, pickId);
   }
 
   Future<List<Reply>> getRepliesFromSingleDoc(String pickId) async {
@@ -615,6 +617,12 @@ class AuthProvider with ChangeNotifier {
       );
     }
     return replies;
+  }
+
+  Future<Map<String, dynamic>?> getSinglePick({
+    required String id,
+  }) {
+    return _databaseService.getSinglePick(id: id);
   }
 
   // isPostLiked(String posturl) {

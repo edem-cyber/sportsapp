@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/models/Reply.dart';
+import 'package:sportsapp/screens/picks/picks.dart';
 
 // Models
 
@@ -17,16 +18,6 @@ const String messagesCollection = 'Messages';
 class DatabaseService {
   DatabaseService();
   final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
-  // var postsRef = FirebaseFirestore.instance.collection(userCollection);
-
-  // Future<bool> isDuplicateUsername(String username) async {
-  //   final QuerySnapshot result = await _dataBase
-  //       .collection(userNamesCollection)
-  //       .where('username', isEqualTo: username)
-  //       .get();
-  //   final List<DocumentSnapshot> documents = result.docs;
-  //   return documents.length == 1;
-  // }
 
   Future<bool> isDuplicateUsername(String username) async {
     final result = await _dataBase
@@ -41,25 +32,16 @@ class DatabaseService {
     return _dataBase.collection(userCollection).doc(uid).set(userInfoMap);
   }
 
-  // void addReply(Reply reply) {
-  //   _dataBase.collection('replies').add(
-  //     {
-  //       'text': reply.text,
-  //       'author': reply.author,
-  //       'timestamp': reply.timestamp,
-  //       'postId': reply.postId,
-  //     },
-  //   );
-  // }
-
-  Future<void> addReply(Reply reply) async {
+  Future<void> addReply(Reply reply, doc) async {
     await _dataBase
         .collection('Picks')
         .doc(
-          reply.postId.toString(),
+          doc,
         )
         .collection('replies')
-        .add(reply.toJson());
+        .add(
+          reply.toJson(),
+        );
   }
 
   //Update User
@@ -271,11 +253,21 @@ class DatabaseService {
     return _dataBase.collection('Picks').doc(id).delete();
   }
 
+  // Stream<bool> isPostInLikedArray(
+  //     {required String uid, required Article article})  {
+  //   List<String> likeList = await getLikedPostsArray(uid: uid);
+  //   bool isLiked = likeList.contains(article.articleUrl);
+  //   return isLiked;
+  // }
+
+  //stream is post in liked array
   Future<bool> isPostInLikedArray(
       {required String uid, required Article article}) async {
-    List<String> likeList = await getLikedPostsArray(uid: uid);
-    bool isLiked = likeList.contains(article.articleUrl);
-    return isLiked;
+    return _dataBase.collection(userCollection).doc(uid).get().then((value) {
+      List<String> likeList = List.from(value.data()![postDoc]);
+      bool isLiked = likeList.contains(article.articleUrl);
+      return isLiked;
+    });
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getAllPicks() async {
@@ -359,8 +351,27 @@ class DatabaseService {
         );
   }
 
-  sendPost({required String message, required String uid}) {
-    // _dataBase.collection("posts").doc()
+  sendPost(
+      {required String message, required String id, required String photoURL}) {
+    _dataBase
+        .collection("Picks")
+        .doc(
+          id,
+        )
+        .set(
+      {
+        "message": message,
+        "photoURL": photoURL,
+        "created_at": DateTime.now(),
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>?> getSinglePick({required String id}) async {
+    var pick = _dataBase.collection('Picks').doc(id).get();
+    // return pick.then((value) => value.data() as Map<String, String>);
+    var pickData = await pick;
+    return pickData.data();
   }
 
   // Future<bool> toggleLikedPost(

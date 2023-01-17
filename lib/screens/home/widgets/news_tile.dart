@@ -236,8 +236,8 @@ class _NewsTileState extends State<NewsTile> {
                       widget.isLiked = !widget.isLiked;
                     });
                   },
-                  child: StreamBuilder<bool>(
-                    stream: getIsLiked.asStream(),
+                  child: FutureBuilder<bool>(
+                    future: getIsLiked,
                     initialData: widget.isLiked,
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (snapshot.connectionState == ConnectionState.active ||
@@ -252,6 +252,9 @@ class _NewsTileState extends State<NewsTile> {
                                   ? Colors.blue
                                   : Colors.black,
                         );
+                      } else if (snapshot.hasError) {
+                        return const Icon(Icons.favorite_border,
+                            color: Colors.blue);
                       }
                       return const Icon(Icons.favorite_border,
                           color: Colors.blue);

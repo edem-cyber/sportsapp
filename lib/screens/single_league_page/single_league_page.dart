@@ -23,14 +23,20 @@ class _LeaguePageState extends State<LeagueDetailsScreen>
     print("CODE: ${widget.code}");
   }
 
-  final ScrollController scrollController = ScrollController(
-    initialScrollOffset: 0.0,
-    keepScrollOffset: true,
-  );
+  // scrollcontext parameter
+
+  // var scrollPosition = ScrollPositionWithSingleContext(
+  //   // context: ScrollContext(),
+  //   initialPixels: 0.0,
+  //   keepScrollOffset: true,
+  //   physics: const ClampingScrollPhysics(),
+  //   context: ,
+  // );
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    var themeProvider = Provider.of<ThemeProvider>(context);
+    // var themeProvider = Provider.of<ThemeProvider>(context);
     TabController tabController = TabController(length: 2, vsync: this);
 
     return Scaffold(
@@ -65,8 +71,8 @@ class _LeaguePageState extends State<LeagueDetailsScreen>
                 ),
               ],
               splashFactory: NoSplash.splashFactory,
-              labelColor: themeProvider.isDarkMode ? kWhite : kBlack,
-              unselectedLabelColor: themeProvider.isDarkMode ? kWhite : kBlack,
+              labelColor: kBlue,
+              unselectedLabelColor: kBlack,
               indicatorColor: kBlue,
               indicatorSize: TabBarIndicatorSize.tab,
               indicatorWeight: 3,
@@ -80,9 +86,6 @@ class _LeaguePageState extends State<LeagueDetailsScreen>
           ),
         ),
       ),
-      // body: Body(
-      //   tabController: tabController,
-      // ),
       body: SafeArea(
         child: Column(
           children: [

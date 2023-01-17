@@ -36,8 +36,8 @@ class _BodyState extends State<Body> {
             height: 20,
           ),
           //show list of bookmarks from firebase
-          StreamBuilder<List<String>>(
-            stream: getLikedPostsArray.asStream(),
+          FutureBuilder<List<String>>(
+            future: getLikedPostsArray,
             builder:
                 (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
               //if the list is empty

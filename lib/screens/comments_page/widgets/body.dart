@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Reply.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/comments_page/widgets/comment.dart';
 // import 'package:sticky_headers/sticky_headers.dart';
 
@@ -22,27 +21,67 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
+    //SCROLLCONTROLLER
+    ScrollController _scrollController = ScrollController();
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
-    //textcontroller
     TextEditingController textController = TextEditingController();
     final GlobalKey<FormState> chatMessageKey = GlobalKey<FormState>();
 
-    Future<List<Reply>> getRepliesFromSingleDoc(String pickId) async {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
+    // Future<List<Reply>> getRepliesFromSingleDoc(String pickId) async {
+    //   QuerySnapshot snapshot = await FirebaseFirestore.instance
+    //       .collection('Picks')
+    //       .doc(pickId)
+    //       .collection('replies')
+    //       .orderBy('timestamp', descending: false)
+    //       .get();
+
+    //   //convert to string and print
+    //   List<Reply> replies = snapshot.docs
+    //       .map(
+    //         (e) => Reply.fromJson(e.data() as Map<String, dynamic>),
+    //       )
+    //       .toList();
+
+    //   debugPrint("replies: ${replies}");
+    //   return replies;
+    // }
+
+    //stream to get Pick heading
+    // Stream<Map<String, dynamic>> getPickHeadingAndDescription(
+    //     String pickId) async* {
+    //   yield* FirebaseFirestore.instance
+    //       .collection('Picks')
+    //       .doc(pickId)
+    //       .snapshots()
+    //       .map(
+    //     (snapshot) {
+    //       print("snapshot: ${snapshot.data()}");
+    //       return snapshot.data() ?? {};
+    //     },
+    //   );
+    // }
+
+    //stream to get replies from firebase
+    Stream<List<Reply>> getRepliesFromSingleDoc(String pickId) async* {
+      yield* FirebaseFirestore.instance
           .collection('Picks')
           .doc(pickId)
           .collection('replies')
-          .get();
+          .orderBy('timestamp', descending: false)
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map(
+                (e) => Reply.fromJson(e.data()),
+              )
+              .toList());
+    }
 
-      //convert to string and print
-      List<Reply> replies = snapshot.docs
-          .map(
-            (e) => Reply.fromJson(e.data() as Map<String, dynamic>),
-          )
-          .toList();
-
-      debugPrint("replies: ${replies}");
-      return replies;
+    void _scrollDown() {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(seconds: 2),
+        curve: Curves.fastOutSlowIn,
+      );
     }
 
     return SafeArea(
@@ -52,69 +91,87 @@ class _BodyState extends State<Body> {
           Container(
             padding: const EdgeInsets.only(bottom: 70),
             // color: kBlack,
-            child: FutureBuilder<List<Reply>>(
-                future: getRepliesFromSingleDoc(widget.id!),
-                builder: (context, snapshot) {
-                  return ListView(
-                    physics: const ClampingScrollPhysics(),
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          await getRepliesFromSingleDoc(widget.id!);
-                        },
-                        child: MyHeader(
-                          heading: "Messi leaves Barcelona",
-                          text:
-                              "Father, husband & music. Going thru bariatric. Boston U & St Edward grad Browns Cavs Guardian Penguins. Father, husband & music. Going thru bariatric. Boston U & St Edward grad Browns Cavs Guardian Penguins. Father, husband & music. Going thru bariatric. Boston U & St Edward grad Browns Cavs Guardian Penguins. Father, husband & music. Going thru bariatric. Boston U & St Edward grad Browns Cavs Guardian Penguins. Cavs Guardian Penguins. Father, husband & music. Going thru bariatric. Boston U & St Edward grad Browns Cavs Guardian ",
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
-                          "Comments & Replies",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: ListView.separated(
-                          physics: const NeverScrollableScrollPhysics(),
-                          separatorBuilder: (BuildContext context, int index) {
-                            return Container(
-                              padding: const EdgeInsets.only(left: 10),
-                              alignment: Alignment.centerLeft,
-                              height: 50,
-                              child: const VerticalDivider(
-                                color: kGrey,
-                              ),
-                            );
+            child: StreamBuilder<List<Reply>>(
+              stream: getRepliesFromSingleDoc(widget.id!),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                      child: CupertinoActivityIndicator(color: kBlack));
+                } else if (snapshot.hasData) {
+                  return Scrollbar(
+                    isAlwaysShown: true,
+                    controller: _scrollController,
+                    child: ListView(
+                      physics: const ClampingScrollPhysics(),
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // pick heading and description
                           },
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Comment(
-                              image: authProvider.user!.photoURL!,
-                              text: snapshot.data![index].text ??
-                                  "Error loading text",
-                            );
-                          },
+                          child: FutureBuilder<Map<String, dynamic>?>(
+                            future: authProvider.getSinglePick(id: widget.id!),
+                            builder: (context, snapshot) {
+                              return MyHeader(
+                                heading: snapshot.data!['title'],
+                                text: snapshot.data!['desc'],
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height / 4,
-                      ),
-                    ],
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            "Comments & Replies",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: ListView.separated(
+                            physics: const NeverScrollableScrollPhysics(),
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return Container(
+                                padding: const EdgeInsets.only(left: 10),
+                                alignment: Alignment.centerLeft,
+                                height: 50,
+                                child: const VerticalDivider(
+                                  color: kGrey,
+                                ),
+                              );
+                            },
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Comment(
+                                image: authProvider.user!.photoURL!,
+                                text: snapshot.data![index].text ??
+                                    "Error loading text",
+                              );
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height / 4,
+                        ),
+                      ],
+                    ),
                   );
-                }),
+                }
+                return const Center(
+                  child: CupertinoActivityIndicator(),
+                );
+              },
+            ),
           ),
           Positioned(
               left: 0,
@@ -145,14 +202,16 @@ class _BodyState extends State<Body> {
                       child: Theme(
                         data: ThemeData(
                           textSelectionTheme: const TextSelectionThemeData(
-                              selectionColor: kLightBlue),
+                            selectionColor: kLightBlue,
+                          ),
                         ),
                         child: Form(
                           key: chatMessageKey,
                           child: TextFormField(
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "Please enter a message";
+                                // return "Please enter a message";
+                                return;
                               }
                               return null;
                             },
@@ -186,11 +245,13 @@ class _BodyState extends State<Body> {
                             Reply(
                               text: message,
                               timestamp: Timestamp.now().toString(),
-                              author: authProvider.user!.email,
-                              postId: Timestamp.now().toString(),
+                              author: authProvider.user!.photoURL,
+                              // postId: widget.id,
                             ),
+                            widget.id!,
                           );
                           textController.clear();
+                          _scrollDown();
                         }
                       },
                       child: Container(
@@ -242,7 +303,10 @@ class MyHeader extends StatelessWidget {
               bottom: Radius.circular(40),
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 20,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
@@ -14,6 +15,8 @@ import 'package:sportsapp/providers/ThemeProvider.dart';
 //import http package
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:sportsapp/screens/single_league_page/tabs/fixtures/widgets/single_match.dart';
 
 class FixturesTab extends StatefulWidget {
   final String? code;
@@ -92,7 +95,6 @@ class _FixturesTabState extends State<FixturesTab>
         ));
       }
 
-      //print crest of
       return fixtures;
     } else {
       print("ERROR: ${response.statusCode}");
@@ -123,6 +125,7 @@ class _FixturesTabState extends State<FixturesTab>
             thumbVisibility: true,
             interactive: true,
             child: ListView.builder(
+              controller: widget.scrollController,
               physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
               itemCount: fixtures.length,
@@ -141,6 +144,7 @@ class _FixturesTabState extends State<FixturesTab>
                           child: Text("Matchday ${fixture.matchday}",
                               style: Theme.of(context).textTheme.headline6!),
                         ),
+                      // else if (fixture.matchday == null)
                       SingleMatch(
                         homeTeam: fixture.homeTeamTla,
                         awayTeam: fixture.awayTeamTla,
@@ -156,131 +160,13 @@ class _FixturesTabState extends State<FixturesTab>
             ),
           );
         } else if (snapshot.hasError || snapshot.data == null) {
-          return Text('${snapshot.error}');
+          return const Center(child: CupertinoActivityIndicator());
         }
-        return const Center(child: CircularProgressIndicator());
+        return const Center(child: CupertinoActivityIndicator());
       },
     );
   }
 
   @override
   bool get wantKeepAlive => true;
-}
-
-class SingleMatch extends StatelessWidget {
-  final String? homeTeam;
-  final String? awayTeam;
-  final int? matchday;
-  final String? utcDate;
-  final String? homeLogo;
-  final String? awayLogo;
-  const SingleMatch({
-    Key? key,
-    this.homeTeam,
-    this.awayTeam,
-    this.matchday,
-    this.utcDate,
-    this.homeLogo,
-    this.awayLogo,
-  }) : super(key: key);
-
-  String parseMyDate(String date) {
-    //parse date from 2022-12-21T19:45:00Z to 19:45
-    var mydate = DateTime.parse(date);
-
-    var formattedDate = DateFormat('HH:mm').format(mydate);
-    return formattedDate;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
-      child: Row(
-        // crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          //match day text
-          // Text(
-          //   "MD $matchday",
-          //   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-          //         color: kWhite,
-          //       ),
-          // ),
-          Text(
-            homeTeam!.length > 10
-                ? "${homeTeam.toString().substring(0, 10)}..."
-                : homeTeam.toString(),
-            style: themeProvider.isDarkMode
-                ? Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: kWhite,
-                    )
-                : Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: kBlack,
-                    ),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          homeLogo.toString().contains('.svg') == true
-              ? SvgPicture.network(
-                  homeLogo ?? "",
-                  width: 50,
-                )
-              : CachedNetworkImage(
-                  imageUrl: homeLogo ?? "",
-                  width: 50,
-                ),
-          const SizedBox(
-            width: 10,
-          ),
-          Container(
-            width: 60,
-            alignment: Alignment.center,
-            child: Text(
-              // regex to remove time from date
-              //
-              parseMyDate(utcDate ?? ""),
-              style: themeProvider.isDarkMode
-                  ? Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: kWhite,
-                      )
-                  : Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: kBlack,
-                      ),
-            ),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          awayLogo.toString().contains('.svg') == true
-              ? SvgPicture.network(
-                  awayLogo ?? "",
-                  width: 50,
-                )
-              : CachedNetworkImage(
-                  imageUrl: awayLogo ?? "",
-                  width: 50,
-                ),
-          const SizedBox(
-            width: 10,
-          ),
-          Text(
-            awayTeam!.length > 10
-                ? "${awayTeam.toString().substring(0, 6)}..."
-                : awayTeam.toString(),
-            style: themeProvider.isDarkMode
-                ? Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: kWhite,
-                    )
-                : Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: kBlack,
-                    ),
-          ),
-        ],
-      ),
-    );
-  }
 }
