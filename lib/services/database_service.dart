@@ -243,6 +243,7 @@ class DatabaseService {
         'title': title,
         'desc': desc,
         'created_at': DateTime.now(),
+        //new collection for replies
       },
     );
   }
@@ -367,11 +368,21 @@ class DatabaseService {
     );
   }
 
-  Future<Map<String, dynamic>?> getSinglePick({required String id}) async {
-    var pick = _dataBase.collection('Picks').doc(id).get();
-    // return pick.then((value) => value.data() as Map<String, String>);
-    var pickData = await pick;
-    return pickData.data();
+  // Future<List> getSinglePick({required String id}) async {
+  //   var pick = await _dataBase.collection('Picks').doc(id).get();
+  //   // return pick.then((value) => value.data() as Map<String, String>);
+  //   var pickData = pick.data();
+  //   print("pickData: $pickData");
+  //   return pickData;
+  // }
+
+  Future<int> getRepliesCount({required String id}) {
+    return _dataBase
+        .collection("Picks")
+        .doc(id)
+        .collection("replies")
+        .get()
+        .then((snapshot) => snapshot.size);
   }
 
   // Future<bool> toggleLikedPost(

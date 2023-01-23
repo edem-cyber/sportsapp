@@ -9,7 +9,6 @@ import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/screens/home/widgets/news_tile.dart';
 
 class Body extends StatefulWidget {
-  //scroll controller
   final ScrollController scrollController;
   const Body({Key? key, required this.scrollController}) : super(key: key);
 

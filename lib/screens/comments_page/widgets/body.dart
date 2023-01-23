@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
@@ -11,21 +15,66 @@ import 'package:sportsapp/screens/comments_page/widgets/comment.dart';
 
 class Body extends StatefulWidget {
   String? id;
+  ScrollController scrollController;
 
-  Body({Key? key, this.id}) : super(key: key);
+  Body({
+    Key? key,
+    this.id,
+    required this.scrollController,
+  }) : super(key: key);
 
   @override
   State<Body> createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
+  XFile? imageFile;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    void _scrollDown() {
+      widget.scrollController.animateTo(
+        widget.scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.fastOutSlowIn,
+      );
+      // widget.scrollController.animateTo(
+      //   widget.scrollController.position.maxScrollExtent,
+      //   duration: const Duration(milliseconds: 300),
+      //   curve: Curves.easeOut,
+      // );
+    }
+
     //SCROLLCONTROLLER
-    ScrollController _scrollController = ScrollController();
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     TextEditingController textController = TextEditingController();
     final GlobalKey<FormState> chatMessageKey = GlobalKey<FormState>();
+    // Future<Map<String, dynamic>?> getSinglePick({required String id}) async {
+    //   var pick = await FirebaseFirestore.instance
+    //       .collection('picks')
+    //       .doc(id)
+    //       .get()
+    //       .then((value) => value.data());
+
+    //   print("pick: ${pick}");
+    //   return pick;
+    // }
+
+    Future<Map<String, dynamic>?> getSinglePick({required String id}) async {
+      var pick = await FirebaseFirestore.instance
+          .collection('Picks')
+          .doc(id)
+          .get()
+          .then((value) => value.data());
+      print("pick is $pick");
+      return pick;
+    }
 
     // Future<List<Reply>> getRepliesFromSingleDoc(String pickId) async {
     //   QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -76,12 +125,80 @@ class _BodyState extends State<Body> {
               .toList());
     }
 
-    void _scrollDown() {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(seconds: 2),
-        curve: Curves.fastOutSlowIn,
+    final picker = ImagePicker();
+
+    void pickImage() async {
+      final XFile? imageFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 25,
       );
+      setState(() {
+        this.imageFile = imageFile;
+      });
+    }
+
+    final FirebaseStorage storage = FirebaseStorage.instance;
+
+    Future<String?> uploadPfP() async {
+      try {
+        File? uploadedFile = File(imageFile!.path);
+        var now = DateTime.now().millisecondsSinceEpoch;
+        TaskSnapshot? taskSnapshot =
+            await storage.ref("images/profile_pics/$now").putFile(
+                  uploadedFile,
+                );
+        return taskSnapshot != null
+            ? await taskSnapshot.ref.getDownloadURL()
+            : "";
+      } catch (e) {
+        print("UPLOADPFP FUNCTION!!: $e");
+      }
+    }
+
+    bool isButtonEnabled = false;
+
+    void sendMessage() {
+      if (chatMessageKey.currentState!.validate()) {
+        // Retrieve the input text and submit the form
+        // scroll down
+
+        _scrollDown();
+
+        authProvider.addReply(
+          Reply(
+            text: textController.text,
+            timestamp: Timestamp.now().toString(),
+            // author of doc should be a reference to user doc in firestore
+            author: authProvider.user!.uid,
+          ),
+          widget.id!,
+        );
+        textController.clear();
+      }
+    }
+
+    // validator for chat message
+    bool validateChatMessage(String? value) {
+      // regex for checking if message contains only spaces
+      bool isValid = false;
+      RegExp regExp = RegExp(r'^\s+$');
+      if (value == null || value.isEmpty) {
+        isValid = false;
+      } else if (value.length > 400) {
+        isValid = false;
+      } else if (value.length < 2) {
+        isValid = false;
+      } else if (regExp.hasMatch(value)) {
+        isValid = false;
+      } else {
+        isValid = true;
+      }
+
+      setState(() {
+        isButtonEnabled = isValid;
+      });
+
+      return isValid;
     }
 
     return SafeArea(
@@ -89,19 +206,20 @@ class _BodyState extends State<Body> {
         // alignment: Alignment.bottomCenter,
         children: [
           Container(
-            padding: const EdgeInsets.only(bottom: 70),
+            padding: const EdgeInsets.only(bottom: 20),
             // color: kBlack,
             child: StreamBuilder<List<Reply>>(
               stream: getRepliesFromSingleDoc(widget.id!),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                      child: CupertinoActivityIndicator(color: kBlack));
+                if (snapshot.connectionState == ConnectionState.waiting ||
+                    snapshot.connectionState == ConnectionState.none ||
+                    snapshot.data == null) {
+                  return const Center(child: CupertinoActivityIndicator());
                 } else if (snapshot.hasData) {
                   return Scrollbar(
-                    isAlwaysShown: true,
-                    controller: _scrollController,
+                    thumbVisibility: true,
                     child: ListView(
+                      controller: widget.scrollController,
                       physics: const ClampingScrollPhysics(),
                       children: [
                         GestureDetector(
@@ -109,12 +227,22 @@ class _BodyState extends State<Body> {
                             // pick heading and description
                           },
                           child: FutureBuilder<Map<String, dynamic>?>(
-                            future: authProvider.getSinglePick(id: widget.id!),
+                            future: getSinglePick(id: widget.id!),
                             builder: (context, snapshot) {
-                              return MyHeader(
-                                heading: snapshot.data!['title'],
-                                text: snapshot.data!['desc'],
-                              );
+                              if (snapshot.hasData) {
+                                return MyHeader(
+                                  heading: snapshot.data!['title'],
+                                  text: snapshot.data!['desc'],
+                                );
+                              } else if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                    child: CupertinoActivityIndicator(
+                                        color: kBlack));
+                              }
+                              return const Center(
+                                  child: CupertinoActivityIndicator(
+                                      color: kBlack));
                             },
                           ),
                         ),
@@ -153,7 +281,8 @@ class _BodyState extends State<Body> {
                             itemCount: snapshot.data!.length,
                             itemBuilder: (BuildContext context, int index) {
                               return Comment(
-                                image: authProvider.user!.photoURL!,
+                                id: snapshot.data![index].author ??
+                                    "Error loading image",
                                 text: snapshot.data![index].text ??
                                     "Error loading text",
                               );
@@ -178,11 +307,15 @@ class _BodyState extends State<Body> {
               right: 0,
               bottom: 0,
               child: Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.only(top: 7, left: 10, right: 10),
                 child: Row(
                   children: <Widget>[
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        pickImage();
+                      },
                       // backgroundColor: kBlue,
                       // elevation: 0,
                       child: Container(
@@ -208,19 +341,29 @@ class _BodyState extends State<Body> {
                         child: Form(
                           key: chatMessageKey,
                           child: TextFormField(
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                // return "Please enter a message";
-                                return;
+                            onChanged: (value) {
+                              // setState(() {
+
+                              //   // disable send button if text is empty
+                              // });
+                              if (value.isEmpty) {
+                                setState(() {
+                                  isButtonEnabled = false;
+                                });
                               }
-                              return null;
+                            },
+                            validator: (value) {
+                              validateChatMessage(value!);
+                            },
+                            onTap: () {
+                              _scrollDown;
                             },
                             style: Theme.of(context).textTheme.bodyLarge,
                             maxLines: 1,
                             controller: textController,
                             decoration: InputDecoration(
                               filled: true,
-                              fillColor: kGrey.withOpacity(0.2),
+                              fillColor: kGrey.withOpacity(0.15),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(40.0),
                                 borderSide: BorderSide.none,
@@ -238,21 +381,7 @@ class _BodyState extends State<Body> {
                     // ),
                     GestureDetector(
                       onTap: () {
-                        if (chatMessageKey.currentState!.validate()) {
-                          // Retrieve the input text and submit the form
-                          String message = textController.text;
-                          authProvider.addReply(
-                            Reply(
-                              text: message,
-                              timestamp: Timestamp.now().toString(),
-                              author: authProvider.user!.photoURL,
-                              // postId: widget.id,
-                            ),
-                            widget.id!,
-                          );
-                          textController.clear();
-                          _scrollDown();
-                        }
+                        isButtonEnabled ? sendMessage() : null;
                       },
                       child: Container(
                         padding: const EdgeInsets.only(
@@ -260,9 +389,9 @@ class _BodyState extends State<Body> {
                           top: 15,
                           bottom: 15,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.send,
-                          color: kBlue,
+                          color: isButtonEnabled ? kBlue : kGrey,
                           size: 25,
                         ),
                       ),

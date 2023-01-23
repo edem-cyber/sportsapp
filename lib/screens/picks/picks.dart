@@ -297,7 +297,7 @@ class _PicksState extends State<Picks> {
                       )
                     ];
                   },
-                  body: const Body(),
+                  body:  Body(),
                 ),
               );
             }
@@ -328,7 +328,7 @@ class _PicksState extends State<Picks> {
                   )
                 ];
               },
-              body: const Body(),
+              body:  Body(),
             );
           },
         ),

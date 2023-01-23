@@ -7,8 +7,6 @@ import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
-import 'package:sportsapp/screens/authentication/auth_button.dart';
-import 'package:sportsapp/widgets/form_error.dart';
 
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
@@ -51,14 +49,11 @@ class _BodyState extends State<Body> {
   //firebase storage
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  final TextEditingController _emailController =
-      TextEditingController(text: "edem.agbakpe@icloud.com");
+  final TextEditingController _emailController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _displayNameController =
-      TextEditingController(text: "Edem Agbakpe");
-  final TextEditingController _bioController =
-      TextEditingController(text: "I love BENZEMA!");
+  final TextEditingController _displayNameController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
 
   // Future<void> uploadPfP() async {
   //   try {
@@ -95,23 +90,6 @@ class _BodyState extends State<Body> {
 
   //   return taskSnapshot.ref.getDownloadURL();
   // }
-
-  Future<String?> uploadPfP() async {
-    try {
-      File? uploadedFile = File(imageFile!.path);
-      //VAR DATETIME TO miliseconds
-      var now = DateTime.now().millisecondsSinceEpoch;
-      TaskSnapshot? taskSnapshot =
-          await storage.ref("images/profile_pics/$now").putFile(
-                uploadedFile,
-              );
-      return taskSnapshot != null
-          ? await taskSnapshot.ref.getDownloadURL()
-          : "";
-    } catch (e) {
-      print("UPLOADPFP FUNCTION!!: $e");
-    }
-  }
 
   // Future<String> getDownload() async {
   //   File? uploadFile = File(imageFile!.path);
@@ -195,7 +173,7 @@ class _BodyState extends State<Body> {
                       shape: const CircleBorder(),
                       child: const Icon(
                         Icons.camera_alt_outlined,
-                        color: Colors.blue,
+                        color: kBlue,
                       ),
                     ),
                   ),
@@ -236,6 +214,23 @@ class _BodyState extends State<Body> {
       this.imageFile = imageFile;
       // if (imageFile != null) Image.file(File(imageFile.path));
     });
+  }
+
+  Future<String?> uploadPfP() async {
+    try {
+      File? uploadedFile = File(imageFile!.path);
+      //VAR DATETIME TO miliseconds
+      var now = DateTime.now().millisecondsSinceEpoch;
+      TaskSnapshot? taskSnapshot =
+          await storage.ref("images/profile_pics/$now").putFile(
+                uploadedFile,
+              );
+      return taskSnapshot != null
+          ? await taskSnapshot.ref.getDownloadURL()
+          : "";
+    } catch (e) {
+      print("UPLOADPFP FUNCTION!!: $e");
+    }
   }
 
   // @override

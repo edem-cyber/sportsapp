@@ -600,30 +600,11 @@ class AuthProvider with ChangeNotifier {
     _databaseService.addReply(reply, pickId);
   }
 
-  Future<List<Reply>> getRepliesFromSingleDoc(String pickId) async {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('Picks')
-        .doc(pickId)
-        .collection('replies')
-        .get();
-
-    List<Reply> replies = [];
-    for (var doc in snapshot.docs) {
-      //convert to map string dynamic
-      // var data = doc.data();
-
-      replies.add(
-        Reply.fromJson(doc.data() as Map<String, dynamic>),
-      );
-    }
-    return replies;
-  }
-
-  Future<Map<String, dynamic>?> getSinglePick({
-    required String id,
-  }) {
-    return _databaseService.getSinglePick(id: id);
-  }
+  // Future<Map<String, dynamic>?> getSinglePick({
+  //   required String id,
+  // }) {
+  //   return _databaseService.getSinglePick(id: id);
+  // }
 
   // isPostLiked(String posturl) {
   //   return _databaseService.isPostLiked(_auth.currentUser!.uid, posturl);

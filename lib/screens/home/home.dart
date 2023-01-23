@@ -6,7 +6,6 @@ import 'package:sportsapp/screens/home/widgets/body.dart';
 import 'package:sportsapp/widgets/small_appbar.dart';
 
 class News extends StatefulWidget {
-  //scroll controller
   final ScrollController scrollController;
   const News({Key? key, required this.scrollController}) : super(key: key);
   static const String routeName = '/home';

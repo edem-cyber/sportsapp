@@ -10,7 +10,10 @@ import 'package:sportsapp/screens/comments_page/comments_page.dart';
 import 'package:sportsapp/screens/picks/widgets/room.dart';
 
 class Body extends StatefulWidget {
-  const Body({Key? key}) : super(key: key);
+  int? reply;
+  Body({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<Body> createState() => _BodyState();
@@ -19,6 +22,12 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   // late bool _loading;
   // var newslist = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    int replyCount = widget.reply ?? 0;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +49,7 @@ class _BodyState extends State<Body> {
         }
         if (snapshot.hasError ||
             !snapshot.hasData ||
+            snapshot.data!.docs.isEmpty ||
             snapshot.data!.docs.isEmpty) {
           return const Center(child: Text("No Picks"));
         }
@@ -86,20 +96,21 @@ class _BodyState extends State<Body> {
                   child: const Icon(Icons.delete),
                 ),
                 child: Room(
-                    onTap: () {
-                      // navigationService.nagivateRoute(CommentsPage.routeName);
-                      //navigate using material page route
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CommentsPage(
-                          id: snapshot.data!.docs[index].id,
-                        ),
-                      ));
-                    },
-                    desc: snapshot.data!.docs[index]['desc'],
-                    title: snapshot.data!.docs[index]['title'],
-                    comments: "$index",
-                    likes: "$index",
-                    isRead: true),
+                  onTap: () {
+                    // navigationService.nagivateRoute(CommentsPage.routeName);
+                    //navigate using material page route
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => CommentsPage(
+                        id: snapshot.data!.docs[index].id,
+                      ),
+                    ));
+                  },
+                  desc: snapshot.data!.docs[index]['desc'],
+                  title: snapshot.data!.docs[index]['title'],
+                  // comments: snapshot.data!.docs[index]['comments'],
+                  isRead: false,
+                  // likes: snapshot.data!.docs[index]['likes'],
+                ),
               );
             },
           );

@@ -25,7 +25,6 @@ import 'package:sportsapp/widgets/app_dialog.dart';
 class Base extends StatefulWidget {
   static String routeName = "/base";
   const Base({Key? key}) : super(key: key);
-  //scroll controller
 
   @override
   State<Base> createState() => _BaseState();
@@ -34,7 +33,7 @@ class Base extends StatefulWidget {
 class _BaseState extends State<Base> {
   final ScrollController scrollController = ScrollController();
   //change active page
-  var _currentIndex = 3;
+  var _currentIndex = 2;
 
   showPage(int index) {
     setState(() {

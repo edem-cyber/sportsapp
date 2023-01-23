@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
+import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 
 class Room extends StatelessWidget {
-  final String title, desc, comments, likes;
+  final String? title, desc, comments, likes, id;
   final bool isRead;
   final Function()? onTap;
 
@@ -12,15 +14,25 @@ class Room extends StatelessWidget {
       {Key? key,
       required this.desc,
       required this.title,
-      required this.comments,
-      required this.likes,
+      this.comments,
+      this.likes,
       required this.isRead,
-      this.onTap})
+      this.onTap,
+      this.id})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
     var themeProvider = Provider.of<ThemeProvider>(context);
+    // Future<Map<String, dynamic>?> getSinglePick({required String id}) async {
+    //   var pick = await FirebaseFirestore.instance
+    //       .collection('picks')
+    //       .doc(id)
+    //       .get()
+    //       .then((value) => value.data());
+    //   return pick;
+    // }
 
     return GestureDetector(
       onTap: onTap,
@@ -40,14 +52,14 @@ class Room extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              title,
+              title ?? "",
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    desc,
+                    desc ?? "",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyText1,
@@ -71,18 +83,18 @@ class Room extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  "$comments Comments",
-                  style: Theme.of(context).textTheme.bodyText2,
+                  "7 comments",
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
                 const SizedBox(
-                  width: 10,
+                  width: 5,
                 ),
                 Text(
-                  "$likes Likes",
+                  "7 likes",
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
               ],
-            ),
+            )
             // Divider(
             //   color: kGrey,
             // )
