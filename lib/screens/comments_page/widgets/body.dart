@@ -6,18 +6,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Reply.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/comments_page/widgets/comment.dart';
-// import 'package:sticky_headers/sticky_headers.dart';
 
 class Body extends StatefulWidget {
-  String? id;
-  ScrollController scrollController;
+  final String? id;
+  final ScrollController scrollController;
 
-  Body({
+  const Body({
     Key? key,
     this.id,
     required this.scrollController,
@@ -32,7 +30,6 @@ class _BodyState extends State<Body> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -44,27 +41,11 @@ class _BodyState extends State<Body> {
         duration: const Duration(milliseconds: 200),
         curve: Curves.fastOutSlowIn,
       );
-      // widget.scrollController.animateTo(
-      //   widget.scrollController.position.maxScrollExtent,
-      //   duration: const Duration(milliseconds: 300),
-      //   curve: Curves.easeOut,
-      // );
     }
 
-    //SCROLLCONTROLLER
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     TextEditingController textController = TextEditingController();
     final GlobalKey<FormState> chatMessageKey = GlobalKey<FormState>();
-    // Future<Map<String, dynamic>?> getSinglePick({required String id}) async {
-    //   var pick = await FirebaseFirestore.instance
-    //       .collection('picks')
-    //       .doc(id)
-    //       .get()
-    //       .then((value) => value.data());
-
-    //   print("pick: ${pick}");
-    //   return pick;
-    // }
 
     Future<Map<String, dynamic>?> getSinglePick({required String id}) async {
       var pick = await FirebaseFirestore.instance
@@ -76,41 +57,6 @@ class _BodyState extends State<Body> {
       return pick;
     }
 
-    // Future<List<Reply>> getRepliesFromSingleDoc(String pickId) async {
-    //   QuerySnapshot snapshot = await FirebaseFirestore.instance
-    //       .collection('Picks')
-    //       .doc(pickId)
-    //       .collection('replies')
-    //       .orderBy('timestamp', descending: false)
-    //       .get();
-
-    //   //convert to string and print
-    //   List<Reply> replies = snapshot.docs
-    //       .map(
-    //         (e) => Reply.fromJson(e.data() as Map<String, dynamic>),
-    //       )
-    //       .toList();
-
-    //   debugPrint("replies: ${replies}");
-    //   return replies;
-    // }
-
-    //stream to get Pick heading
-    // Stream<Map<String, dynamic>> getPickHeadingAndDescription(
-    //     String pickId) async* {
-    //   yield* FirebaseFirestore.instance
-    //       .collection('Picks')
-    //       .doc(pickId)
-    //       .snapshots()
-    //       .map(
-    //     (snapshot) {
-    //       print("snapshot: ${snapshot.data()}");
-    //       return snapshot.data() ?? {};
-    //     },
-    //   );
-    // }
-
-    //stream to get replies from firebase
     Stream<List<Reply>> getRepliesFromSingleDoc(String pickId) async* {
       yield* FirebaseFirestore.instance
           .collection('Picks')
@@ -157,18 +103,27 @@ class _BodyState extends State<Body> {
 
     bool isButtonEnabled = false;
 
+    bool getIsButtonEnabled() {
+      if (chatMessageKey.currentState!.validate()) {
+        setState(() {
+          isButtonEnabled = true;
+        });
+      } else {
+        setState(() {
+          isButtonEnabled = false;
+        });
+      }
+      return isButtonEnabled;
+    }
+
     void sendMessage() {
       if (chatMessageKey.currentState!.validate()) {
-        // Retrieve the input text and submit the form
-        // scroll down
-
         _scrollDown();
 
         authProvider.addReply(
           Reply(
             text: textController.text,
             timestamp: Timestamp.now().toString(),
-            // author of doc should be a reference to user doc in firestore
             author: authProvider.user!.uid,
           ),
           widget.id!,
@@ -177,9 +132,7 @@ class _BodyState extends State<Body> {
       }
     }
 
-    // validator for chat message
     bool validateChatMessage(String? value) {
-      // regex for checking if message contains only spaces
       bool isValid = false;
       RegExp regExp = RegExp(r'^\s+$');
       if (value == null || value.isEmpty) {
@@ -201,13 +154,13 @@ class _BodyState extends State<Body> {
       return isValid;
     }
 
+    var isAdmin = authProvider.isAdmin();
+
     return SafeArea(
       child: Stack(
-        // alignment: Alignment.bottomCenter,
         children: [
           Container(
             padding: const EdgeInsets.only(bottom: 20),
-            // color: kBlack,
             child: StreamBuilder<List<Reply>>(
               stream: getRepliesFromSingleDoc(widget.id!),
               builder: (context, snapshot) {
@@ -223,9 +176,7 @@ class _BodyState extends State<Body> {
                       physics: const ClampingScrollPhysics(),
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            // pick heading and description
-                          },
+                          onTap: () {},
                           child: FutureBuilder<Map<String, dynamic>?>(
                             future: getSinglePick(id: widget.id!),
                             builder: (context, snapshot) {
@@ -290,7 +241,7 @@ class _BodyState extends State<Body> {
                           ),
                         ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height / 4,
+                          height: MediaQuery.of(context).size.height / 10,
                         ),
                       ],
                     ),
@@ -316,8 +267,6 @@ class _BodyState extends State<Body> {
                       onTap: () {
                         pickImage();
                       },
-                      // backgroundColor: kBlue,
-                      // elevation: 0,
                       child: Container(
                         padding: const EdgeInsets.only(
                           right: 10,
@@ -341,23 +290,21 @@ class _BodyState extends State<Body> {
                         child: Form(
                           key: chatMessageKey,
                           child: TextFormField(
-                            onChanged: (value) {
-                              // setState(() {
+                            // onChanged: (value) {
+                            //   if (value.isEmpty) {
+                            //     setState(() {
+                            //       getIsButtonEnabled();
+                            //     });
+                            //   }
+                            // },
+                            // validator: (value) {
+                            //   // var isValid = validateChatMessage(value!);
 
-                              //   // disable send button if text is empty
-                              // });
-                              if (value.isEmpty) {
-                                setState(() {
-                                  isButtonEnabled = false;
-                                });
-                              }
-                            },
-                            validator: (value) {
-                              validateChatMessage(value!);
-                            },
-                            onTap: () {
-                              _scrollDown;
-                            },
+                            //   if (chatMessageKey.currentState!.validate()) {
+                            //   } else {
+                            //     return null;
+                            //   }
+                            // },
                             style: Theme.of(context).textTheme.bodyLarge,
                             maxLines: 1,
                             controller: textController,
@@ -376,12 +323,13 @@ class _BodyState extends State<Body> {
                         ),
                       ),
                     ),
-                    // const SizedBox(
-                    //   width: 15,
-                    // ),
                     GestureDetector(
                       onTap: () {
-                        isButtonEnabled ? sendMessage() : null;
+                        if (chatMessageKey.currentState!.validate()) {
+                          if (textController.text.trim().isNotEmpty) {
+                            sendMessage();
+                          }
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.only(
@@ -389,9 +337,9 @@ class _BodyState extends State<Body> {
                           top: 15,
                           bottom: 15,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.send,
-                          color: isButtonEnabled ? kBlue : kGrey,
+                          color: kBlue,
                           size: 25,
                         ),
                       ),

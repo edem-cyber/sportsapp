@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
@@ -31,86 +32,120 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    // var getPosts = Provider.of<AuthProvider>(context, listen: false).getPosts();
-    // TabController tabController = TabController(length: 3, vsync: this);
-
-    //tab bar controller
     var themeProvider = Provider.of<ThemeProvider>(context);
     var navigationService = Provider.of<NavigationService>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var getAllPicks = authProvider.getAllPicks();
+    // isAdmin
+    var isAdmin = authProvider.isAdmin();
+    final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
 
-    // final postModel = Provider.of<DataClass>(context);
     return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
       future: getAllPicks,
       builder: (context, snapshot) {
+        var allPicksFuture = snapshot.data;
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CupertinoActivityIndicator());
         }
         if (snapshot.hasError ||
             !snapshot.hasData ||
-            snapshot.data!.docs.isEmpty ||
-            snapshot.data!.docs.isEmpty) {
+            allPicksFuture!.docs.isEmpty ||
+            allPicksFuture.docs.isEmpty) {
           return const Center(child: Text("No Picks"));
         }
 
         if (snapshot.hasData) {
           return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
+            itemCount: allPicksFuture.docs.length,
             itemBuilder: (BuildContext context, int index) {
-              return Dismissible(
-                dismissThresholds: const {
-                  DismissDirection.startToEnd: 0.8,
-                  DismissDirection.endToStart: 0.2,
-                },
-                key: UniqueKey(),
-                confirmDismiss: (direction) {
-                  return showDialog(
-                      context: context,
-                      builder: (BuildContext context) => CupertinoAlertDialog(
-                            title: const Text("Confirm"),
-                            content: const Text("Delete this Pick?"),
-                            actions: <Widget>[
-                              CupertinoDialogAction(
-                                onPressed: () {
-                                  setState(() {
-                                    authProvider.deletePick(
-                                        id: snapshot.data!.docs[index].id);
-                                  });
-                                  navigationService.goBack();
-                                },
-                                child: const Text("Confirm"),
-                              ),
-                              CupertinoDialogAction(
-                                onPressed: () {
-                                  navigationService.goBack();
-                                  return;
-                                },
-                                child: const Text("Cancel"),
-                              )
-                            ],
-                          ));
-                },
-                background: Container(
-                  color: kWarning,
-                  child: const Icon(Icons.delete),
-                ),
-                child: Room(
-                  onTap: () {
-                    // navigationService.nagivateRoute(CommentsPage.routeName);
-                    //navigate using material page route
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => CommentsPage(
-                        id: snapshot.data!.docs[index].id,
+              return FutureBuilder<bool>(
+                future: isAdmin,
+                builder: (context, snapshot) {
+                  bool futureVar = snapshot.data ?? false;
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CupertinoActivityIndicator());
+                  } else if (futureVar == true) {
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      behavior: HitTestBehavior.translucent,
+                      dragStartBehavior: DragStartBehavior.start,
+                      dismissThresholds: const {
+                        // DismissDirection.startToEnd: 0.5,
+                        DismissDirection.endToStart: 0.2,
+                      },
+                      key: UniqueKey(),
+                      confirmDismiss: (direction) async {
+                        if (direction == DismissDirection.endToStart) {
+                          return showDialog(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  CupertinoAlertDialog(
+                                    title: const Text("Confirm"),
+                                    content: const Text("Delete this Pick?"),
+                                    actions: <Widget>[
+                                      CupertinoDialogAction(
+                                        onPressed: () {
+                                          setState(() {
+                                            authProvider.deletePick(
+                                                id: allPicksFuture
+                                                    .docs[index].id);
+                                          });
+                                          navigationService.goBack();
+                                        },
+                                        child: const Text("Confirm"),
+                                      ),
+                                      CupertinoDialogAction(
+                                        onPressed: () {
+                                          navigationService.goBack();
+                                          return;
+                                        },
+                                        child: const Text("Cancel"),
+                                      )
+                                    ],
+                                  ));
+                        }
+                        return Future.value(false);
+                      },
+                      background: Container(
+                        color: kWarning,
+                        child: const Icon(Icons.delete),
                       ),
-                    ));
-                  },
-                  desc: snapshot.data!.docs[index]['desc'],
-                  title: snapshot.data!.docs[index]['title'],
-                  // comments: snapshot.data!.docs[index]['comments'],
-                  isRead: false,
-                  // likes: snapshot.data!.docs[index]['likes'],
-                ),
+                      child: Room(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => CommentsPage(
+                              id: allPicksFuture.docs[index].id,
+                            ),
+                          ));
+                        },
+                        desc: allPicksFuture.docs[index]['desc'],
+                        title: allPicksFuture.docs[index]['title'],
+                        id: allPicksFuture.docs[index].id,
+                        // get length of docs in comments collection
+                        // comments: snapshot.data!.docs[index]['comments'],
+                        isRead: false,
+                        // likes: snapshot.data!.docs[index]['likes'],
+                      ),
+                    );
+                  }
+
+                  return Room(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => CommentsPage(
+                          id: allPicksFuture.docs[index].id,
+                        ),
+                      ));
+                    },
+                    desc: allPicksFuture.docs[index]['desc'],
+                    title: allPicksFuture.docs[index]['title'],
+                    id: allPicksFuture.docs[index].id,
+                    // get length of docs in comments collection
+                    // comments: snapshot.data!.docs[index]['comments'],
+                    isRead: false,
+                    // likes: snapshot.data!.docs[index]['likes'],
+                  );
+                },
               );
             },
           );

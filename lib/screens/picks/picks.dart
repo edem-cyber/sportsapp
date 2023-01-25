@@ -19,10 +19,10 @@ class Picks extends StatefulWidget {
 class _PicksState extends State<Picks> {
   @override
   Widget build(BuildContext context) {
-    var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var themeProvider = Provider.of<ThemeProvider>(context, listen: true);
     var size = MediaQuery.of(context).size;
 
+    var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var isAdmin = authProvider.isAdmin();
 
     //texteditting controllers
@@ -97,9 +97,6 @@ class _PicksState extends State<Picks> {
           Padding(
             padding: EdgeInsets.only(left: 0, right: 20, top: 0, bottom: 0),
             child: CircleAvatar(
-              // ignore: prefer_if_null_operators
-              // backgroundImage: NetworkImage(authProvider.user!.photoURL ??
-              //     AppImage.defaultProfilePicture),
               foregroundColor: Colors.transparent,
               backgroundColor: Colors.transparent,
               radius: 15,
@@ -123,12 +120,10 @@ class _PicksState extends State<Picks> {
             ),
           ),
         ),
-        // bottom: const ()
-        //,
       ),
       body: SafeArea(
         child: FutureBuilder<bool>(
-          future: authProvider.isAdmin(),
+          future: isAdmin,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CupertinoActivityIndicator());
@@ -136,14 +131,12 @@ class _PicksState extends State<Picks> {
             if (snapshot.data == null || snapshot.hasError) {
               return const Center(child: Text("Error"));
             }
-
             if (snapshot.hasData && snapshot.data == true) {
               return Scaffold(
                 floatingActionButton: FloatingActionButton(
                   backgroundColor: kBlue,
                   foregroundColor: kWhite,
                   onPressed: () {
-                    //Open Modal
                     showModalBottomSheet(
                         isDismissible: true,
                         clipBehavior: Clip.antiAlias,
@@ -154,7 +147,6 @@ class _PicksState extends State<Picks> {
                           ),
                         ),
                         enableDrag: true,
-                        //set anchor point to top
                         isScrollControlled: true,
                         anchorPoint: const Offset(0, 1),
                         context: context,
@@ -164,7 +156,6 @@ class _PicksState extends State<Picks> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                //form to create room
                                 SafeArea(
                                   child: Form(
                                     key: formKey,
@@ -297,7 +288,7 @@ class _PicksState extends State<Picks> {
                       )
                     ];
                   },
-                  body:  Body(),
+                  body: Body(),
                 ),
               );
             }
@@ -328,7 +319,7 @@ class _PicksState extends State<Picks> {
                   )
                 ];
               },
-              body:  Body(),
+              body: Body(),
             );
           },
         ),

@@ -34,6 +34,12 @@ class Room extends StatelessWidget {
     //   return pick;
     // }
 
+    Stream<int> getRepliesLength(String pickId) {
+      var doc = FirebaseFirestore.instance.collection('Picks').doc(pickId);
+      var comments = doc.collection('replies');
+      return comments.snapshots().map((snapshot) => snapshot.size);
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -80,20 +86,25 @@ class Room extends StatelessWidget {
                       ),
               ],
             ),
-            Row(
-              children: [
-                Text(
-                  "7 comments",
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  "7 likes",
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-              ],
+            StreamBuilder<int>(
+              stream: getRepliesLength(id ?? ""),
+              builder: (context, snapshot) {
+                return Row(
+                  children: [
+                    Text(
+                      "${snapshot.data} replies",
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    // Text(
+                    //   "7 likes",
+                    //   style: Theme.of(context).textTheme.bodyText1,
+                    // ),
+                  ],
+                );
+              },
             )
             // Divider(
             //   color: kGrey,

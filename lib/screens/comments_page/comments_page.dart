@@ -19,12 +19,17 @@ class CommentsPage extends StatefulWidget {
 }
 
 class _CommentsPageState extends State<CommentsPage> {
+  late ScrollController scrollController;
   @override
   void initState() {
     super.initState();
+
+    scrollController = ScrollController(
+      initialScrollOffset: 0.0,
+      keepScrollOffset: true,
+    );
   }
 
-  ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
