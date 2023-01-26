@@ -536,6 +536,11 @@ class AuthProvider with ChangeNotifier {
     return await _databaseService.getUser(uid: _auth.currentUser!.uid);
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>> getProfileData(
+      {required String id}) async {
+    return await _databaseService.getUser(uid: id);
+  }
+
   // Future createPick() async {
   //   //if user is not admin
   //   var isAdminUser = false;

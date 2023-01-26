@@ -13,7 +13,6 @@ class EditProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var themeProvder = Provider.of<ThemeProvider>(context, listen: true);
-    // var nagivate
     var navigationService = Provider.of<NavigationService>(context);
 
     return Scaffold(
@@ -34,7 +33,6 @@ class EditProfile extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              
               navigationService.goBack();
             },
             child: Text(

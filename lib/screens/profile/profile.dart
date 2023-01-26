@@ -6,18 +6,22 @@ import 'package:sportsapp/screens/profile/widgets/body.dart';
 class Profile extends StatelessWidget {
   //routename
   static const routeName = '/profile';
-  const Profile({Key? key}) : super(key: key);
+  String? id;
+  Profile({Key? key, this.id}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
+    debugPrint("id: $id");
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         automaticallyImplyLeading: true,
         title: const Text("Profile"),
       ),
-      body: const Body(),
+      body: Body(
+        id: id ?? authProvider.user!.uid,
+      ),
     );
   }
 }

@@ -120,10 +120,7 @@ class _BodyState extends State<Body> {
                                   ],
                                 ));
                       },
-                      onDismissed: (direction) {
-                        //remove from firebase
-                        //show snackbar cupertino
-                      },
+                      
                       background: Container(
                         color: kWarning,
                         child: const Icon(

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sportsapp/screens/profile/profile.dart';
 
 class Comment extends StatelessWidget {
   final String id;
@@ -26,8 +27,17 @@ class Comment extends StatelessWidget {
             future: getImage(id: id),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return CircleAvatar(
-                  backgroundImage: CachedNetworkImageProvider(snapshot.data!),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Profile(
+                        id: id,
+                      ),
+                    ));
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: CachedNetworkImageProvider(snapshot.data!),
+                  ),
                 );
               }
               return Shimmer.fromColors(

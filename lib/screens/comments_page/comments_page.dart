@@ -30,7 +30,6 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
