@@ -190,22 +190,26 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
                               const SizedBox(
                                 width: 3,
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                    color: kBlue,
-                                    borderRadius: BorderRadius.circular(20)),
-                                padding: const EdgeInsets.all(7),
-                                child: InkWell(
-                                  onTap: () {
-                                    navigationService
-                                        .nagivateRoute(SettingsPage.routeName);
-                                  },
-                                  child: SvgPicture.asset(
-                                    "assets/icons/x.svg",
-                                    color: kWhite,
-                                  ),
-                                ),
-                              )
+
+                              authProvider.user!.uid == widget.id
+                                  ? Container(
+                                      decoration: BoxDecoration(
+                                          color: kBlue,
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      padding: const EdgeInsets.all(7),
+                                      child: InkWell(
+                                        onTap: () {
+                                          navigationService.nagivateRoute(
+                                              SettingsPage.routeName);
+                                        },
+                                        child: SvgPicture.asset(
+                                          "assets/icons/x.svg",
+                                          color: kWhite,
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox.shrink()
                             ],
                           ),
                           const SizedBox(

@@ -8,11 +8,11 @@ import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/comments_page/widgets/body.dart';
 
 class CommentsPage extends StatefulWidget {
-  String? id;
+  final String? id;
   //routename
   static const routeName = '/comments-page';
 
-  CommentsPage({Key? key, this.id}) : super(key: key);
+  const CommentsPage({Key? key, this.id}) : super(key: key);
 
   @override
   State<CommentsPage> createState() => _CommentsPageState();
