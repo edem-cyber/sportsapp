@@ -600,32 +600,34 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
+  // get friend requests
+  Future<List<String>> getFriendRequests() {
+    return _databaseService.getFriendRequests(
+      userId: _auth.currentUser!.uid,
+    );
+  }
+
   //add reply based on uid
   addReply(Reply reply, String pickId) {
     _databaseService.addReply(reply, pickId);
   }
 
-  // Future<Map<String, dynamic>?> getSinglePick({
-  //   required String id,
-  // }) {
-  //   return _databaseService.getSinglePick(id: id);
-  // }
+  sendFriendRequest(String uid) {
+    _databaseService.sendFriendRequest(
+      receiverId: uid,
+      senderId: _auth.currentUser!.uid,
+    );
+  }
 
-  // isPostLiked(String posturl) {
-  //   return _databaseService.isPostLiked(_auth.currentUser!.uid, posturl);
-  // }
+  acceptFriendRequest(String uid) {
+    _databaseService.acceptFriendRequest(
+      receiverId: _auth.currentUser!.uid,
+      senderId: uid,
+    );
+  }
 
-  // unlikePost(String posturl) {
-  //   _databaseService.unlikePost(posturl, _auth.currentUser!.uid);
-  // }
-
-  // Future<void> _onAuthStateChanged(User firebaseUser) async {
-  //   if (firebaseUser == null) {
-  //     _status = Status.Unauthenticated;
-  //   } else {
-  //     _user = firebaseUser;
-  //     _status = Status.Authenticated;
-  //   }
-  //   notifyListeners();
-  // }
+  Stream<bool> checkIfFriends(String uid) {
+    return _databaseService.checkIfFriends(
+        friendId: uid, userId: _auth.currentUser!.uid);
+  }
 }

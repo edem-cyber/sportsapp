@@ -1,4 +1,6 @@
 // Packages
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sportsapp/models/Post.dart';
@@ -32,18 +34,6 @@ class DatabaseService {
     return _dataBase.collection(userCollection).doc(uid).set(userInfoMap);
   }
 
-  Future<void> addReply(Reply reply, doc) async {
-    await _dataBase
-        .collection('Picks')
-        .doc(
-          doc,
-        )
-        .collection('replies')
-        .add(
-          reply.toJson(),
-        );
-  }
-
   //Update User
   Future<void> updateUser(
       {required String uid,
@@ -65,6 +55,18 @@ class DatabaseService {
   Future<DocumentSnapshot<Map<String, dynamic>>> getUser(
       {required String uid}) async {
     return await _dataBase.collection(userCollection).doc(uid).get();
+  }
+
+  Future<void> addReply(Reply reply, doc) async {
+    await _dataBase
+        .collection('Picks')
+        .doc(
+          doc,
+        )
+        .collection('replies')
+        .add(
+          reply.toJson(),
+        );
   }
 
 //* Getting the chats from the users
@@ -157,6 +159,131 @@ class DatabaseService {
     } catch (e) {
       debugPrint('$e');
     }
+  }
+
+  Future<List<String>> getFriendRequests({required String userId}) async {
+    List<String> friends = [];
+    try {
+      QuerySnapshot friendRequests = await _dataBase
+          .collection(userCollection)
+          .doc(userId)
+          .collection('friends')
+          .where('status', isEqualTo: 'pending')
+          .get();
+      for (var element in friendRequests.docs) {
+        friends.add(element.id);
+      }
+    } catch (error) {
+      debugPrint('$error');
+    }
+
+    return friends;
+  }
+
+  // Send a friend request
+  Future<void> sendFriendRequest(
+      {required String senderId, required String receiverId}) async {
+    try {
+      await _dataBase
+          .collection(userCollection)
+          .doc(receiverId)
+          .collection('friends')
+          .doc(senderId)
+          .set({'status': 'pending'});
+      await _dataBase
+          .collection(userCollection)
+          .doc(senderId)
+          .collection('friends')
+          .doc(receiverId)
+          .set({'status': 'sent'});
+    } catch (error) {
+      debugPrint('$error');
+    }
+  }
+
+// Accept a friend request
+  Future<void> acceptFriendRequest(
+      {required String senderId, required String receiverId}) async {
+    try {
+      await _dataBase
+          .collection(userCollection)
+          .doc(receiverId)
+          .collection('friends')
+          .doc(senderId)
+          .update({'status': 'accepted'});
+      await _dataBase
+          .collection(userCollection)
+          .doc(senderId)
+          .collection('friends')
+          .doc(receiverId)
+          .update({'status': 'accepted'});
+    } catch (error) {
+      debugPrint('$error');
+    }
+  }
+
+// Cancel a friend request
+  Future<void> cancelFriendRequest(
+      {required String senderId, required String receiverId}) async {
+    try {
+      await _dataBase
+          .collection(userCollection)
+          .doc(receiverId)
+          .collection('friends')
+          .doc(senderId)
+          .delete();
+      await _dataBase
+          .collection(userCollection)
+          .doc(senderId)
+          .collection('friends')
+          .doc(receiverId)
+          .delete();
+    } catch (error) {
+      debugPrint('$error');
+    }
+  }
+
+// Remove a friend
+  Future<void> removeFriend(
+      {required String userId, required String friendId}) async {
+    try {
+      // Remove the friend from the user's friends list
+      await _dataBase
+          .collection(userCollection)
+          .doc(userId)
+          .collection('friends')
+          .doc(friendId)
+          .delete();
+      // Remove the user from the friend's friends list
+      await _dataBase
+          .collection(userCollection)
+          .doc(friendId)
+          .collection('friends')
+          .doc(userId)
+          .delete();
+    } catch (error) {
+      debugPrint('$error');
+    }
+  }
+
+  // check if friends or not
+  final _checkIfFriendsController = StreamController<bool>();
+
+  Stream<bool> checkIfFriends(
+      {required String userId, required String friendId}) {
+    _dataBase
+        .collection(userCollection)
+        .doc(userId)
+        .collection('friends')
+        .doc(friendId)
+        .snapshots()
+        .map((event) => event.exists)
+        .transform(StreamTransformer.fromHandlers(handleData: (exists, sink) {
+      sink.add(exists);
+      sink.close();
+    }));
+
+    return _checkIfFriendsController.stream;
   }
 
   Stream<List> getPosts(

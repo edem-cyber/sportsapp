@@ -13,10 +13,12 @@ class RoomsTab extends StatefulWidget {
 class _RoomsState extends State<RoomsTab> {
   @override
   Widget build(BuildContext context) {
-    // gridview builder to display the rooms
+
     return Padding(
       padding: const EdgeInsets.only(top: 10),
       child: GridView.builder(
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 10,

@@ -25,7 +25,6 @@ class _PicksState extends State<Picks> {
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var isAdmin = authProvider.isAdmin();
 
-    //texteditting controllers
     TextEditingController pickTitleController = TextEditingController();
     TextEditingController pickDescriptionController = TextEditingController();
 

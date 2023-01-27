@@ -77,34 +77,33 @@ class _BodyState extends State<Body> {
                       confirmDismiss: (direction) async {
                         if (direction == DismissDirection.endToStart) {
                           return showDialog(
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  CupertinoAlertDialog(
-                                    title: const Text("Confirm"),
-                                    content: const Text("Delete this Pick?"),
-                                    actions: <Widget>[
-                                      CupertinoDialogAction(
-                                        onPressed: () {
-                                          setState(() {
-                                            authProvider.deletePick(
-                                                id: allPicksFuture
-                                                    .docs[index].id);
-                                          });
-                                          navigationService.goBack();
-                                        },
-                                        child: const Text("Confirm"),
-                                      ),
-                                      CupertinoDialogAction(
-                                        onPressed: () {
-                                          navigationService.goBack();
-                                          return;
-                                        },
-                                        child: const Text("Cancel"),
-                                      )
-                                    ],
-                                  ));
+                            context: context,
+                            builder: (BuildContext context) =>
+                                CupertinoAlertDialog(
+                              title: const Text("Confirm"),
+                              content: const Text("Delete this Pick?"),
+                              actions: <Widget>[
+                                CupertinoDialogAction(
+                                  onPressed: () {
+                                    setState(() {
+                                      authProvider.deletePick(
+                                          id: allPicksFuture.docs[index].id);
+                                    });
+                                    navigationService.goBack();
+                                  },
+                                  child: const Text("Confirm"),
+                                ),
+                                CupertinoDialogAction(
+                                  onPressed: () {
+                                    navigationService.goBack();
+                                    return;
+                                  },
+                                  child: const Text("Cancel"),
+                                )
+                              ],
+                            ),
+                          );
                         }
-                        return Future.value(false);
                       },
                       background: Container(
                         color: kWarning,
@@ -123,7 +122,7 @@ class _BodyState extends State<Body> {
                         id: allPicksFuture.docs[index].id,
                         // get length of docs in comments collection
                         // comments: snapshot.data!.docs[index]['comments'],
-                        isRead: false,
+                        isRead: true,
                         // likes: snapshot.data!.docs[index]['likes'],
                       ),
                     );
@@ -142,7 +141,7 @@ class _BodyState extends State<Body> {
                     id: allPicksFuture.docs[index].id,
                     // get length of docs in comments collection
                     // comments: snapshot.data!.docs[index]['comments'],
-                    isRead: false,
+                    isRead: true,
                     // likes: snapshot.data!.docs[index]['likes'],
                   );
                 },

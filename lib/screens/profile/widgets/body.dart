@@ -24,7 +24,8 @@ class Body extends StatefulWidget {
   State<Body> createState() => _BodyState();
 }
 
-class _BodyState extends State<Body> with TickerProviderStateMixin {
+class _BodyState extends State<Body>
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   Map<String, dynamic> userData = {};
   @override
   Widget build(BuildContext context) {
@@ -163,30 +164,54 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
                                       // borderSide: BorderSide(color: Colors.blue),
                                       // shape: StadiumBorder(),
                                       )
-                                  : OutlinedButton(
-                                      onPressed: () {
-                                        // navigationService.openFullScreenDialog(
-                                        //   const EditProfile(),
-                                        // );
-                                      },
-                                      style: OutlinedButton.styleFrom(
-                                        // primary: kWhite,
-                                        backgroundColor: kBlue,
-                                        shape: const StadiumBorder(),
-                                        side: const BorderSide(color: kWhite),
-                                      ),
-                                      child: Text(
-                                        "Add Friend",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                color: kWhite,
-                                                fontWeight: FontWeight.bold),
-                                      )
-                                      // borderSide: BorderSide(color: Colors.blue),
-                                      // shape: StadiumBorder(),
-                                      ),
+                                  : StreamBuilder<bool>(
+                                      stream: authProvider
+                                          .checkIfFriends(widget.id),
+                                      builder: (context, snapshot) {
+                                        var isFriend = snapshot.data;
+                                        if (snapshot.hasError ||
+                                            snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                          return const Center(
+                                              child:
+                                                  CupertinoActivityIndicator());
+                                        } else if (snapshot.hasData) {
+                                          return OutlinedButton(
+                                              onPressed: () {
+                                                // navigationService.openFullScreenDialog(
+                                                //   const EditProfile(),
+                                                // );
+
+                                                authProvider.sendFriendRequest(
+                                                    widget.id);
+                                              },
+                                              style: OutlinedButton.styleFrom(
+                                                // primary: kWhite,
+                                                backgroundColor: kBlue,
+                                                shape: const StadiumBorder(),
+                                                side: const BorderSide(
+                                                    color: kWhite),
+                                              ),
+                                              child: Text(
+                                                isFriend == true
+                                                    ? "Remove Friend"
+                                                    : "Add Friend",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium!
+                                                    .copyWith(
+                                                        color: kWhite,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                              )
+                                              // borderSide: BorderSide(color: Colors.blue),
+                                              // shape: StadiumBorder(),
+                                              );
+                                        }
+                                        return const Center(
+                                          child: CupertinoActivityIndicator(),
+                                        );
+                                      }),
                               const SizedBox(
                                 width: 3,
                               ),
@@ -282,8 +307,8 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
                             LikesTab(
                               id: widget.id,
                             ),
-                            RoomsTab(),
-                            MediaTab(),
+                            const RoomsTab(),
+                            const MediaTab(),
                           ],
                         ),
                       ),
@@ -307,4 +332,8 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
       },
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

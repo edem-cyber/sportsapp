@@ -45,7 +45,7 @@ class Room extends StatelessWidget {
       child: Container(
         height: 85,
         decoration: BoxDecoration(
-          color: isRead ? kBlue.withOpacity(0.1) : kBlue.withOpacity(0.1),
+          color: isRead ? kGrey.withOpacity(0.1) : kBlue.withOpacity(0.1),
           border: Border(
             // top: BorderSide(width: 16.0, color: Colors.lightBlue.shade50),
             bottom: BorderSide(width: 1.0, color: kGrey.withOpacity(0.2)),

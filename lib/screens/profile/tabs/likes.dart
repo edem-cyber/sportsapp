@@ -47,130 +47,122 @@ class _LikesTabState extends State<LikesTab> {
       // authProvider.removeFromDb(postUrl);
     }
 
-    return Column(
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        StreamBuilder<List<String>>(
-          stream: getLikedPostsArrayStream(
-            uid: widget.id,
-          ),
-          initialData: const [],
-          builder: (context, snapshot) {
-            var likedPosts = snapshot.data;
-            if (snapshot.hasData) {
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: likedPosts!.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: widget.id == authProvider.user!.uid
-                        ? Dismissible(
-                            confirmDismiss: (direction) {
-                              return showDialog(
-                                context: context,
-                                builder: (context) => CupertinoAlertDialog(
-                                  title: const Text("Confirm"),
-                                  content: const Text(
-                                      "Are you sure you want to delete this item?"),
-                                  actions: [
-                                    CupertinoDialogAction(
-                                      onPressed: () {
-                                        // authProvider
-                                        //     .removeFromDb(snapshot.data![index]);
-                                        // navigationService.goBack();
-                                        Navigator.of(context).pop(true);
-                                      },
-                                      child: const Text("DELETE"),
-                                    ),
-                                    CupertinoDialogAction(
-                                      onPressed: () =>
-                                          navigationService.goBack(),
-                                      child: const Text("CANCEL"),
-                                    ),
-                                  ],
+    return StreamBuilder<List<String>>(
+      stream: getLikedPostsArrayStream(
+        uid: widget.id,
+      ),
+      initialData: const [],
+      builder: (context, snapshot) {
+        var likedPosts = snapshot.data;
+        if (snapshot.hasData) {
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            itemCount: likedPosts!.length,
+            itemBuilder: (context, index) {
+              return Card(
+                child: widget.id == authProvider.user!.uid
+                    ? Dismissible(
+                        confirmDismiss: (direction) {
+                          return showDialog(
+                            context: context,
+                            builder: (context) => CupertinoAlertDialog(
+                              title: const Text("Confirm"),
+                              content: const Text(
+                                  "Are you sure you want to delete this item?"),
+                              actions: [
+                                CupertinoDialogAction(
+                                  onPressed: () {
+                                    // authProvider
+                                    //     .removeFromDb(snapshot.data![index]);
+                                    // navigationService.goBack();
+                                    Navigator.of(context).pop(true);
+                                  },
+                                  child: const Text("DELETE"),
                                 ),
-                              );
-                            },
-                            background: Container(
-                              color: kWarning,
-                              child: const Icon(Icons.delete),
+                                CupertinoDialogAction(
+                                  onPressed: () => navigationService.goBack(),
+                                  child: const Text("CANCEL"),
+                                ),
+                              ],
                             ),
-                            behavior: HitTestBehavior.translucent,
-                            key: UniqueKey(),
-                            child: ListTile(
-                              onTap: () async {
-                                if (await canLaunchUrl(
-                                    Uri.parse(likedPosts[index]))) {
-                                  await launchUrl(Uri.parse(likedPosts[index]));
-                                } else {
-                                  throw 'Could not launch ${snapshot.data![index]}';
-                                }
-                              },
-                              title: Text(
-                                likedPosts[index],
-                                maxLines: 2,
-                              ),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  //remove from list tile
-                                  setState(() {
-                                    removeListTile(likedPosts[index]);
-                                  });
-                                  // snapshot.data![index].remove(index);
-                                },
-                                icon: const Icon(Icons.delete),
-                              ),
-                            ),
-                          )
-                        : ListTile(
-                            onTap: () async {
-                              if (await canLaunchUrl(
-                                  Uri.parse(likedPosts[index]))) {
-                                await launchUrl(Uri.parse(likedPosts[index]));
-                              } else {
-                                throw 'Could not launch ${snapshot.data![index]}';
-                              }
-                            },
-                            title: Text(
-                              likedPosts[index],
-                              maxLines: 2,
-                            ),
-                            // trailing: IconButton(
-                            //   onPressed: () {
-                            //     //remove from list tile
-                            //     setState(() {
-                            //       removeListTile(likedPosts[index]);
-                            //     });
-                            //     // snapshot.data![index].remove(index);
-                            //   },
-                            //   icon: const Icon(Icons.delete),
-                            // ),
+                          );
+                        },
+                        background: Container(
+                          color: kWarning,
+                          child: const Icon(Icons.delete),
+                        ),
+                        behavior: HitTestBehavior.translucent,
+                        key: UniqueKey(),
+                        child: ListTile(
+                          onTap: () async {
+                            if (await canLaunchUrl(
+                                Uri.parse(likedPosts[index]))) {
+                              await launchUrl(Uri.parse(likedPosts[index]));
+                            } else {
+                              throw 'Could not launch ${snapshot.data![index]}';
+                            }
+                          },
+                          title: Text(
+                            likedPosts[index],
+                            maxLines: 2,
                           ),
-                  );
-                },
-              );
-            } else if (snapshot.hasError ||
-                snapshot.data == null ||
-                snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: Text(
-                  'No bookmarks',
-                  style: Theme.of(context).textTheme.headline6!.copyWith(
-                        fontWeight: FontWeight.normal,
+                          trailing: IconButton(
+                            onPressed: () {
+                              //remove from list tile
+                              setState(() {
+                                removeListTile(likedPosts[index]);
+                              });
+                              // snapshot.data![index].remove(index);
+                            },
+                            icon: const Icon(Icons.delete),
+                          ),
+                        ),
+                      )
+                    : ListTile(
+                        onTap: () async {
+                          if (await canLaunchUrl(
+                              Uri.parse(likedPosts[index]))) {
+                            await launchUrl(Uri.parse(likedPosts[index]));
+                          } else {
+                            throw 'Could not launch ${snapshot.data![index]}';
+                          }
+                        },
+                        title: Text(
+                          likedPosts[index],
+                          maxLines: 2,
+                        ),
+                        // trailing: IconButton(
+                        //   onPressed: () {
+                        //     //remove from list tile
+                        //     setState(() {
+                        //       removeListTile(likedPosts[index]);
+                        //     });
+                        //     // snapshot.data![index].remove(index);
+                        //   },
+                        //   icon: const Icon(Icons.delete),
+                        // ),
                       ),
-                ),
               );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
-        ),
-      ],
+            },
+          );
+        } else if (snapshot.hasError ||
+            snapshot.data == null ||
+            snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: Text(
+              'No bookmarks',
+              style: Theme.of(context).textTheme.headline6!.copyWith(
+                    fontWeight: FontWeight.normal,
+                  ),
+            ),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }
