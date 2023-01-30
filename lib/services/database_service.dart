@@ -267,23 +267,22 @@ class DatabaseService {
   }
 
   // check if friends or not
-  final _checkIfFriendsController = StreamController<bool>();
 
-  Stream<bool> checkIfFriends(
+  Future<bool> checkIfFriends(
       {required String userId, required String friendId}) {
+    bool isFriend = false;
     _dataBase
         .collection(userCollection)
         .doc(userId)
         .collection('friends')
         .doc(friendId)
-        .snapshots()
-        .map((event) => event.exists)
-        .transform(StreamTransformer.fromHandlers(handleData: (exists, sink) {
-      sink.add(exists);
-      sink.close();
-    }));
+        .get()
+        .then((value) {
+      // check if the value is set to accepted or pending or sent
+      
+    });
 
-    return _checkIfFriendsController.stream;
+    return Future.value(isFriend);
   }
 
   Stream<List> getPosts(

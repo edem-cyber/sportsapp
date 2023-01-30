@@ -626,7 +626,7 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
-  Stream<bool> checkIfFriends(String uid) {
+  Future<bool> checkIfFriends(String uid) {
     return _databaseService.checkIfFriends(
         friendId: uid, userId: _auth.currentUser!.uid);
   }

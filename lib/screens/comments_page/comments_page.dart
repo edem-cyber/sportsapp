@@ -73,7 +73,7 @@ class _CommentsPageState extends State<CommentsPage> {
             if (snapshot.hasData) {
               return Text("${snapshot.data!['title']}");
             }
-            return const Text("Error loading comments");
+            return const SizedBox.shrink();
           },
         ),
       ),

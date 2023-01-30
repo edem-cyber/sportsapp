@@ -149,17 +149,12 @@ class _LikesTabState extends State<LikesTab> {
         } else if (snapshot.hasError ||
             snapshot.data == null ||
             snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: Text(
-              'No bookmarks',
-              style: Theme.of(context).textTheme.headline6!.copyWith(
-                    fontWeight: FontWeight.normal,
-                  ),
-            ),
+          return const Center(
+            child: CupertinoActivityIndicator(),
           );
         } else {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CupertinoActivityIndicator(),
           );
         }
       },

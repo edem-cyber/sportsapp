@@ -164,8 +164,8 @@ class _BodyState extends State<Body>
                                       // borderSide: BorderSide(color: Colors.blue),
                                       // shape: StadiumBorder(),
                                       )
-                                  : StreamBuilder<bool>(
-                                      stream: authProvider
+                                  : FutureBuilder<bool>(
+                                      future: authProvider
                                           .checkIfFriends(widget.id),
                                       builder: (context, snapshot) {
                                         var isFriend = snapshot.data;
@@ -186,7 +186,6 @@ class _BodyState extends State<Body>
                                                     widget.id);
                                               },
                                               style: OutlinedButton.styleFrom(
-                                                // primary: kWhite,
                                                 backgroundColor: kBlue,
                                                 shape: const StadiumBorder(),
                                                 side: const BorderSide(

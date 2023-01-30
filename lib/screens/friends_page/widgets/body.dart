@@ -18,37 +18,31 @@ class Body extends StatefulWidget {
   State<Body> createState() => _BodyState();
 }
 
-class _BodyState extends State<Body> {
+class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<ThemeProvider>(context);
     var navigationService = Provider.of<NavigationService>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
 
-    Stream<List<DocumentSnapshot>> getUsersByUids() {
-      StreamController<List<DocumentSnapshot>> streamController =
-          StreamController();
+    Future<List<DocumentSnapshot>> getUsersByUids() async {
       List<DocumentSnapshot> users = [];
-      authProvider.getFriendRequests().then((userreq) {
-        try {
-          for (String uid in userreq) {
-            FirebaseFirestore.instance
-                .collection("Users")
-                .doc(uid)
-                .get()
-                .then((user) {
-              users.add(user);
-              streamController.add(users);
-            });
-          }
-        } catch (error) {
-          streamController.addError(error);
+      try {
+        List<String> userreq = await authProvider.getFriendRequests();
+        for (String uid in userreq) {
+          DocumentSnapshot user = await FirebaseFirestore.instance
+              .collection("Users")
+              .doc(uid)
+              .get();
+          users.add(user);
         }
-      });
-      return streamController.stream;
+      } catch (error) {
+        debugPrint(error.toString());
+      }
+      return users;
     }
 
-    Future<List<String>> getFriendRequests = authProvider.getFriendRequests();
+    // Future<List<String>> getFriendRequests = authProvider.getFriendRequests();
 
     return Column(
       children: [
@@ -71,8 +65,9 @@ class _BodyState extends State<Body> {
                   );
                 },
               ),
-              StreamBuilder<List<DocumentSnapshot>>(
-                  stream: getUsersByUids(),
+              FutureBuilder<List<DocumentSnapshot>>(
+                  initialData: const [],
+                  future: getUsersByUids(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         snapshot.hasError) {
@@ -106,4 +101,8 @@ class _BodyState extends State<Body> {
       ],
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

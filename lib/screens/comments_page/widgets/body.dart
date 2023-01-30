@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Reply.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
@@ -154,8 +155,6 @@ class _BodyState extends State<Body> {
       return isValid;
     }
 
-    var isAdmin = authProvider.isAdmin();
-
     return SafeArea(
       child: Stack(
         children: [
@@ -187,13 +186,50 @@ class _BodyState extends State<Body> {
                                 );
                               } else if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return const Center(
-                                    child: CupertinoActivityIndicator(
-                                        color: kBlack));
+                                return Container(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  decoration: BoxDecoration(
+                                    color: kGrey.withOpacity(0.4),
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(40),
+                                    ),
+                                  ),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: Shimmer.fromColors(
+                                      baseColor: Colors.grey,
+                                      highlightColor: Colors.white,
+                                      child: Container(
+                                        height: 35,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                );
                               }
-                              return const Center(
-                                  child: CupertinoActivityIndicator(
-                                      color: kBlack));
+                              return Container(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: kGrey.withOpacity(0.4),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(40),
+                                  ),
+                                ),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: Shimmer.fromColors(
+                                    baseColor: Colors.grey,
+                                    highlightColor: Colors.white,
+                                    child: Container(
+                                      height: 35,
+                                      width: MediaQuery.of(context).size.width,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              );
                             },
                           ),
                         ),
