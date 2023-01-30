@@ -46,67 +46,13 @@ class _BodyState extends State<Body> {
       builder: (context, snapshot) {
         var allPicksFuture = snapshot.data;
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-              child:
-                  // Shimmer.fromColors(baseColor: ,)
-                  Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: ListView.builder(
-              itemCount: 10,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 48.0,
-                        height: 48.0,
-                        color: Colors.white,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              height: 8.0,
-                              color: Colors.white,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: 8.0,
-                              color: Colors.white,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                            ),
-                            Container(
-                              width: 40.0,
-                              height: 8.0,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              },
-            ),
-          ));
+          return const Center(
+            child: CupertinoActivityIndicator(),
+          );
         }
         if (snapshot.hasError ||
             !snapshot.hasData ||
-            allPicksFuture!.docs.isEmpty ||
-            allPicksFuture.docs.isEmpty) {
+            allPicksFuture!.docs.isEmpty) {
           return const Center(child: Text("No Picks"));
         }
 
@@ -119,17 +65,36 @@ class _BodyState extends State<Body> {
                 builder: (context, snapshot) {
                   bool futureVar = snapshot.data ?? false;
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CupertinoActivityIndicator());
+                    return Center(
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Room(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CommentsPage(
+                                  id: allPicksFuture.docs[index].id,
+                                ),
+                              ),
+                            );
+                          },
+                          desc: allPicksFuture.docs[index]['desc'],
+                          title: allPicksFuture.docs[index]['title'],
+                          id: allPicksFuture.docs[index].id,
+                          isRead: true,
+                        ),
+                      ),
+                    );
                   } else if (futureVar == true) {
                     return Dismissible(
                       direction: DismissDirection.endToStart,
                       behavior: HitTestBehavior.translucent,
                       dragStartBehavior: DragStartBehavior.start,
                       dismissThresholds: const {
-                        // DismissDirection.startToEnd: 0.5,
                         DismissDirection.endToStart: 0.2,
                       },
-                      key: UniqueKey(),
+                      key: Key(allPicksFuture.docs[index].id),
                       confirmDismiss: (direction) async {
                         if (direction == DismissDirection.endToStart) {
                           return showDialog(
@@ -141,10 +106,12 @@ class _BodyState extends State<Body> {
                               actions: <Widget>[
                                 CupertinoDialogAction(
                                   onPressed: () {
-                                    setState(() {
-                                      authProvider.deletePick(
-                                          id: allPicksFuture.docs[index].id);
-                                    });
+                                    setState(
+                                      () {
+                                        authProvider.deletePick(
+                                            id: allPicksFuture.docs[index].id);
+                                      },
+                                    );
                                     navigationService.goBack();
                                   },
                                   child: const Text("Confirm"),
@@ -167,11 +134,13 @@ class _BodyState extends State<Body> {
                       ),
                       child: Room(
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => CommentsPage(
-                              id: allPicksFuture.docs[index].id,
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CommentsPage(
+                                id: allPicksFuture.docs[index].id,
+                              ),
                             ),
-                          ));
+                          );
                         },
                         desc: allPicksFuture.docs[index]['desc'],
                         title: allPicksFuture.docs[index]['title'],
@@ -183,22 +152,27 @@ class _BodyState extends State<Body> {
                       ),
                     );
                   }
-
-                  return Room(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CommentsPage(
-                          id: allPicksFuture.docs[index].id,
-                        ),
-                      ));
-                    },
-                    desc: allPicksFuture.docs[index]['desc'],
-                    title: allPicksFuture.docs[index]['title'],
-                    id: allPicksFuture.docs[index].id,
-                    // get length of docs in comments collection
-                    // comments: snapshot.data!.docs[index]['comments'],
-                    isRead: true,
-                    // likes: snapshot.data!.docs[index]['likes'],
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Room(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => CommentsPage(
+                              id: allPicksFuture.docs[index].id,
+                            ),
+                          ),
+                        );
+                      },
+                      desc: allPicksFuture.docs[index]['desc'],
+                      title: allPicksFuture.docs[index]['title'],
+                      id: allPicksFuture.docs[index].id,
+                      // get length of docs in comments collection
+                      // comments: snapshot.data!.docs[index]['comments'],
+                      isRead: true,
+                      // likes: snapshot.data!.docs[index]['likes'],
+                    ),
                   );
                 },
               );
@@ -206,61 +180,7 @@ class _BodyState extends State<Body> {
           );
         }
 
-        return Center(
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: ListView.builder(
-              itemCount: 10,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 48.0,
-                        height: 48.0,
-                        color: Colors.white,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              height: 8.0,
-                              color: Colors.white,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: 8.0,
-                              color: Colors.white,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                            ),
-                            Container(
-                              width: 40.0,
-                              height: 8.0,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        );
+        return const Center(child: CupertinoActivityIndicator());
       },
     );
   }

@@ -7,6 +7,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/screens/search/widgets/body.dart';
+import 'package:sportsapp/screens/search/widgets/search_delegate.dart';
 
 class Search extends StatefulWidget {
   Search({Key? key}) : super(key: key);
@@ -56,9 +57,6 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
           Padding(
             padding: EdgeInsets.only(left: 0, right: 20, top: 0, bottom: 0),
             child: CircleAvatar(
-              // ignore: prefer_if_null_operators
-              // backgroundImage: NetworkImage(authProvider.user!.photoURL ??
-              //     AppImage.defaultProfilePicture),
               foregroundColor: Colors.transparent,
               backgroundColor: Colors.transparent,
               radius: 15,
@@ -71,6 +69,16 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
             borderRadius: BorderRadius.circular(10),
           ),
           child: TextField(
+            onTap: () {
+              showSearch(context: context, delegate: UserSearchDelegate());
+            },
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(color: kTextLightColor, fontSize: 14),
+            onChanged: (value) {
+              showSearch(context: context, delegate: UserSearchDelegate());
+            },
             textAlign: TextAlign.center,
             decoration: InputDecoration(
               border: InputBorder.none,

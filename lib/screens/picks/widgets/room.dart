@@ -25,14 +25,6 @@ class Room extends StatelessWidget {
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
     var themeProvider = Provider.of<ThemeProvider>(context);
-    // Future<Map<String, dynamic>?> getSinglePick({required String id}) async {
-    //   var pick = await FirebaseFirestore.instance
-    //       .collection('picks')
-    //       .doc(id)
-    //       .get()
-    //       .then((value) => value.data());
-    //   return pick;
-    // }
 
     Stream<int> getRepliesLength(String pickId) {
       var doc = FirebaseFirestore.instance.collection('Picks').doc(pickId);
@@ -71,7 +63,6 @@ class Room extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ),
-                // const Spacer(),
                 const SizedBox(
                   width: 5,
                 ),
@@ -82,33 +73,30 @@ class Room extends StatelessWidget {
                       )
                     : const CircleAvatar(
                         radius: 15,
-                        // backgroundColor: Colors.transparent,
                       ),
               ],
             ),
             StreamBuilder<int>(
               stream: getRepliesLength(id ?? ""),
               builder: (context, snapshot) {
-                return Row(
-                  children: [
-                    Text(
-                      "${snapshot.data} replies",
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    // Text(
-                    //   "7 likes",
-                    //   style: Theme.of(context).textTheme.bodyText1,
-                    // ),
-                  ],
-                );
+                if (snapshot.hasData) {
+                  return Row(
+                    children: [
+                      Text(
+                        "${snapshot.data} replies",
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                    ],
+                  );
+                } else if (snapshot.hasError || !snapshot.hasData) {
+                  return const Text("Error");
+                }
+                return const Text("...");
               },
             )
-            // Divider(
-            //   color: kGrey,
-            // )
           ],
         ),
       ),

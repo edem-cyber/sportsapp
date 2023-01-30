@@ -279,7 +279,6 @@ class DatabaseService {
         .get()
         .then((value) {
       // check if the value is set to accepted or pending or sent
-      
     });
 
     return Future.value(isFriend);
@@ -295,6 +294,29 @@ class DatabaseService {
         .limit(limit)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  Future<List<Map<String, dynamic>>> searchUsers(String searchTerm) async {
+    List<Map<String, dynamic>> users = [];
+
+    try {
+      var query = _dataBase
+          .collection(userCollection)
+          .where("displayName", isEqualTo: searchTerm)
+          .limit(20);
+
+      var snapshots = await query.get();
+      for (var snapshot in snapshots.docs) {
+        users.add(
+          snapshot.data(),
+        );
+      }
+    } catch (error) {
+      debugPrint("Error while searching users: $error");
+    }
+
+    debugPrint("search users: $users");
+    return users;
   }
 
   // Future<bool> setBookmarks(
@@ -398,7 +420,12 @@ class DatabaseService {
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getAllPicks() async {
-    return await _dataBase.collection('Picks').get();
+    // return await _dataBase.collection('Picks').get();
+    // get picks and order by created_at
+    return await _dataBase
+        .collection('Picks')
+        .orderBy('created_at', descending: true)
+        .get();
   }
 
   //function to
@@ -428,9 +455,9 @@ class DatabaseService {
             )
           },
         )
-        .then((value) => print("Liked Post Added"))
+        .then((value) => debugPrint("Liked Post Added"))
         .catchError(
-          (error) => print("Failed to add liked post: $error"),
+          (error) => debugPrint("Failed to add liked post: $error"),
         );
     // await _dataBase.collection(userCollection).doc(uid).update({
     //   postDoc: FieldValue.arrayUnion([article.articleUrl.toString()])
@@ -450,9 +477,9 @@ class DatabaseService {
             )
           },
         )
-        .then((value) => print("Liked Post Removed"))
+        .then((value) => debugPrint("Liked Post Removed"))
         .catchError(
-          (error) => print("Failed to remove liked post: $error"),
+          (error) => debugPrint("Failed to remove liked post: $error"),
         );
   }
 
@@ -472,9 +499,9 @@ class DatabaseService {
             )
           },
         )
-        .then((value) => print("Liked Post Removed"))
+        .then((value) => debugPrint("Liked Post Removed"))
         .catchError(
-          (error) => print("Failed to remove liked post: $error"),
+          (error) => debugPrint("Failed to remove liked post: $error"),
         );
   }
 
@@ -498,7 +525,7 @@ class DatabaseService {
   //   var pick = await _dataBase.collection('Picks').doc(id).get();
   //   // return pick.then((value) => value.data() as Map<String, String>);
   //   var pickData = pick.data();
-  //   print("pickData: $pickData");
+  //   debugPrint("pickData: $pickData");
   //   return pickData;
   // }
 

@@ -43,6 +43,8 @@ class _BodyState extends State<Body>
       return dateFormat.format(date);
     }
 
+    var size = MediaQuery.of(context).size;
+
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       future: userProfile,
       builder: (context, snapshot) {
@@ -50,16 +52,8 @@ class _BodyState extends State<Body>
 
         if (snapshot.data == null) {
           return SizedBox(
-            // width: size.width,
-            // height: size.height,
-            child: Center(
-              child: Text(
-                'No bookmarks',
-                style: Theme.of(context).textTheme.headline6!.copyWith(
-                      fontWeight: FontWeight.normal,
-                    ),
-              ),
-            ),
+            width: size.width,
+            height: size.height,
           );
         } else if (snapshot.hasData) {
           return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -315,12 +309,47 @@ class _BodyState extends State<Body>
                   ),
                 );
               } else if (currentUser!['likes'] == 0) {
-                return Center(
-                  child: Text(snapshot.error.toString()),
+                return const Center(
+                  child: Text("No likes yet"),
                 );
               }
 
-              return const Center(child: CupertinoActivityIndicator());
+              return Center(
+                  child: Shimmer.fromColors(
+                baseColor: Colors.grey,
+                highlightColor: Colors.white,
+                child: Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(50)),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: 10,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              height: 100,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ));
             },
           );
         }

@@ -630,4 +630,10 @@ class AuthProvider with ChangeNotifier {
     return _databaseService.checkIfFriends(
         friendId: uid, userId: _auth.currentUser!.uid);
   }
+
+  // searchUsers
+
+  Future<List<Map<String, dynamic>>> searchUsers(String searchTerm) async {
+    return await _databaseService.searchUsers(searchTerm);
+  }
 }
