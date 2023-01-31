@@ -42,6 +42,23 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
       return users;
     }
 
+    Future<List<DocumentSnapshot>> getUidsOfFriends() async {
+      List<DocumentSnapshot> users = [];
+      try {
+        List<String> userreq = await authProvider.getFriends();
+        for (String uid in userreq) {
+          DocumentSnapshot user = await FirebaseFirestore.instance
+              .collection("Users")
+              .doc(uid)
+              .get();
+          users.add(user);
+        }
+      } catch (error) {
+        debugPrint(error.toString());
+      }
+      return users;
+    }
+
     // Future<List<String>> getFriendRequests = authProvider.getFriendRequests();
 
     return Column(
@@ -52,49 +69,68 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
             // viewportFraction: 0.8,
             // controller: tabController,
             children: [
-              ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                itemCount: 4,
-                itemBuilder: (BuildContext context, int index) {
-                  return Friend(
-                    name: 'Larry Mills',
-                    desc:
-                        '$index Father, husband & music. Going thru bariatric. Boston U & St Edward grad Browns Cavs Guardian Penguins Terriers Buckeyes',
-                    username: '@LarryMillz',
-                    // friend: friend,
-                  );
+              FutureBuilder<List<DocumentSnapshot>>(
+                initialData: const [],
+                future: getUidsOfFriends(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      snapshot.hasError) {
+                    return const Center(child: CupertinoActivityIndicator());
+                  } else if (snapshot.hasData) {
+                    List<DocumentSnapshot> friendRequests = snapshot.data!;
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      itemCount: friendRequests.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        print(index);
+                        return Friend(
+                          name: friendRequests[index]["displayName"],
+                          username: friendRequests[index]["username"],
+                          desc: friendRequests[index]["bio"],
+                          image: friendRequests[index]["photoURL"],
+                        );
+                      },
+                    );
+                  } else {
+                    return const Center(child: Text("No friend requests"));
+                  }
                 },
               ),
               FutureBuilder<List<DocumentSnapshot>>(
-                  initialData: const [],
-                  future: getUsersByUids(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting ||
-                        snapshot.hasError) {
-                      return const Center(child: CupertinoActivityIndicator());
-                    } else if (snapshot.hasData) {
-                      List<DocumentSnapshot> friendRequests = snapshot.data!;
-                      return ListView.builder(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        itemCount: friendRequests.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          print(index);
-                          return FriendRequest(
-                            image: friendRequests[index]["photoURL"],
-                            name: friendRequests[index]["displayName"],
-                            bio: friendRequests[index]["bio"],
-                            username: friendRequests[index]["username"],
-                            onTap1: () {
-                              authProvider.acceptFriendRequest(
-                                  friendRequests[index].id);
-                            },
-                          );
-                        },
-                      );
-                    } else {
-                      return const Center(child: Text("No friend requests"));
-                    }
-                  }),
+                initialData: const [],
+                future: getUsersByUids(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      snapshot.hasError) {
+                    return const Center(child: CupertinoActivityIndicator());
+                  } else if (snapshot.hasData) {
+                    List<DocumentSnapshot> friendRequests = snapshot.data!;
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      itemCount: friendRequests.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        print(index);
+                        return FriendRequest(
+                          image: friendRequests[index]["photoURL"],
+                          name: friendRequests[index]["displayName"],
+                          bio: friendRequests[index]["bio"],
+                          username: friendRequests[index]["username"],
+                          onTap1: () {
+                            authProvider
+                                .acceptFriendRequest(friendRequests[index].id);
+
+                            setState(() {
+                              friendRequests.removeAt(index);
+                            });
+                          },
+                        );
+                      },
+                    );
+                  } else {
+                    return const Center(child: Text("No friend requests"));
+                  }
+                },
+              ),
             ],
           ),
         ),

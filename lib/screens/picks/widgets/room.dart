@@ -6,20 +6,18 @@ import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 
 class Room extends StatelessWidget {
-  final String? title, desc, comments, likes, id;
+  final String? title, desc, id;
   final bool isRead;
   final Function()? onTap;
 
-  const Room(
-      {Key? key,
-      required this.desc,
-      required this.title,
-      this.comments,
-      this.likes,
-      required this.isRead,
-      this.onTap,
-      this.id})
-      : super(key: key);
+  const Room({
+    Key? key,
+    required this.desc,
+    required this.title,
+    required this.isRead,
+    this.onTap,
+    this.id,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -7,9 +7,9 @@ class UserSearchDelegate extends SearchDelegate {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
-          query = '';
+          query = "";
         },
       ),
     ];
@@ -18,7 +18,7 @@ class UserSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, null);
       },
@@ -54,6 +54,29 @@ class UserSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container();
+    // build suggestions from firestore users
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+    Future<List<Map<String, dynamic>>> users = authProvider.searchUsers(query);
+    return FutureBuilder(
+      future: users,
+      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              Map<String, dynamic> userData = snapshot.data![index];
+              return ListTile(
+                title: Text(userData['displayName']),
+                subtitle: Text(userData['username']),
+              );
+            },
+          );
+        } else if (snapshot.hasError) {
+          return Text("Error: ${snapshot.error}");
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 }

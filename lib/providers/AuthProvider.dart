@@ -11,7 +11,6 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/models/Reply.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
-import 'package:sportsapp/screens/picks/picks.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/notification.dart';
@@ -268,7 +267,7 @@ class AuthProvider with ChangeNotifier {
         'photoURL': photoURL ?? '',
         'lastSeen': DateTime.now(),
         'createdAt': DateTime.now(),
-        'likes': [],
+        'liked_posts': [],
         'isAdmin': false,
       };
       await _databaseService.addUserInfoToDB(
@@ -607,6 +606,13 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
+  // get friend requests
+  Future<List<String>> getFriends() {
+    return _databaseService.getFriends(
+      userId: _auth.currentUser!.uid,
+    );
+  }
+
   //add reply based on uid
   addReply(Reply reply, String pickId) {
     _databaseService.addReply(reply, pickId);
@@ -626,8 +632,32 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
-  Future<bool> checkIfFriends(String uid) {
+  cancelFriendRequest(String uid) {
+    _databaseService.cancelFriendRequest(
+      receiverId: _auth.currentUser!.uid,
+      senderId: uid,
+    );
+  }
+
+  removeFriend(String uid) {
+    _databaseService.removeFriend(
+      userId: _auth.currentUser!.uid,
+      friendId: uid,
+    );
+  }
+
+  Future<String> checkIfFriends(String uid) {
     return _databaseService.checkIfFriends(
+        friendId: uid, userId: _auth.currentUser!.uid);
+  }
+
+  Future<String> getFriendStatus(String uid) {
+    return _databaseService.getFriendStatus(
+        friendId: uid, userId: _auth.currentUser!.uid);
+  }
+
+  Stream<String> getFriendStatusStream(String uid) {
+    return _databaseService.getFriendStatusStream(
         friendId: uid, userId: _auth.currentUser!.uid);
   }
 
@@ -635,5 +665,10 @@ class AuthProvider with ChangeNotifier {
 
   Future<List<Map<String, dynamic>>> searchUsers(String searchTerm) async {
     return await _databaseService.searchUsers(searchTerm);
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> searchPicks(
+      {String? searchTerm}) {
+    return _databaseService.searchPicks(searchTerm: searchTerm);
   }
 }

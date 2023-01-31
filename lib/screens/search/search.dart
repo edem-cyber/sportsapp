@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -24,6 +25,16 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
     var themeProvider = Provider.of<ThemeProvider>(context);
     var authProvider = Provider.of<AuthProvider>(context);
     TabController tabController = TabController(length: 3, vsync: this);
+    void showUserSearch(
+      BuildContext context,
+      String query,
+    ) {
+      showSearch(
+        context: context,
+        delegate: UserSearchDelegate(),
+        query: query,
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -77,7 +88,7 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                 .bodyLarge!
                 .copyWith(color: kTextLightColor, fontSize: 14),
             onChanged: (value) {
-              showSearch(context: context, delegate: UserSearchDelegate());
+              showUserSearch(context, value);
             },
             textAlign: TextAlign.center,
             decoration: InputDecoration(

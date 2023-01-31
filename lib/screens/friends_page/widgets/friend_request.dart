@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
 
-class FriendRequest extends StatelessWidget {
+class FriendRequest extends StatefulWidget {
   final Function()? onTap1, onTap2;
   final String name, username, bio, image;
 
@@ -18,6 +18,11 @@ class FriendRequest extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<FriendRequest> createState() => _FriendRequestState();
+}
+
+class _FriendRequestState extends State<FriendRequest> {
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -28,7 +33,7 @@ class FriendRequest extends StatelessWidget {
           CircleAvatar(
             radius: 17,
             child: CachedNetworkImage(
-              imageUrl: image,
+              imageUrl: widget.image,
               fit: BoxFit.cover,
               imageBuilder: (context, imageProvider) => Container(
                 // width: 80.0,
@@ -60,9 +65,9 @@ class FriendRequest extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name.length > 9
-                      ? '${name.substring(0, 10)}... $username'
-                      : '$name $username',
+                  widget.name.length > 9
+                      ? '${widget.name.substring(0, 10)}... ${widget.username}'
+                      : '${widget.name} ${widget.username}',
                   style: Theme.of(context).textTheme.bodyMedium,
                   // maxLines: ,
                 ),
@@ -70,7 +75,7 @@ class FriendRequest extends StatelessWidget {
                   width: 4,
                 ),
                 Text(
-                  bio,
+                  widget.bio,
                   maxLines: 3,
                   style: Theme.of(context).textTheme.bodySmall,
                   // maxLines: ,
@@ -90,13 +95,12 @@ class FriendRequest extends StatelessWidget {
                 height: 25,
                 alignment: Alignment.center,
                 width: 70,
-                // decoration: BoxDecoration(
-                //   color: Colors.green,
-                // ),
                 child: Ink(
                   child: InkWell(
                     onTap: () {
-                      onTap1!();
+                      // setState(() {
+                      widget.onTap1!();
+                      // });
                     },
                     child: Text(
                       'Accept',
@@ -127,7 +131,7 @@ class FriendRequest extends StatelessWidget {
                 child: Ink(
                   child: InkWell(
                     onTap: () {
-                      onTap2!();
+                      widget.onTap2!();
                     },
                     child: Text(
                       'Decline',

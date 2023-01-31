@@ -1,14 +1,17 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
 
 class Friend extends StatelessWidget {
-  final String name, username, desc;
+  final String name, username, desc, image;
 
   const Friend(
       {Key? key,
       required this.name,
       required this.username,
-      required this.desc})
+      required this.desc,
+      required this.image})
       : super(key: key);
 
   @override
@@ -19,8 +22,32 @@ class Friend extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 17,
+            child: CachedNetworkImage(
+              imageUrl: image,
+              fit: BoxFit.cover,
+              imageBuilder: (context, imageProvider) => Container(
+                // width: 80.0,
+                // height: 80.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              placeholder: (context, url) => Center(
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: const CircleAvatar(
+                    radius: 40,
+                  ),
+                ),
+              ),
+            ),
           ),
           const SizedBox(
             width: 10,
@@ -32,9 +59,8 @@ class Friend extends StatelessWidget {
                 Text(
                   name.length > 9
                       ? '${name.substring(0, 10)}... $username'
-                      : '$name username',
+                      : '$name $username',
                   style: Theme.of(context).textTheme.bodyMedium,
-                  // maxLines: ,
                 ),
                 const SizedBox(
                   width: 4,
@@ -43,14 +69,13 @@ class Friend extends StatelessWidget {
                   desc,
                   maxLines: 3,
                   style: Theme.of(context).textTheme.bodySmall,
-                  // maxLines: ,
                 ),
               ],
             ),
           ),
           Row(
-            children: [
-              const SizedBox(
+            children: const [
+              SizedBox(
                 width: 4,
               ),
             ],

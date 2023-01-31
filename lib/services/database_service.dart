@@ -180,6 +180,25 @@ class DatabaseService {
     return friends;
   }
 
+  Future<List<String>> getFriends({required String userId}) async {
+    List<String> friends = [];
+    try {
+      QuerySnapshot friendRequests = await _dataBase
+          .collection(userCollection)
+          .doc(userId)
+          .collection('friends')
+          .where('status', isEqualTo: 'accepted')
+          .get();
+      for (var element in friendRequests.docs) {
+        friends.add(element.id);
+      }
+    } catch (error) {
+      debugPrint('$error');
+    }
+
+    return friends;
+  }
+
   // Send a friend request
   Future<void> sendFriendRequest(
       {required String senderId, required String receiverId}) async {
@@ -268,9 +287,9 @@ class DatabaseService {
 
   // check if friends or not
 
-  Future<bool> checkIfFriends(
+  Future<String> checkIfFriends(
       {required String userId, required String friendId}) {
-    bool isFriend = false;
+    String status = '';
     _dataBase
         .collection(userCollection)
         .doc(userId)
@@ -278,10 +297,52 @@ class DatabaseService {
         .doc(friendId)
         .get()
         .then((value) {
-      // check if the value is set to accepted or pending or sent
+      value.data() != null && value.data()!['status'];
+
+      if (value.data() != null) {
+        status = value.data()!['status'];
+      }
     });
 
-    return Future.value(isFriend);
+    return Future.value(status);
+  }
+
+  // check friend status
+  Future<String> getFriendStatus(
+      {required String userId, required String friendId}) {
+    String status = '';
+    _dataBase
+        .collection(userCollection)
+        .doc(userId)
+        .collection('friends')
+        .doc(friendId)
+        .get()
+        .then((value) {
+      if (value.data() != null) {
+        status = value.data()!['status'];
+      }
+    });
+
+    return Future.value(status);
+  }
+
+  // check friend status
+  Stream<String> getFriendStatusStream(
+      {required String userId, required String friendId}) {
+    return _dataBase
+        .collection(userCollection)
+        .doc(userId)
+        .collection('friends')
+        .doc(friendId)
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.data() != null) {
+        print('friend status: ${snapshot.data()!['status']}');
+        return snapshot.data()!['status'];
+      } else {
+        return '';
+      }
+    });
   }
 
   Stream<List> getPosts(
@@ -302,15 +363,14 @@ class DatabaseService {
     try {
       var query = _dataBase
           .collection(userCollection)
-          .where("displayName", isEqualTo: searchTerm)
-          .limit(20);
+          .where("username", isEqualTo: searchTerm)
+          .limit(20)
+          .snapshots()
+          .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
 
-      var snapshots = await query.get();
-      for (var snapshot in snapshots.docs) {
-        users.add(
-          snapshot.data(),
-        );
-      }
+      await query.forEach((element) {
+        users = element;
+      });
     } catch (error) {
       debugPrint("Error while searching users: $error");
     }
@@ -320,7 +380,7 @@ class DatabaseService {
   }
 
   // Future<bool> setBookmarks(
-  //     {required String sourceName,
+  //     {required String sneurceName,
   //     required String imageUrl,
   //     required String title,
   //     required String description,
@@ -402,12 +462,16 @@ class DatabaseService {
     return _dataBase.collection('Picks').doc(id).delete();
   }
 
-  // Stream<bool> isPostInLikedArray(
-  //     {required String uid, required Article article})  {
-  //   List<String> likeList = await getLikedPostsArray(uid: uid);
-  //   bool isLiked = likeList.contains(article.articleUrl);
-  //   return isLiked;
-  // }
+  Stream<QuerySnapshot<Map<String, dynamic>>> searchPicks(
+      {String? searchTerm}) {
+    return _dataBase
+        .collection('Picks')
+        .orderBy('title', descending: true)
+        // .toString()
+        // convert everything to lower case
+        .where('title', isGreaterThanOrEqualTo: searchTerm)
+        .snapshots();
+  }
 
   //stream is post in liked array
   Future<bool> isPostInLikedArray(
@@ -424,7 +488,7 @@ class DatabaseService {
     // get picks and order by created_at
     return await _dataBase
         .collection('Picks')
-        .orderBy('created_at', descending: true)
+        .orderBy('created_at', descending: false)
         .get();
   }
 

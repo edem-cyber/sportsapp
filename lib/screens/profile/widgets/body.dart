@@ -17,8 +17,8 @@ import 'package:sportsapp/screens/profile/tabs/rooms.dart';
 import 'package:sportsapp/screens/settings/settings.dart';
 
 class Body extends StatefulWidget {
-  Body({Key? key, required this.id}) : super(key: key);
-  String id;
+  const Body({Key? key, required this.id}) : super(key: key);
+  final String id;
 
   @override
   State<Body> createState() => _BodyState();
@@ -27,8 +27,10 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   Map<String, dynamic> userData = {};
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var themeProvider = Provider.of<ThemeProvider>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var navigationService = Provider.of<NavigationService>(context);
@@ -36,7 +38,6 @@ class _BodyState extends State<Body>
     var userProfile = authProvider.getProfileData(id: widget.id);
     var userData = authProvider.getUserData();
 
-    //convert timesstamp to formatted date
     formattedDate(Timestamp timestamp) {
       var date = timestamp.toDate();
       DateFormat dateFormat = DateFormat().add_yMMM();
@@ -44,6 +45,12 @@ class _BodyState extends State<Body>
     }
 
     var size = MediaQuery.of(context).size;
+    // button style for follow and message
+    var buttonStyle = OutlinedButton.styleFrom(
+      backgroundColor: kBlue,
+      shape: const StadiumBorder(),
+      side: const BorderSide(color: kWhite),
+    );
 
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       future: userProfile,
@@ -158,48 +165,110 @@ class _BodyState extends State<Body>
                                       // borderSide: BorderSide(color: Colors.blue),
                                       // shape: StadiumBorder(),
                                       )
-                                  : FutureBuilder<bool>(
-                                      future: authProvider
-                                          .checkIfFriends(widget.id),
+                                  : StreamBuilder<String>(
+                                      initialData: '',
+                                      stream: authProvider
+                                          .getFriendStatusStream(widget.id),
                                       builder: (context, snapshot) {
-                                        var isFriend = snapshot.data;
+                                        var friendState =
+                                            snapshot.data.toString();
+                                        print("friendState: $friendState");
                                         if (snapshot.hasError ||
                                             snapshot.connectionState ==
                                                 ConnectionState.waiting) {
                                           return const Center(
-                                              child:
-                                                  CupertinoActivityIndicator());
+                                            child: CupertinoActivityIndicator(),
+                                          );
                                         } else if (snapshot.hasData) {
-                                          return OutlinedButton(
-                                              onPressed: () {
-                                                // navigationService.openFullScreenDialog(
-                                                //   const EditProfile(),
-                                                // );
-
-                                                authProvider.sendFriendRequest(
-                                                    widget.id);
-                                              },
-                                              style: OutlinedButton.styleFrom(
-                                                backgroundColor: kBlue,
-                                                shape: const StadiumBorder(),
-                                                side: const BorderSide(
-                                                    color: kWhite),
-                                              ),
-                                              child: Text(
-                                                isFriend == true
-                                                    ? "Remove Friend"
-                                                    : "Add Friend",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
-                                                        color: kWhite,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                              )
-                                              // borderSide: BorderSide(color: Colors.blue),
-                                              // shape: StadiumBorder(),
+                                          switch (friendState) {
+                                            case 'accepted':
+                                              return OutlinedButton(
+                                                onPressed: () {
+                                                  showCupertinoDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        CupertinoAlertDialog(
+                                                      title: const Text(
+                                                        "Unfriend",
+                                                        style: TextStyle(
+                                                            color: kWhite),
+                                                      ),
+                                                      content: const Text(
+                                                          "Are you sure you want to unfriend?"),
+                                                      actions: [
+                                                        CupertinoDialogAction(
+                                                          child: const Text(
+                                                            "Cancel",
+                                                          ),
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                        ),
+                                                        CupertinoDialogAction(
+                                                          child: const Text(
+                                                            "Confirm",
+                                                          ),
+                                                          onPressed: () {
+                                                            authProvider
+                                                                .removeFriend(
+                                                                    widget.id);
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                                style: buttonStyle,
+                                                child: Text(
+                                                  "Unfriend",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .copyWith(color: kWhite),
+                                                ),
                                               );
+                                            case 'sent':
+                                              return OutlinedButton(
+                                                onPressed: () {
+                                                  authProvider
+                                                      .cancelFriendRequest(
+                                                          widget.id);
+                                                },
+                                                style: buttonStyle,
+                                                child: Text(
+                                                  "Cancel Request",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .copyWith(color: kWhite),
+                                                ),
+                                              );
+                                            default:
+                                              return OutlinedButton(
+                                                onPressed: () {
+                                                  authProvider
+                                                      .sendFriendRequest(
+                                                    widget.id,
+                                                  );
+                                                },
+                                                style: OutlinedButton.styleFrom(
+                                                  primary: kBlue,
+                                                  shape: const StadiumBorder(),
+                                                  side: const BorderSide(
+                                                      color: kBlue),
+                                                ),
+                                                child: Text(
+                                                  "Add Friend",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .copyWith(color: kBlue),
+                                                ),
+                                              );
+                                          }
                                         }
                                         return const Center(
                                           child: CupertinoActivityIndicator(),
@@ -233,31 +302,42 @@ class _BodyState extends State<Body>
                           const SizedBox(
                             height: 10,
                           ),
-                          Text.rich(
-                            TextSpan(
-                              //align children center
-                              children: <InlineSpan>[
-                                TextSpan(
-                                  text: "2198",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(
-                                          color: kBlack,
-                                          fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: " Friends",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(color: kBlack),
-                                ),
-                              ],
-                            ),
-                            // textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 12),
-                          ),
+                          FutureBuilder<List>(
+                              initialData: const [],
+                              future: authProvider.getFriends(),
+                              builder: (context, snapshot) {
+                                return Text.rich(
+                                  TextSpan(
+                                    //align children center
+                                    children: <InlineSpan>[
+                                      TextSpan(
+                                        text: snapshot.hasData
+                                            ? snapshot.data!.length.toString()
+                                            : "0",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .copyWith(
+                                                color: kBlack,
+                                                fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                        // if more than 1 friend, add an 's'
+                                        text: snapshot.hasData &&
+                                                snapshot.data!.length > 1
+                                            ? " friends"
+                                            : " friend",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .copyWith(color: kBlack),
+                                      ),
+                                    ],
+                                  ),
+                                  // textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 12),
+                                );
+                              }),
                         ],
                       ),
                       const SizedBox(
@@ -308,7 +388,7 @@ class _BodyState extends State<Body>
                     ],
                   ),
                 );
-              } else if (currentUser!['likes'] == 0) {
+              } else if (currentUser!['liked_posts'] == 0) {
                 return const Center(
                   child: Text("No likes yet"),
                 );

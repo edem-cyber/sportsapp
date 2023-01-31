@@ -13,8 +13,10 @@ import 'package:sportsapp/screens/picks/widgets/room.dart';
 
 class Body extends StatefulWidget {
   int? reply;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> searchResults;
   Body({
     Key? key,
+    required this.searchResults,
   }) : super(key: key);
 
   @override
@@ -41,8 +43,8 @@ class _BodyState extends State<Body> {
     var isAdmin = authProvider.isAdmin();
     final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
 
-    return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      future: getAllPicks,
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: widget.searchResults,
       builder: (context, snapshot) {
         var allPicksFuture = snapshot.data;
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -145,34 +147,24 @@ class _BodyState extends State<Body> {
                         desc: allPicksFuture.docs[index]['desc'],
                         title: allPicksFuture.docs[index]['title'],
                         id: allPicksFuture.docs[index].id,
-                        // get length of docs in comments collection
-                        // comments: snapshot.data!.docs[index]['comments'],
                         isRead: true,
-                        // likes: snapshot.data!.docs[index]['likes'],
                       ),
                     );
                   }
-                  return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Room(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => CommentsPage(
-                              id: allPicksFuture.docs[index].id,
-                            ),
+                  return Room(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => CommentsPage(
+                            id: allPicksFuture.docs[index].id,
                           ),
-                        );
-                      },
-                      desc: allPicksFuture.docs[index]['desc'],
-                      title: allPicksFuture.docs[index]['title'],
-                      id: allPicksFuture.docs[index].id,
-                      // get length of docs in comments collection
-                      // comments: snapshot.data!.docs[index]['comments'],
-                      isRead: true,
-                      // likes: snapshot.data!.docs[index]['likes'],
-                    ),
+                        ),
+                      );
+                    },
+                    desc: allPicksFuture.docs[index]['desc'],
+                    title: allPicksFuture.docs[index]['title'],
+                    id: allPicksFuture.docs[index].id,
+                    isRead: true,
                   );
                 },
               );
