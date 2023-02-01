@@ -165,115 +165,147 @@ class _BodyState extends State<Body>
                                       // borderSide: BorderSide(color: Colors.blue),
                                       // shape: StadiumBorder(),
                                       )
-                                  : StreamBuilder<String>(
-                                      initialData: '',
-                                      stream: authProvider
-                                          .getFriendStatusStream(widget.id),
-                                      builder: (context, snapshot) {
-                                        var friendState =
-                                            snapshot.data.toString();
-                                        print("friendState: $friendState");
-                                        if (snapshot.hasError ||
-                                            snapshot.connectionState ==
-                                                ConnectionState.waiting) {
-                                          return const Center(
-                                            child: CupertinoActivityIndicator(),
-                                          );
-                                        } else if (snapshot.hasData) {
-                                          switch (friendState) {
-                                            case 'accepted':
-                                              return OutlinedButton(
-                                                onPressed: () {
-                                                  showCupertinoDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        CupertinoAlertDialog(
-                                                      title: const Text(
-                                                        "Unfriend",
-                                                        style: TextStyle(
-                                                            color: kWhite),
-                                                      ),
-                                                      content: const Text(
-                                                          "Are you sure you want to unfriend?"),
-                                                      actions: [
-                                                        CupertinoDialogAction(
-                                                          child: const Text(
-                                                            "Cancel",
+                                  : Row(
+                                      children: [
+                                        StreamBuilder<String>(
+                                          initialData: '',
+                                          stream: authProvider
+                                              .getFriendStatusStream(widget.id),
+                                          builder: (context, snapshot) {
+                                            var friendState =
+                                                snapshot.data.toString();
+                                            print("friendState: $friendState");
+                                            if (snapshot.hasError ||
+                                                snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                              return const Center(
+                                                child:
+                                                    CupertinoActivityIndicator(),
+                                              );
+                                            } else if (snapshot.hasData) {
+                                              switch (friendState) {
+                                                case 'accepted':
+                                                  return OutlinedButton(
+                                                    onPressed: () {
+                                                      showCupertinoDialog(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            CupertinoAlertDialog(
+                                                          title: const Text(
+                                                            "Unfriend",
+                                                            style: TextStyle(
+                                                                color: kWhite),
                                                           ),
-                                                          onPressed: () {
-                                                            Navigator.pop(
-                                                                context);
-                                                          },
+                                                          content: const Text(
+                                                              "Are you sure you want to unfriend?"),
+                                                          actions: [
+                                                            CupertinoDialogAction(
+                                                              child: const Text(
+                                                                "Cancel",
+                                                              ),
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                            ),
+                                                            CupertinoDialogAction(
+                                                              child: const Text(
+                                                                "Confirm",
+                                                              ),
+                                                              onPressed: () {
+                                                                authProvider
+                                                                    .removeFriend(
+                                                                        widget
+                                                                            .id);
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                            ),
+                                                          ],
                                                         ),
-                                                        CupertinoDialogAction(
-                                                          child: const Text(
-                                                            "Confirm",
-                                                          ),
-                                                          onPressed: () {
-                                                            authProvider
-                                                                .removeFriend(
-                                                                    widget.id);
-                                                            Navigator.pop(
-                                                                context);
-                                                          },
-                                                        ),
-                                                      ],
+                                                      );
+                                                    },
+                                                    style: buttonStyle,
+                                                    child: Text(
+                                                      "Unfriend",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodySmall!
+                                                          .copyWith(
+                                                              color: kWhite),
                                                     ),
                                                   );
-                                                },
-                                                style: buttonStyle,
-                                                child: Text(
-                                                  "Unfriend",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall!
-                                                      .copyWith(color: kWhite),
-                                                ),
-                                              );
-                                            case 'sent':
-                                              return OutlinedButton(
+                                                case 'sent':
+                                                  return OutlinedButton(
+                                                    onPressed: () {
+                                                      authProvider
+                                                          .cancelFriendRequest(
+                                                              widget.id);
+                                                    },
+                                                    style: buttonStyle,
+                                                    child: Text(
+                                                      "Cancel Request",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodySmall!
+                                                          .copyWith(
+                                                              color: kWhite),
+                                                    ),
+                                                  );
+                                                default:
+                                                  return OutlinedButton(
+                                                    onPressed: () {
+                                                      authProvider
+                                                          .sendFriendRequest(
+                                                        widget.id,
+                                                      );
+                                                    },
+                                                    style: OutlinedButton
+                                                        .styleFrom(
+                                                      primary: kBlue,
+                                                      shape:
+                                                          const StadiumBorder(),
+                                                      side: const BorderSide(
+                                                          color: kBlue),
+                                                    ),
+                                                    child: Text(
+                                                      "Add Friend",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodySmall!
+                                                          .copyWith(
+                                                              color: kBlue),
+                                                    ),
+                                                  );
+                                              }
+                                            }
+                                            return const Center(
+                                              child:
+                                                  CupertinoActivityIndicator(),
+                                            );
+                                          },
+                                        ),
+
+                                        // check if user profile is equal to current user profile
+                                        // if false show direct message button
+                                        authProvider.user!.uid == widget.id
+                                            ? OutlinedButton(
                                                 onPressed: () {
-                                                  authProvider
-                                                      .cancelFriendRequest(
-                                                          widget.id);
-                                                },
-                                                style: buttonStyle,
-                                                child: Text(
-                                                  "Cancel Request",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall!
-                                                      .copyWith(color: kWhite),
-                                                ),
-                                              );
-                                            default:
-                                              return OutlinedButton(
-                                                onPressed: () {
-                                                  authProvider
-                                                      .sendFriendRequest(
-                                                    widget.id,
+                                                  navigationService
+                                                      .openFullScreenDialog(
+                                                    const EditProfile(),
                                                   );
                                                 },
-                                                style: OutlinedButton.styleFrom(
-                                                  primary: kBlue,
-                                                  shape: const StadiumBorder(),
-                                                  side: const BorderSide(
-                                                      color: kBlue),
+                                                child: SvgPicture.asset(
+                                                  "assets/icons/direct.svg",
+                                                  color: kBlue,
                                                 ),
-                                                child: Text(
-                                                  "Add Friend",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall!
-                                                      .copyWith(color: kBlue),
-                                                ),
-                                              );
-                                          }
-                                        }
-                                        return const Center(
-                                          child: CupertinoActivityIndicator(),
-                                        );
-                                      }),
+                                              )
+                                            : const SizedBox(
+                                                width: 10,
+                                              ),
+                                      ],
+                                    ),
                               const SizedBox(
                                 width: 3,
                               ),
