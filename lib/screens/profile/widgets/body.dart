@@ -10,6 +10,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
+import 'package:sportsapp/screens/direct_message/direct_message.dart';
 import 'package:sportsapp/screens/edit_profile/edit_profile.dart';
 import 'package:sportsapp/screens/profile/tabs/likes.dart';
 import 'package:sportsapp/screens/profile/tabs/media.dart';
@@ -160,11 +161,12 @@ class _BodyState extends State<Body>
                                         "Edit Profile",
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodyMedium,
-                                      )
+                                            .bodySmall!
+                                            .copyWith(color: kBlue),
+                                      ),
                                       // borderSide: BorderSide(color: Colors.blue),
                                       // shape: StadiumBorder(),
-                                      )
+                                    )
                                   : Row(
                                       children: [
                                         StreamBuilder<String>(
@@ -285,19 +287,39 @@ class _BodyState extends State<Body>
                                             );
                                           },
                                         ),
-
                                         // check if user profile is equal to current user profile
                                         // if false show direct message button
-                                        authProvider.user!.uid == widget.id
+                                        authProvider.user!.uid != widget.id
                                             ? OutlinedButton(
+                                                style: OutlinedButton.styleFrom(
+                                                  backgroundColor: Colors.white,
+                                                  shape: const CircleBorder(),
+                                                  side: const BorderSide(
+                                                      color: kBlue),
+                                                ),
                                                 onPressed: () {
-                                                  navigationService
-                                                      .openFullScreenDialog(
-                                                    const EditProfile(),
+                                                  // navigate usign material page route to chat page
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DirectMessage(
+                                                        id: widget.id,
+                                                        name: profile!.data()![
+                                                            'displayName'],
+                                                        image: profile.data()![
+                                                            'photoURL'],
+                                                        username:
+                                                            profile.data()![
+                                                                'username'],
+                                                      ),
+                                                    ),
                                                   );
                                                 },
                                                 child: SvgPicture.asset(
-                                                  "assets/icons/direct.svg",
+                                                  "assets/icons/dm.svg",
+                                                  height: 20,
+                                                  width: 20,
                                                   color: kBlue,
                                                 ),
                                               )
@@ -306,16 +328,16 @@ class _BodyState extends State<Body>
                                               ),
                                       ],
                                     ),
-                              const SizedBox(
-                                width: 3,
-                              ),
 
+                              const SizedBox(
+                                width: 10,
+                              ),
                               authProvider.user!.uid == widget.id
                                   ? Container(
                                       decoration: BoxDecoration(
-                                          color: kBlue,
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
+                                        color: kBlue,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
                                       padding: const EdgeInsets.all(7),
                                       child: InkWell(
                                         onTap: () {
@@ -402,7 +424,7 @@ class _BodyState extends State<Body>
                           )
                         ],
                       ),
-                      Container(
+                      SizedBox(
                         height: MediaQuery.of(context).size.height * 0.5,
                         child: TabBarView(
                           controller: tabController,
@@ -430,36 +452,34 @@ class _BodyState extends State<Body>
                   child: Shimmer.fromColors(
                 baseColor: Colors.grey,
                 highlightColor: Colors.white,
-                child: Container(
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(50)),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(50)),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: 10,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            height: 100,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                          );
+                        },
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: 10,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               ));
             },
@@ -474,6 +494,5 @@ class _BodyState extends State<Body>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
