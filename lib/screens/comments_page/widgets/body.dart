@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/models/Reply.dart';
+import 'package:sportsapp/models/PickReply.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/comments_page/widgets/comment.dart';
 
@@ -58,7 +58,7 @@ class _BodyState extends State<Body> {
       return pick;
     }
 
-    Stream<List<Reply>> getRepliesFromSingleDoc(String pickId) async* {
+    Stream<List<PickReply>> getRepliesFromSingleDoc(String pickId) async* {
       yield* FirebaseFirestore.instance
           .collection('Picks')
           .doc(pickId)
@@ -67,7 +67,7 @@ class _BodyState extends State<Body> {
           .snapshots()
           .map((snapshot) => snapshot.docs
               .map(
-                (e) => Reply.fromJson(e.data()),
+                (e) => PickReply.fromJson(e.data()),
               )
               .toList());
     }
@@ -121,8 +121,8 @@ class _BodyState extends State<Body> {
       if (chatMessageKey.currentState!.validate()) {
         _scrollDown();
 
-        authProvider.addReply(
-          Reply(
+        authProvider.addPickReply(
+          PickReply(
             text: textController.text,
             timestamp: Timestamp.now().toString(),
             author: authProvider.user!.uid,
@@ -160,7 +160,7 @@ class _BodyState extends State<Body> {
         children: [
           Container(
             padding: const EdgeInsets.only(bottom: 20),
-            child: StreamBuilder<List<Reply>>(
+            child: StreamBuilder<List<PickReply>>(
               stream: getRepliesFromSingleDoc(widget.id!),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting ||

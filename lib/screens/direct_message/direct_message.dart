@@ -41,6 +41,7 @@ class DirectMessage extends StatelessWidget {
         name: name,
         username: username,
         image: image,
+        scrollController: ScrollController(),
       ),
     );
   }

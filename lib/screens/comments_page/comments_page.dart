@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/models/Reply.dart';
+import 'package:sportsapp/models/PickReply.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/comments_page/widgets/body.dart';
@@ -36,14 +36,14 @@ class _CommentsPageState extends State<CommentsPage> {
     var navigationService = Provider.of<NavigationService>(context);
 
     //function to get replies from firebase
-    Future<List<Reply>> getReplies({required String id}) async {
+    Future<List<PickReply>> getReplies({required String id}) async {
       var replies = await FirebaseFirestore.instance
           .collection('Picks')
           .doc(id)
           .collection('replies')
           .get()
           .then((value) => value.docs
-              .map((e) => Reply.fromJson(e.data()))
+              .map((e) => PickReply.fromJson(e.data()))
               .toList(growable: false));
       return replies;
     }

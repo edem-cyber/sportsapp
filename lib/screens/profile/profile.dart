@@ -6,8 +6,8 @@ import 'package:sportsapp/screens/profile/widgets/body.dart';
 class Profile extends StatelessWidget {
   //routename
   static const routeName = '/profile';
-  String? id;
-  Profile({Key? key, this.id}) : super(key: key);
+  final String? id;
+  const Profile({Key? key, this.id}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

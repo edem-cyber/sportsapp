@@ -8,8 +8,9 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sportsapp/base.dart';
 import 'package:sportsapp/helper/constants.dart';
+import 'package:sportsapp/models/ChatMessageModel.dart';
 import 'package:sportsapp/models/Post.dart';
-import 'package:sportsapp/models/Reply.dart';
+import 'package:sportsapp/models/PickReply.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
@@ -443,33 +444,40 @@ class AuthProvider with ChangeNotifier {
 
     Uri url = Uri.parse(
         "https://newsapi.org/v2/top-headlines?category=sports&q=football&language=en&apiKey=$apiKey");
-    var response = await http.get(url);
-    // print("RESPONSE STATUS: ${response.statusCode}");
-    // print("RESPONSE BODY: ${response.body}");
 
-    var jsonData = jsonDecode(response.body);
+    try {
+      var response = await http.get(url);
+      // print("RESPONSE STATUS: ${response.statusCode}");
+      // print("RESPONSE BODY: ${response.body}");
+
+      var jsonData = jsonDecode(response.body);
+      if (jsonData['status'] == "ok") {
+        jsonData["articles"].forEach(
+          (element) {
+            if (element['urlToImage'] != null &&
+                element['description'] != null) {
+              Article article = Article(
+                title: element['title'] ?? "",
+                description: element['description'] ?? "",
+                urlToImage: element['urlToImage'] ?? "",
+                content: element['content'] ?? "",
+                publishedAt: DateTime.parse(element['publishedAt']),
+                author: element['author'] ?? "",
+                articleUrl: element['url'] ?? "",
+              );
+              // print("ARTICLE: ${article.title}");
+              // print("NEWS LENGTH: ${news.length}");
+              news.add(article);
+            }
+          },
+        );
+      }
+    } catch (e) {
+      print("GETPOSTS ERROR: $e");
+    }
     // print("JSON DATA: ${jsonData}");
     // print("JSON STATUS: ${jsonData['status']}");
-    if (jsonData['status'] == "ok") {
-      jsonData["articles"].forEach(
-        (element) {
-          if (element['urlToImage'] != null && element['description'] != null) {
-            Article article = Article(
-              title: element['title'] ?? "",
-              description: element['description'] ?? "",
-              urlToImage: element['urlToImage'] ?? "",
-              content: element['content'] ?? "",
-              publishedAt: DateTime.parse(element['publishedAt']),
-              author: element['author'] ?? "",
-              articleUrl: element['url'] ?? "",
-            );
-            // print("ARTICLE: ${article.title}");
-            // print("NEWS LENGTH: ${news.length}");
-            news.add(article);
-          }
-        },
-      );
-    }
+    print(news);
     return news;
   }
 
@@ -589,6 +597,12 @@ class AuthProvider with ChangeNotifier {
     return _databaseService.getAllPicks();
   }
 
+  // get chat messages
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChatMessages(
+      {required String chatId}) {
+    return _databaseService.getChatMessages(chatId: chatId);
+  }
+
   sendMessage(
     String message,
   ) {
@@ -596,6 +610,16 @@ class AuthProvider with ChangeNotifier {
       message: message,
       id: Timestamp.now().toString(),
       photoURL: _auth.currentUser!.photoURL ?? "",
+    );
+  }
+
+  Future<void> createChat(
+      {required String recipientId,
+      required Map<String, dynamic> message}) async {
+    _databaseService.createChat(
+      user1: _auth.currentUser!.uid,
+      user2: recipientId,
+      message: message,
     );
   }
 
@@ -614,8 +638,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   //add reply based on uid
-  addReply(Reply reply, String pickId) {
-    _databaseService.addReply(reply, pickId);
+  addPickReply(PickReply reply, String pickId) {
+    _databaseService.addPickReply(reply, pickId);
   }
 
   sendFriendRequest(String uid) {

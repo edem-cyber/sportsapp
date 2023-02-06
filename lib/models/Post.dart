@@ -77,7 +77,10 @@ class Article {
     return data;
   }
 
-  static fromMap(Map<String, dynamic> data) {}
+  @override
+  String toString() {
+    return 'Article{source: $source, title: $title, author: $author, description: $description, urlToImage: $urlToImage, publishedAt: $publishedAt, content: $content, articleUrl: $articleUrl}';
+  }
 }
 
 class Source {
@@ -96,5 +99,10 @@ class Source {
     data['id'] = id;
     data['name'] = name;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'Source{id: $id, name: $name}';
   }
 }
