@@ -715,4 +715,6 @@ class AuthProvider with ChangeNotifier {
       {required String chatId}) async {
     return await _databaseService.getLastMessageForChat(chatId: chatId);
   }
+
+  void createRoom({required String roomTitle, required String roomDesc}) {}
 }

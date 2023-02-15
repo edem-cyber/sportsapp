@@ -192,7 +192,7 @@ class _ChatsTabState extends State<ChatsTab>
                         ),
                       ),
                       title: Text(
-                        user['displayName'] ?? user['username'] ?? 'User',
+                        user['displayName'] ?? user['username'] ?? '',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),

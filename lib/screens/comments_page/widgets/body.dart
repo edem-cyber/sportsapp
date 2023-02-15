@@ -34,6 +34,14 @@ class _BodyState extends State<Body> {
     super.initState();
   }
 
+  TextEditingController textController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     void _scrollDown() {
@@ -45,7 +53,6 @@ class _BodyState extends State<Body> {
     }
 
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
-    TextEditingController textController = TextEditingController();
     final GlobalKey<FormState> chatMessageKey = GlobalKey<FormState>();
 
     Future<Map<String, dynamic>?> getSinglePick({required String id}) async {

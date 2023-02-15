@@ -326,6 +326,17 @@ class _SignUpFormState extends State<SignUpForm> {
   // }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _emailController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _displayNameController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     //authprovider
     var authProvider = Provider.of<AuthProvider>(context, listen: false);

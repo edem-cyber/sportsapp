@@ -33,30 +33,32 @@ class DirectMessagePage extends StatelessWidget {
           appBar: AppBar(
             centerTitle: true,
             actions: [
-              CachedNetworkImage(
-                imageUrl: profile!['photoURL'] ??
-                    'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
-                imageBuilder: (context, imageProvider) => Container(
-                  width: 40.0,
-                  height: 40.0,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                placeholder: (context, url) =>
-                    const CupertinoActivityIndicator(),
-                errorWidget: (context, url, error) =>
-                    const Center(child: Icon(Icons.error)),
-              ),
-              const SizedBox(width: 10)
+              profile != null && profile['photoURL'] != null
+                  ? CachedNetworkImage(
+                      imageUrl: profile['photoURL'],
+                      imageBuilder: (context, imageProvider) => Container(
+                        width: 40.0,
+                        height: 40.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
+                        ),
+                      ),
+                      placeholder: (context, url) => const SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    )
+                  : const SizedBox(width: 40),
+              const SizedBox.shrink()
             ],
-            title: Text(profile['displayName'] ??
-                profile['username'] ??
-                ''),
+            title: Text(profile!['displayName'] ?? profile['username'] ?? ''),
           ),
           body: Body(
             id: id,

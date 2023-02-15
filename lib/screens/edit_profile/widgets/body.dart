@@ -101,6 +101,15 @@ class _BodyState extends State<Body> {
   //   return ref;
   // }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _emailController.dispose();
+    _displayNameController.dispose();
+    _bioController.dispose();
+  }
+
   TextFormField buildDisplayNameFormField() {
     return TextFormField(
       controller: _displayNameController,

@@ -31,10 +31,20 @@ class _BodyState extends State<Body> {
     print("${widget.id}, ${widget.name}, ${widget.username}, ${widget.image}");
   }
 
+  final TextEditingController dmController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    widget.scrollController.dispose();
+    dmController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    final TextEditingController dmController = TextEditingController();
     final GlobalKey<FormState> dmKey = GlobalKey<FormState>();
     void _scrollDown() {
       widget.scrollController.animateTo(
