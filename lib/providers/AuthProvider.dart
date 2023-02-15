@@ -623,6 +623,16 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
+  Stream<QuerySnapshot> getSingleChatStream({
+    required String user1,
+    required String user2,
+  }) {
+    return _databaseService.getSingleChatStream(
+      user1: user1,
+      user2: user2,
+    );
+  }
+
   // get friend requests
   Future<List<String>> getFriendRequests() {
     return _databaseService.getFriendRequests(
@@ -694,5 +704,15 @@ class AuthProvider with ChangeNotifier {
   Stream<QuerySnapshot<Map<String, dynamic>>> searchPicks(
       {String? searchTerm}) {
     return _databaseService.searchPicks(searchTerm: searchTerm);
+  }
+
+// getChatsForUser
+  Stream<QuerySnapshot> getChatsForUser({required String uid}) {
+    return _databaseService.getChatsForUser(uid: uid);
+  }
+
+  Future<DocumentSnapshot> getLastMessageForChat(
+      {required String chatId}) async {
+    return await _databaseService.getLastMessageForChat(chatId: chatId);
   }
 }

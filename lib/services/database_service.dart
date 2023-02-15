@@ -16,7 +16,7 @@ const String postDoc = 'liked_posts';
 const String chatCollection = 'Chats';
 const String roomsCollection = 'Rooms';
 
-const String messagesCollection = 'Messages';
+const String messagesCollection = 'messages';
 
 class DatabaseService {
   DatabaseService();
@@ -71,13 +71,10 @@ class DatabaseService {
   }
 
 //* Getting the chats from the users
-  Stream<QuerySnapshot> getChatsForUser(String uid) {
+  Stream<QuerySnapshot> getChatsForUser({required String uid}) {
     return _dataBase
         .collection(chatCollection)
-        .where(
-          'members',
-          arrayContains: uid,
-        )
+        .where((doc) => doc.documentID.contains(uid))
         .snapshots();
   }
 
@@ -95,17 +92,19 @@ class DatabaseService {
         .get();
   }
 
-  // Future<void> createChat(
-  //     {required ChatMessage message, required String recipientId}) async {
-  //   final chatId = "${message.senderID}-$recipientId";
-  //   final chatRef = _dataBase.collection("Chats").doc(chatId);
+  Future<DocumentSnapshot> getLastMessageForChat(
+      {required String chatId}) async {
+    final QuerySnapshot<Map<String, dynamic>> messages = await FirebaseFirestore
+        .instance
+        .collection(chatCollection)
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .get();
 
-  //   final chatMessage = ChatMessage(
-  //     senderID: message.senderID,
-  //     type: MessageType.text,
-  //     content: message.content,
-  //     sentTime: DateTime.now(),
-  //   );
+    return messages.docs.first;
+  }
 
   //   // await chatRef.set({
   //   //   'messages': [chatMessage.toJson()],
@@ -139,103 +138,79 @@ class DatabaseService {
       {required String user1,
       required String user2,
       required Map<String, dynamic> message}) async {
-    // Combine the user IDs to form the chat id with dash
-    // as the separator
-    String chatId = "$user1-$user2";
-
-    // Get a reference to the chat document
-    DocumentReference chatRef =
-        _firestore.collection(userCollection).doc(chatId);
-
-    // Check if the chat document exists
-    DocumentSnapshot chatSnapshot = await chatRef.get();
-    // set the message to be an object with the message field
-    // and the sent time field
-    message = {
-      "message": message,
-      "sent_time": DateTime.now(),
-    };
-
-    // if the chat document does not exist, create it in the chat collection
-    // else if it exists do nothing
-    // then add the message to the messages collection of the chat document
-    // then store the chat document reference in the chats subcollection of the
-    // users collection
-
-    if (!chatSnapshot.exists) {
-      await chatRef.set({
-        'members': [user1, user2],
-      });
-      await chatRef.collection("messages").add(message);
-      await _firestore
-          .collection(userCollection)
-          .doc(user1)
-          .collection(chatCollection)
-          .doc(chatId)
-          .set({"chat": chatRef});
-      await _firestore
-          .collection(userCollection)
-          .doc(user2)
-          .collection(chatCollection)
-          .doc(chatId)
-          .set({"chat": chatRef});
-    } else {
-      await chatRef.collection("messages").add(message);
+    try {
+      List<String> sortedMembers = [user1, user2]..sort();
+      String chatId = sortedMembers.join('-');
+      DocumentReference chatRef =
+          _firestore.collection(chatCollection).doc(chatId);
+      DocumentSnapshot chatSnapshot = await chatRef.get();
+      if (!chatSnapshot.exists) {
+        await chatRef.set({
+          'members': [user1, user2],
+        });
+        await chatRef.collection("messages").add(message);
+        await _firestore
+            .collection(userCollection)
+            .doc(user1)
+            .collection(chatCollection)
+            .doc(chatId)
+            .set({"chat": chatRef});
+        await _firestore
+            .collection(userCollection)
+            .doc(user2)
+            .collection(chatCollection)
+            .doc(chatId)
+            .set({"chat": chatRef});
+      } else {
+        await chatRef.collection("messages").add(message);
+      }
+    } catch (e) {
+      print("Error in Create Chat Function: $e");
     }
+  }
+
+  Stream<QuerySnapshot> getSingleChatStream({
+    required String user1,
+    required String user2,
+  }) {
+    // String chatId = "$user1-$user2";
+    // make chatId the same for both users
+    // help me wrrite the chatid to be one for both users
+    List<String> sortedMembers = [user1, user2]..sort();
+    String chatId = sortedMembers.join('-');
+
+    return _firestore
+        .collection(chatCollection)
+        .doc(chatId)
+        .collection("messages")
+        .orderBy('timestamp', descending: true)
+        .snapshots();
   }
 
 //get likes from likes array
 
-  Stream<QuerySnapshot> streamMessagesForChatPage(String chatId) {
-    return _dataBase
-        .collection(chatCollection)
-        .doc(chatId)
-        .collection(messagesCollection)
-        .orderBy('sent_time', descending: false)
-        .snapshots();
-  }
-
-  // // // * Add messages to the firestore databse
-  Future<void> addMessagesToChat(String chatId, ChatMessage message) async {
-    try {
-      await _dataBase
-          .collection(chatCollection)
-          .doc(chatId)
-          .collection(messagesCollection)
-          .add(
-            message.toJson(),
-          );
-    } catch (error) {
-      debugPrint('$error');
-    }
-  }
-
-  // Future<void> updateChatData(String chatId, Map<String, dynamic> data) async {
-  //   try {
-  //     await _dataBase.collection(chatCollection).doc(chatId).update(data);
-  //   } catch (error) {
-  //     debugPrint('$error');
-  //   }
+  // Stream<QuerySnapshot> streamMessagesForChatPage(String chatId) {
+  //   return _dataBase
+  //       .collection(chatCollection)
+  //       .doc(chatId)
+  //       .collection(messagesCollection)
+  //       .orderBy('sent_time', descending: false)
+  //       .snapshots();
   // }
 
-//   // *Delete chat
-//   Future<void> deleteChat(String chatId) async {
-//     try {
-//       await _dataBase.collection(chatCollection).doc(chatId).delete();
-//     } catch (error) {
-//       debugPrint('$error');
-//     }
-//   }
-
-// // * Select and Create chat
-  // Future<DocumentReference?> createChat(Map<String, dynamic> data) async {
+  // // // * Add messages to the firestore databse
+  // Future<void> addMessagesToChat(String chatId, ChatMessage message) async {
   //   try {
-  //     final chat = await _dataBase.collection(chatCollection).add(data);
-  //     return chat;
+  //     await _dataBase
+  //         .collection(chatCollection)
+  //         .doc(chatId)
+  //         .collection(messagesCollection)
+  //         .add(
+  //           message.toJson(),
+  //         );
   //   } catch (error) {
   //     debugPrint('$error');
   //   }
-  //   return null;
   // }
 
 //* Update time
@@ -582,21 +557,7 @@ class DatabaseService {
         .get();
   }
 
-  //function to
-
-  // Stream<bool> isPostLikedList(
-  //     {required String uid, required Article article}) {
-  //   List<String> likeList = await getLikedPostsArray(uid: uid);
-  //   var isLiked = likeList.contains(article);
-  //     }
-
   likePost({required String uid, required Article article}) {
-    // var isLiked = isPostLiked(uid: uid, article: article).then(
-    //   (value) {
-    //     return value;
-    //   },
-    // );
-
     _dataBase
         .collection(userCollection)
         .doc(uid)
@@ -613,9 +574,6 @@ class DatabaseService {
         .catchError(
           (error) => debugPrint("Failed to add liked post: $error"),
         );
-    // await _dataBase.collection(userCollection).doc(uid).update({
-    //   postDoc: FieldValue.arrayUnion([article.articleUrl.toString()])
-    // });
   }
 
   void unlikePost({required String uid, required Article article}) {
@@ -675,14 +633,6 @@ class DatabaseService {
     );
   }
 
-  // Future<List> getSinglePick({required String id}) async {
-  //   var pick = await _dataBase.collection('Picks').doc(id).get();
-  //   // return pick.then((value) => value.data() as Map<String, String>);
-  //   var pickData = pick.data();
-  //   debugPrint("pickData: $pickData");
-  //   return pickData;
-  // }
-
   Future<int> getRepliesCount({required String id}) {
     return _dataBase
         .collection("Picks")
@@ -694,7 +644,6 @@ class DatabaseService {
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getChatMessages(
       {required String chatId}) {
-    // private chat function
     return _dataBase
         .collection("Picks")
         .doc(chatId)
@@ -702,19 +651,4 @@ class DatabaseService {
         .orderBy("created_at", descending: true)
         .snapshots();
   }
-
-  // Future<bool> toggleLikedPost(
-  //     {required String uid, required Article article}) async {
-  //   bool isLiked = await isPostInLikedArray(uid: uid, article: article);
-  //   if (isLiked) {
-  //     unlikePost(uid: uid, article: article);
-  //   } else {
-  //     likePost(uid: uid, article: article);
-  //   }
-  //   return !isLiked;
-  // }
-
-  // bool isLiked({required String uid, required Article article}) {}
-
-  // getCollection({required String uid, required collectionName}) {}
 }

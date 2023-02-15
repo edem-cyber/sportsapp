@@ -10,6 +10,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
+import 'package:sportsapp/screens/all_chats/all_chats.dart';
 import 'package:sportsapp/screens/bookmarks/bookmarks.dart';
 import 'package:sportsapp/screens/friends_page/friends_page.dart';
 import 'package:sportsapp/screens/home/home.dart';
@@ -64,7 +65,7 @@ class _BaseState extends State<Base> {
         'title': 'Picks',
         'icon': 'assets/icons/picks.svg',
         // 'activeIcon': 'assets/icons/profile_active.svg',
-        'page': Picks(),
+        'page': const Picks(),
       },
       {
         'title': 'Leagues',
@@ -108,18 +109,8 @@ class _BaseState extends State<Base> {
                           FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                               future: userDataStream,
                               builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                        ConnectionState.waiting ||
+                                if (!snapshot.hasData ||
                                     snapshot.error != null) {
-                                  return Container(
-                                    height: MediaQuery.of(context).size.height,
-                                    width: MediaQuery.of(context).size.width,
-                                    alignment: Alignment.center,
-                                    child: const CupertinoActivityIndicator(),
-                                  );
-                                }
-
-                                if (snapshot.data!.data() == null) {
                                   return Container(
                                     height: MediaQuery.of(context).size.height,
                                     width: MediaQuery.of(context).size.width,
@@ -170,13 +161,59 @@ class _BaseState extends State<Base> {
                                                 fontSize: 12,
                                               ),
                                             ),
-                                            const Text(
-                                              "5123 Friends",
-                                              style: TextStyle(
-                                                color: kWhite,
-                                                fontSize: 12,
-                                              ),
-                                            )
+                                            FutureBuilder<List>(
+                                                initialData: const [],
+                                                future:
+                                                    authProvider.getFriends(),
+                                                builder: (context, snapshot) {
+                                                  return Text.rich(
+                                                    TextSpan(
+                                                      //align children center
+                                                      children: <InlineSpan>[
+                                                        TextSpan(
+                                                          text: snapshot.hasData
+                                                              ? snapshot
+                                                                  .data!.length
+                                                                  .toString()
+                                                              : "0",
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .bodySmall!
+                                                              .copyWith(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color:
+                                                                      kWhite),
+                                                        ),
+                                                        TextSpan(
+                                                          // if more than 1 friend, add an 's'
+                                                          text: snapshot
+                                                                      .hasData &&
+                                                                  snapshot.data!
+                                                                          .length >
+                                                                      1
+                                                              ? " friends"
+                                                              : " friend",
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .bodySmall!
+                                                              .copyWith(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color:
+                                                                      kWhite),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    // textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                        fontSize: 12),
+                                                  );
+                                                }),
                                           ],
                                         ),
                                         currentAccountPicture:
@@ -317,6 +354,23 @@ class _BaseState extends State<Base> {
                             ),
                             onTap: () {
                               navigateFromDrawer(SettingsPage.routeName);
+                            },
+                          ),
+                          ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 35),
+                            dense: true,
+                            leading: SvgPicture.asset(
+                              "assets/icons/chat_bubble.svg",
+                              height: 20,
+                              color: kWhite,
+                            ),
+                            title: const Text(
+                              "All Chats",
+                              style: TextStyle(color: kWhite),
+                            ),
+                            onTap: () {
+                              navigateFromDrawer(AllChats.routeName);
                             },
                           ),
                           const Expanded(child: SizedBox()),

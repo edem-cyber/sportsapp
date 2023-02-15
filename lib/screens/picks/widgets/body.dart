@@ -28,14 +28,12 @@ class _BodyState extends State<Body> {
   // var newslist = [];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     int replyCount = widget.reply ?? 0;
   }
 
   @override
   Widget build(BuildContext context) {
-    var themeProvider = Provider.of<ThemeProvider>(context);
     var navigationService = Provider.of<NavigationService>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var getAllPicks = authProvider.getAllPicks();
@@ -47,11 +45,6 @@ class _BodyState extends State<Body> {
       stream: widget.searchResults,
       builder: (context, snapshot) {
         var allPicksFuture = snapshot.data;
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CupertinoActivityIndicator(),
-          );
-        }
         if (snapshot.hasError ||
             !snapshot.hasData ||
             allPicksFuture!.docs.isEmpty) {
@@ -71,20 +64,10 @@ class _BodyState extends State<Body> {
                       child: Shimmer.fromColors(
                         baseColor: Colors.grey[300]!,
                         highlightColor: Colors.grey[100]!,
-                        child: Room(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CommentsPage(
-                                  id: allPicksFuture.docs[index].id,
-                                ),
-                              ),
-                            );
-                          },
-                          desc: allPicksFuture.docs[index]['desc'],
-                          title: allPicksFuture.docs[index]['title'],
-                          id: allPicksFuture.docs[index].id,
-                          isRead: true,
+                        child: Container(
+                          height: 100,
+                          width: 100,
+                          color: Colors.white,
                         ),
                       ),
                     );

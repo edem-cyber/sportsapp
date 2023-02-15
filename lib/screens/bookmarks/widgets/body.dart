@@ -41,24 +41,14 @@ class _BodyState extends State<Body> {
             builder:
                 (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
               //if the list is empty
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (
+                  snapshot.connectionState == ConnectionState.none ||
+                  !snapshot.hasData) {
                 return SizedBox(
                   width: size.width,
                   height: size.height,
                   child: const Center(
                     child: CupertinoActivityIndicator(),
-                  ),
-                );
-              }
-              if (snapshot.data == null || snapshot.data!.isEmpty) {
-                return SizedBox(
-                  width: size.width,
-                  height: size.height,
-                  child: Center(
-                    child: Text(
-                      "No Bookmarks",
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
                   ),
                 );
               }
@@ -68,10 +58,8 @@ class _BodyState extends State<Body> {
                   height: size.height,
                   child: Center(
                     child: Text(
-                      'No bookmarks',
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
-                            fontWeight: FontWeight.normal,
-                          ),
+                      "No Bookmarks",
+                      style: Theme.of(context).textTheme.headline6,
                     ),
                   ),
                 );
@@ -120,7 +108,6 @@ class _BodyState extends State<Body> {
                                   ],
                                 ));
                       },
-                      
                       background: Container(
                         color: kWarning,
                         child: const Icon(

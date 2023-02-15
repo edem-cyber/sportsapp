@@ -10,7 +10,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
-import 'package:sportsapp/screens/direct_message/direct_message.dart';
+import 'package:sportsapp/screens/direct_message_page/direct_message_page.dart';
 import 'package:sportsapp/screens/edit_profile/edit_profile.dart';
 import 'package:sportsapp/screens/profile/tabs/likes.dart';
 import 'package:sportsapp/screens/profile/tabs/media.dart';
@@ -32,9 +32,9 @@ class _BodyState extends State<Body>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    var themeProvider = Provider.of<ThemeProvider>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var navigationService = Provider.of<NavigationService>(context);
+    var themeProvider = Provider.of<ThemeProvider>(context);
     var tabController = TabController(length: 3, vsync: this);
     var userProfile = authProvider.getProfileData(id: widget.id);
     var userData = authProvider.getUserData();
@@ -68,8 +68,7 @@ class _BodyState extends State<Body>
             future: userData,
             builder: (context, snapshot) {
               var currentUser = snapshot.data;
-              if (snapshot.data == null ||
-                  snapshot.connectionState == ConnectionState.waiting) {
+              if (!snapshot.hasData || snapshot.hasError) {
                 return const Center(
                   child: CupertinoActivityIndicator(),
                 );
@@ -298,20 +297,19 @@ class _BodyState extends State<Body>
                                                       color: kBlue),
                                                 ),
                                                 onPressed: () {
-                                                  // navigate usign material page route to chat page
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
                                                       builder: (context) =>
-                                                          DirectMessage(
+                                                          DirectMessagePage(
                                                         id: widget.id,
-                                                        name: profile!.data()![
-                                                            'displayName'],
-                                                        image: profile.data()![
-                                                            'photoURL'],
-                                                        username:
-                                                            profile.data()![
-                                                                'username'],
+                                                        // name: profile!.data()![
+                                                        //     'displayName'],
+                                                        // image: profile.data()![
+                                                        //     'photoURL'],
+                                                        // username:
+                                                        //     profile.data()![
+                                                        //         'username'],
                                                       ),
                                                     ),
                                                   );

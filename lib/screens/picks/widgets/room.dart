@@ -6,7 +6,7 @@ import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 
 class Room extends StatelessWidget {
-  final String? title, desc, id;
+  final String? title, desc, id, image;
   final bool isRead;
   final Function()? onTap;
 
@@ -17,6 +17,7 @@ class Room extends StatelessWidget {
     required this.isRead,
     this.onTap,
     this.id,
+    this.image,
   }) : super(key: key);
 
   @override

@@ -85,7 +85,7 @@ class _NewsTileState extends State<NewsTile> {
         Provider.of<NavigationService>(context, listen: false);
     return GestureDetector(
       onTap: () {
-        debugPrint("IMAGE URL IS: ${widget.article.urlToImage}");
+        // debugPrint("IMAGE URL IS: ${widget.article.urlToImage}");
         _navigationService.navigateToPage(
           ArticleView(
             postUrl: widget.article.articleUrl!,

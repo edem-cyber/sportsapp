@@ -38,8 +38,8 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     void _scrollDown() {
       widget.scrollController.animateTo(
-        widget.scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
+        0.0,
+        duration: const Duration(milliseconds: 500),
         curve: Curves.fastOutSlowIn,
       );
     }

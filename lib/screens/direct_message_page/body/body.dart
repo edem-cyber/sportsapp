@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/models/ChatMessageModel.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/screens/direct_message/body/from_chat_bubble.dart';
-import 'package:sportsapp/screens/direct_message/body/send_chat_bubble.dart';
+import 'package:sportsapp/providers/ThemeProvider.dart';
+import 'package:sportsapp/screens/direct_message_page/body/from_chat_bubble.dart';
+import 'package:sportsapp/screens/direct_message_page/body/send_chat_bubble.dart';
 
 class Body extends StatefulWidget {
   final String? id, name, username, image;
@@ -31,12 +33,13 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
+    var themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     final TextEditingController dmController = TextEditingController();
     final GlobalKey<FormState> dmKey = GlobalKey<FormState>();
     void _scrollDown() {
       widget.scrollController.animateTo(
-        widget.scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 200),
+        0.0,
+        duration: const Duration(milliseconds: 500),
         curve: Curves.fastOutSlowIn,
       );
     }
@@ -47,13 +50,19 @@ class _BodyState extends State<Body> {
       print(dmController.text);
       if (dmKey.currentState!.validate()) {
         _scrollDown();
-        // authProvider.createChat(
-        //   // message: dmController.text,
-        //   recipientId: widget.id!,
-        // );
+        authProvider.createChat(
+          message: {
+            'content': dmController.text,
+            'sender_Id': authProvider.user!.uid,
+            'timestamp': DateTime.now(),
+          },
+          recipientId: widget.id!,
+        );
         dmController.clear();
       }
     }
+
+    // get the chat messages function
 
     // chat page body
     return Container(
@@ -62,17 +71,20 @@ class _BodyState extends State<Body> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('Chats')
-                  .doc("${authProvider.user!.uid}, ${widget.id}")
-                  .collection('messages')
-                  .orderBy('timestamp', descending: true)
-                  .snapshots(),
+              stream: authProvider.getSingleChatStream(
+                user1: authProvider.user!.uid,
+                user2: widget.id!,
+              ),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return const CircularProgressIndicator();
+                  return const Center(
+                    child: CupertinoActivityIndicator(),
+                  );
                 }
-                List<DocumentSnapshot> messages = snapshot.data!.docs;
+
+                List<Map<String, dynamic>> messages = snapshot.data!.docs
+                    .map((e) => e.data() as Map<String, dynamic>)
+                    .toList();
                 return Scrollbar(
                   controller: widget.scrollController,
                   child: ListView.builder(
@@ -80,7 +92,7 @@ class _BodyState extends State<Body> {
                     reverse: true,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      DocumentSnapshot message = messages[index];
+                      Map<String, dynamic> message = messages[index];
                       bool isSender =
                           message['sender_Id'] == authProvider.user!.uid;
                       // chat page body chat bubble
@@ -93,20 +105,10 @@ class _BodyState extends State<Body> {
                           children: [
                             isSender
                                 ? SendChatBubble(
-                                    message: ChatMessage(
-                                      content: message['content'],
-                                      senderID: message['sender_Id'],
-                                      sentTime: DateTime.now(),
-                                      type: MessageType.text,
-                                    ),
+                                    message: message['content'],
                                   )
                                 : FromChatBubble(
-                                    message: ChatMessage(
-                                      content: message['content'],
-                                      senderID: message['sender_Id'],
-                                      sentTime: DateTime.now(),
-                                      type: MessageType.text,
-                                    ),
+                                    message: message['content'],
                                   ),
                           ],
                         ),
@@ -127,7 +129,9 @@ class _BodyState extends State<Body> {
                   child: Container(
                     padding: const EdgeInsets.only(left: 10),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: themeProvider.isDarkMode
+                          ? Colors.grey[800]
+                          : Colors.grey[200],
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Form(

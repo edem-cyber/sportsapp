@@ -9,6 +9,7 @@ import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/friends_page/widgets/friend.dart';
 import 'package:sportsapp/screens/friends_page/widgets/friend_request.dart';
+import 'package:sportsapp/screens/profile/profile.dart';
 
 class Body extends StatefulWidget {
   final TabController tabController;
@@ -73,21 +74,28 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                 initialData: const [],
                 future: getUidsOfFriends(),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting ||
-                      snapshot.hasError) {
+                  if (!snapshot.hasData || snapshot.hasError) {
                     return const Center(child: CupertinoActivityIndicator());
                   } else if (snapshot.hasData) {
-                    List<DocumentSnapshot> friendRequests = snapshot.data!;
+                    List<DocumentSnapshot> friends = snapshot.data!;
                     return ListView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 20),
-                      itemCount: friendRequests.length,
+                      itemCount: friends.length,
                       itemBuilder: (BuildContext context, int index) {
                         print(index);
                         return Friend(
-                          name: friendRequests[index]["displayName"],
-                          username: friendRequests[index]["username"],
-                          desc: friendRequests[index]["bio"],
-                          image: friendRequests[index]["photoURL"],
+                          name: friends[index]["displayName"],
+                          username: friends[index]["username"],
+                          desc: friends[index]["bio"],
+                          image: friends[index]["photoURL"],
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Profile(
+                                          id: friends[index].id,
+                                        )));
+                          },
                         );
                       },
                     );
@@ -118,7 +126,6 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                           onTap1: () {
                             authProvider
                                 .acceptFriendRequest(friendRequests[index].id);
-
                             setState(() {
                               friendRequests.removeAt(index);
                             });
