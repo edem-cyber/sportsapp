@@ -65,6 +65,7 @@ class _BodyState extends State<Body> {
             'content': dmController.text,
             'sender_Id': authProvider.user!.uid,
             'timestamp': DateTime.now(),
+            'type': 'text',
           },
           recipientId: widget.id!,
         );

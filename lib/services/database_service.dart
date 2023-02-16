@@ -147,6 +147,8 @@ class DatabaseService {
       if (!chatSnapshot.exists) {
         await chatRef.set({
           'members': [user1, user2],
+          'lastMessage': '',
+          'lastMessageTime': DateTime.now(),
         });
         await chatRef.collection("messages").add(message);
         await _firestore

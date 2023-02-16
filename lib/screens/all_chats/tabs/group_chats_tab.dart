@@ -4,9 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/direct_message_page/direct_message_page.dart';
-import 'package:sportsapp/screens/new_room_page/new_room_page.dart';
+import 'package:sportsapp/screens/group_chats_screen/group_chats_screen.dart';
 
 class GroupChatsTab extends StatefulWidget {
   const GroupChatsTab({
@@ -35,7 +36,114 @@ class _GroupChatsTabState extends State<GroupChatsTab>
           );
     }
 
+    TextEditingController roomTitleController = TextEditingController();
+    TextEditingController roomDescriptionController = TextEditingController();
+
+    final formKey = GlobalKey<FormState>();
+
+    TextFormField buildRoomTitleFormField() {
+      return TextFormField(
+        controller: roomTitleController,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return;
+          }
+          return;
+        },
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          hintText: "Enter Room Title",
+          // floatingLabelBehavior: FloatingLabelBehavior.always,
+        ),
+        onChanged: (value) {
+          value = roomTitleController.text;
+        },
+      );
+    }
+
+    TextFormField buildRoomDescriptionFormField() {
+      return TextFormField(
+        controller: roomDescriptionController,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return;
+          }
+          return;
+        },
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          hintText: "Enter Room Description",
+          // floatingLabelBehavior: FloatingLabelBehavior.always,
+        ),
+        onChanged: (value) {
+          value = roomDescriptionController.text;
+        },
+      );
+    }
+
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    Future<void> createRoom(
+        {required String roomName, required String description}) async {
+      final roomDoc = FirebaseFirestore.instance.collection('Rooms').doc();
+      final members = [authProvider.user!.uid];
+      final timestamp = FieldValue.serverTimestamp();
+      final senderRef = FirebaseFirestore.instance
+          .collection('Users')
+          .doc(authProvider.user!.uid);
+
+      print("ROOM TITLE: ${roomTitleController.text}");
+      print("ROOM DESCRIPTION: ${roomDescriptionController.text}");
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      batch.set(roomDoc, {
+        'roomName': roomName,
+        'description': description,
+        'members': members,
+        'admin': authProvider.user!.uid,
+        'lastMessage': 'Welcome to $roomName room!',
+        'lastMessageTimestamp': timestamp,
+        'roomImage': '',
+        'createdAt': timestamp
+      });
+
+      final messagesCollection = roomDoc.collection('messages');
+      final firstMessageDoc = messagesCollection.doc();
+
+      batch.set(firstMessageDoc, {
+        'senderId': senderRef,
+        'content': 'Welcome to $roomName group chat!',
+        'type': 'text',
+        'timestamp': timestamp
+      });
+
+      print('ROOM DOC ID IS: ${roomDoc.id}');
+
+      return batch.commit();
+    }
+
+    Stream<List<Map<String, dynamic>>> getUserRooms(String userId) {
+      return FirebaseFirestore.instance
+          .collection('Rooms')
+          .where('members', arrayContains: userId)
+          .snapshots()
+          .map((roomsSnapshot) => roomsSnapshot.docs.map((doc) {
+                final data = doc.data();
+                final id = doc.id;
+                final room = {
+                  'id': id,
+                  'roomName': data['roomName'],
+                  'description': data['description'],
+                  'members': List<String>.from(data['members']),
+                  'admin': data['admin'],
+                  'lastMessage': data['lastMessage'],
+                  'lastMessageTimestamp': data['lastMessageTimestamp'],
+                  'roomImage': data['roomImage'],
+                };
+                return room;
+              }).toList());
+    }
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -49,13 +157,146 @@ class _GroupChatsTabState extends State<GroupChatsTab>
                 CupertinoActionSheetAction(
                   child: const Text('Create Room'),
                   onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const NewRoomPage(),
-                        fullscreenDialog: true,
-                      ),
-                    );
+                    showModalBottomSheet(
+                        isDismissible: true,
+                        clipBehavior: Clip.antiAlias,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                        ),
+                        enableDrag: true,
+                        isScrollControlled: true,
+                        anchorPoint: const Offset(0, 1),
+                        context: context,
+                        builder: (context) {
+                          return Builder(builder: (context) {
+                            return Material(
+                              child: Form(
+                                key: formKey,
+                                child: SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.95,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      SafeArea(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 10,
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Container(
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              top: 20,
+                                                              bottom: 20),
+                                                      child: const Icon(
+                                                        Icons.close,
+                                                        size: 30,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              // const SizedBox(height: 10),
+                                              Text("Create a Room",
+                                                  style: Theme.of(context)
+                                                      .appBarTheme
+                                                      .titleTextStyle),
+                                              const SizedBox(height: 10),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 10,
+                                                        horizontal: 25),
+                                                decoration: BoxDecoration(
+                                                  color: kGrey.withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(32),
+                                                ),
+                                                child:
+                                                    buildRoomTitleFormField(),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 10,
+                                                        horizontal: 25),
+                                                decoration: BoxDecoration(
+                                                  color: kGrey.withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(32),
+                                                ),
+                                                child:
+                                                    buildRoomDescriptionFormField(),
+                                              ),
+                                              const SizedBox(height: 20),
+                                              //create room button
+                                              Container(
+                                                width: double.infinity,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 10,
+                                                        horizontal: 25),
+                                                decoration: BoxDecoration(
+                                                  color: kBlue,
+                                                  borderRadius:
+                                                      BorderRadius.circular(32),
+                                                ),
+                                                child: TextButton(
+                                                  onPressed: () async {
+                                                    if (!mounted) {
+                                                      return;
+                                                    }
+                                                    if (formKey.currentState!
+                                                        .validate()) {
+                                                      formKey.currentState!
+                                                          .save();
+
+                                                      try {
+                                                        await createRoom(
+                                                            roomName:
+                                                                roomTitleController
+                                                                    .text,
+                                                            description:
+                                                                roomDescriptionController
+                                                                    .text);
+                                                      } catch (e) {
+                                                        print(
+                                                            "CREATE ROOM ERROR: $e");
+                                                      }
+                                                      // check if mounted
+
+                                                    }
+                                                  },
+                                                  child: Text("Create Room",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyLarge!),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          });
+                        });
                   },
                 ),
               ],
@@ -67,14 +308,14 @@ class _GroupChatsTabState extends State<GroupChatsTab>
               ),
               message: const Text('Create a new room with your friends'),
             ),
-          );
+          ).then((value) => setState(() {}));
         },
         child: const Icon(Icons.add),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: chatsStream(authProvider.user!.uid),
+        stream: getUserRooms(authProvider.user!.uid),
         builder: (context, snapshot) {
-          var chats = snapshot.data ?? [];
+          var rooms = snapshot.data ?? [];
           if (!snapshot.hasData ||
               snapshot.hasError ||
               snapshot.connectionState == ConnectionState.waiting) {
@@ -110,10 +351,10 @@ class _GroupChatsTabState extends State<GroupChatsTab>
                 ),
               ),
             );
-          } else if (chats.isEmpty) {
+          } else if (rooms.isEmpty) {
             return const Center(
               child: Text(
-                'No Chats',
+                'Get started by creating a room',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 20.0,
@@ -123,7 +364,7 @@ class _GroupChatsTabState extends State<GroupChatsTab>
           } else if (snapshot.hasError) {
             return const Center(
               child: Text(
-                'Error',
+                'Error ',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 20.0,
@@ -132,118 +373,80 @@ class _GroupChatsTabState extends State<GroupChatsTab>
             );
           }
           return ListView.builder(
-            itemCount: chats.length,
+            itemCount: rooms.length,
             itemBuilder: (context, index) {
-              var chat = chats[index];
+              var chat = rooms[index];
               return Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 15.0,
                 ),
-                child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  future: authProvider.getProfileData(
-                    id: chat['members'][0] == authProvider.user!.uid
-                        ? chat['members'][1]
-                        : chat['members'][0],
+                child: ListTile(
+                  title: Text(
+                    chat['roomName'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  builder: (context, snapshot) {
-                    var user = snapshot.data != null
-                        ? snapshot.data!.data()
-                        : {
-                            'displayName': 'User',
-                            'username': 'User',
-                            'photoURL':
-                                'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
-                          };
-                    if (!snapshot.hasData ||
-                        snapshot.connectionState == ConnectionState.waiting) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                          vertical: 10.0,
+                  subtitle: Text(
+                    chat['description'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GroupChatsScreen(
+                          roomId: chat['roomId'],
+                          roomName: chat['roomName'],
+                          roomDescription: chat['description'],
+                          roomImage: chat['roomImage'],
+                          roomMembers: chat['roomMembers'],
                         ),
-                        child: Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!,
-                          highlightColor: Colors.grey[100]!,
-                          child: Row(
-                            children: [
-                              const CircleAvatar(
-                                radius: 22,
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      height: 10,
-                                      child: Container(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                      child: Container(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return const Center(child: CupertinoActivityIndicator());
-                    }
-                    if (snapshot.hasData) {
-                      return ListTile(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => DirectMessagePage(
-                                id: chat['members'][0] == authProvider.user!.uid
-                                    ? chat['members'][1]
-                                    : chat['members'][0],
-                              ),
-                            ),
-                          );
-                        },
-                        leading: CircleAvatar(
-                          radius: 25.0,
-                          backgroundImage: CachedNetworkImageProvider(
-                            user!['photoURL'] ??
-                                'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
-                          ),
-                        ),
-                        title: Text(
-                          user['displayName'] ?? user['username'] ?? 'User',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        trailing: Text(
-                          chat['lastMessageTime'] != null
-                              ? DateTime.fromMillisecondsSinceEpoch(
-                                      chat['lastMessageTime']!.seconds * 1000)
-                                  .toLocal()
-                                  .toString()
-                                  .substring(0, 16)
-                              : '',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      );
-                    }
-                    return const Center(
-                      child: CupertinoActivityIndicator(),
+                      ),
                     );
                   },
+                  leading: chat['roomImage'] != null
+                      ? chat['roomImage'] != ""
+                          ? Container(
+                              color: Colors.white,
+                              width: 50.0,
+                              height: 50.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: NetworkImage(chat['roomImage']),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              width: 50.0,
+                              height: 50.0,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey[400]!,
+                                ),
+                                shape: BoxShape.circle,
+                                //   color: Colors.grey,
+                                // color: Colors.white,
+                              ),
+                              child: const Center(
+                                child: Icon(Icons.group),
+                              ),
+                            )
+                      : Container(
+                          width: 50.0,
+                          height: 50.0,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey,
+                          ),
+                          child: const Center(
+                            child: Icon(Icons.group),
+                          ),
+                        ),
                 ),
               );
             },
@@ -254,6 +457,5 @@ class _GroupChatsTabState extends State<GroupChatsTab>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

@@ -33,7 +33,6 @@ class _PicksState extends State<Picks> {
         .snapshots();
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -45,8 +44,8 @@ class _PicksState extends State<Picks> {
 
   @override
   void dispose() {
-    searchController.dispose();
     super.dispose();
+    searchController.dispose();
   }
 
   @override
