@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
-import 'package:sportsapp/screens/friends_page/widgets/friend.dart';
+import 'package:sportsapp/widgets/friend.dart';
 import 'package:sportsapp/screens/friends_page/widgets/friend_request.dart';
 import 'package:sportsapp/screens/profile/profile.dart';
 

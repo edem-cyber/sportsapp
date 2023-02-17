@@ -7,7 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/direct_message_page/direct_message_page.dart';
-import 'package:sportsapp/screens/group_chats_screen/group_chats_screen.dart';
+import 'package:sportsapp/screens/group_chat_screen/group_chat_screen.dart';
 import 'package:sportsapp/services/database_service.dart';
 
 class GroupChatsTab extends StatefulWidget {
@@ -406,7 +406,7 @@ class _GroupChatsTabState extends State<GroupChatsTab>
                           roomName: chat['roomName'],
                           roomDescription: chat['description'],
                           roomImage: chat['roomImage'],
-                          roomMembers: chat['members'][0],
+                          roomMembers: chat['members'],
                         ),
                       ),
                     );

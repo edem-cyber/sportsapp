@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/screens/group_chats_screen/widgets/body.dart';
+import 'package:sportsapp/widgets/friend.dart';
+import 'package:sportsapp/screens/group_chat_screen/widgets/body.dart';
 
 class GroupChatsScreen extends StatefulWidget {
-  final String? roomName, roomId, roomDescription, roomImage, roomMembers;
+  final String? roomName, roomId, roomDescription, roomImage;
+  final List<String>? roomMembers;
   const GroupChatsScreen(
       {super.key,
       this.roomName,
@@ -27,6 +29,7 @@ class _GroupChatsScreenState extends State<GroupChatsScreen> {
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context);
+    var profile = authProvider.getProfileData(id: authProvider.user!.uid);
     mymodal() {
       return showModalBottomSheet(
           isDismissible: true,
@@ -66,12 +69,38 @@ class _GroupChatsScreenState extends State<GroupChatsScreen> {
                         "${widget.roomDescription}",
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
-                      Text("${widget.roomImage}"),
-                      FutureBuilder<Object>(
-                          future: null,
-                          builder: (context, snapshot) {
-                            return Text("${widget.roomMembers}");
-                          }),
+                      Text(
+                        "Members",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: widget.roomMembers!.length,
+                        itemBuilder: (context, index) {
+                          // String uid = widget.roomMembers![index];
+                          return FutureBuilder<
+                              DocumentSnapshot<Map<String, dynamic>>>(
+                            future: profile,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                Map<String, dynamic> userData =
+                                    snapshot.data!.data()!;
+                                // Display user information in a widget
+                                return Friend(
+                                  name: userData['displayName'],
+                                  desc: userData['bio'],
+                                  image: userData['photoURL'],
+                                  username: userData['username'],
+                                  onTap: () {},
+                                );
+                              } else {
+                                // Show a loading indicator while waiting for data
+                                return const CircularProgressIndicator();
+                              }
+                            },
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
