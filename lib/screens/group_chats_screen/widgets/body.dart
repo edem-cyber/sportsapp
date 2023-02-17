@@ -19,7 +19,14 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      
+      child: Column(
+        children: [
+          Text(widget.roomId ?? ''),
+          Text(widget.roomName ?? ''),
+          Text(widget.roomDescription ?? ''),
+          Text(widget.roomMembers ?? ''),
+        ],
+      ),
     );
   }
 }

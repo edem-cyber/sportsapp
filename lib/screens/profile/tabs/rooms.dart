@@ -59,12 +59,10 @@ class RoomProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     // list of colors that will be used to color the room
     final List<Color> colors = [
-      Colors.red,
       Colors.orange,
       Colors.teal,
-      // Colors.cyan,
+      Colors.cyan,
       Colors.brown,
-      Colors.grey,
       // Colors.lightBlue,
       Colors.lightGreen,
       Colors.deepOrange,

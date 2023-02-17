@@ -8,6 +8,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/direct_message_page/direct_message_page.dart';
 import 'package:sportsapp/screens/group_chats_screen/group_chats_screen.dart';
+import 'package:sportsapp/services/database_service.dart';
 
 class GroupChatsTab extends StatefulWidget {
   const GroupChatsTab({
@@ -25,16 +26,6 @@ class _GroupChatsTabState extends State<GroupChatsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
-    Stream<List<Map<String, dynamic>>> chatsStream(String currentUserUid) {
-      return FirebaseFirestore.instance
-          .collection('Chats')
-          .where('members', arrayContains: currentUserUid)
-          .snapshots()
-          .map(
-            (snapshot) => snapshot.docs.map((doc) => doc.data()).toList(),
-          );
-    }
 
     TextEditingController roomTitleController = TextEditingController();
     TextEditingController roomDescriptionController = TextEditingController();
@@ -86,14 +77,14 @@ class _GroupChatsTabState extends State<GroupChatsTab>
     Future<void> createRoom(
         {required String roomName, required String description}) async {
       final roomDoc = FirebaseFirestore.instance.collection('Rooms').doc();
+      var userDoc = FirebaseFirestore.instance
+          .collection(userCollection)
+          .doc(authProvider.user!.uid);
       final members = [authProvider.user!.uid];
       final timestamp = FieldValue.serverTimestamp();
       final senderRef = FirebaseFirestore.instance
           .collection('Users')
           .doc(authProvider.user!.uid);
-
-      print("ROOM TITLE: ${roomTitleController.text}");
-      print("ROOM DESCRIPTION: ${roomDescriptionController.text}");
 
       final batch = FirebaseFirestore.instance.batch();
 
@@ -118,8 +109,6 @@ class _GroupChatsTabState extends State<GroupChatsTab>
         'timestamp': timestamp
       });
 
-      print('ROOM DOC ID IS: ${roomDoc.id}');
-
       return batch.commit();
     }
 
@@ -127,6 +116,7 @@ class _GroupChatsTabState extends State<GroupChatsTab>
       return FirebaseFirestore.instance
           .collection('Rooms')
           .where('members', arrayContains: userId)
+          // .orderBy("lastMessageTimestamp")
           .snapshots()
           .map((roomsSnapshot) => roomsSnapshot.docs.map((doc) {
                 final data = doc.data();
@@ -139,10 +129,13 @@ class _GroupChatsTabState extends State<GroupChatsTab>
                   'admin': data['admin'],
                   'lastMessage': data['lastMessage'],
                   'lastMessageTimestamp': data['lastMessageTimestamp'],
+                  'createdAt': data['createdAt'],
                   'roomImage': data['roomImage'],
                 };
                 return room;
-              }).toList());
+              }).toList()
+                ..sort((a, b) => a['lastMessageTimestamp']
+                    .compareTo(b['lastMessageTimestamp'])));
     }
 
     return Scaffold(
@@ -255,30 +248,43 @@ class _GroupChatsTabState extends State<GroupChatsTab>
                                                       BorderRadius.circular(32),
                                                 ),
                                                 child: TextButton(
-                                                  onPressed: () async {
+                                                  onPressed: () {
                                                     if (!mounted) {
                                                       return;
                                                     }
                                                     if (formKey.currentState!
                                                         .validate()) {
+                                                      if (roomTitleController
+                                                          .text
+                                                          .trim()
+                                                          .isNotEmpty) {}
                                                       formKey.currentState!
                                                           .save();
 
                                                       try {
-                                                        await createRoom(
-                                                            roomName:
-                                                                roomTitleController
-                                                                    .text,
-                                                            description:
-                                                                roomDescriptionController
-                                                                    .text);
+                                                        createRoom(
+                                                                roomName:
+                                                                    roomTitleController
+                                                                        .text,
+                                                                description:
+                                                                    roomDescriptionController
+                                                                        .text)
+                                                            .then((value) {
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pop(
+                                                              context);
+                                                        });
                                                       } catch (e) {
                                                         print(
                                                             "CREATE ROOM ERROR: $e");
                                                       }
                                                       // check if mounted
-
-                                                    }
+                                                      roomTitleController
+                                                          .clear();
+                                                      roomDescriptionController
+                                                          .clear();
+                                                    } else {}
                                                   },
                                                   child: Text("Create Room",
                                                       style: Theme.of(context)
@@ -308,7 +314,7 @@ class _GroupChatsTabState extends State<GroupChatsTab>
               ),
               message: const Text('Create a new room with your friends'),
             ),
-          ).then((value) => setState(() {}));
+          );
         },
         child: const Icon(Icons.add),
       ),
@@ -316,9 +322,17 @@ class _GroupChatsTabState extends State<GroupChatsTab>
         stream: getUserRooms(authProvider.user!.uid),
         builder: (context, snapshot) {
           var rooms = snapshot.data ?? [];
-          if (!snapshot.hasData ||
-              snapshot.hasError ||
-              snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.hasError || !snapshot.hasData) {
+            return Center(
+              child: Text(
+                snapshot.error.toString(),
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 20.0,
+                ),
+              ),
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
             return Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 10.0,
@@ -361,16 +375,6 @@ class _GroupChatsTabState extends State<GroupChatsTab>
                 ),
               ),
             );
-          } else if (snapshot.hasError) {
-            return const Center(
-              child: Text(
-                'Error ',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 20.0,
-                ),
-              ),
-            );
           }
           return ListView.builder(
             itemCount: rooms.length,
@@ -398,11 +402,11 @@ class _GroupChatsTabState extends State<GroupChatsTab>
                       context,
                       MaterialPageRoute(
                         builder: (context) => GroupChatsScreen(
-                          roomId: chat['roomId'],
+                          roomId: chat['id'],
                           roomName: chat['roomName'],
                           roomDescription: chat['description'],
                           roomImage: chat['roomImage'],
-                          roomMembers: chat['roomMembers'],
+                          roomMembers: chat['members'][0],
                         ),
                       ),
                     );

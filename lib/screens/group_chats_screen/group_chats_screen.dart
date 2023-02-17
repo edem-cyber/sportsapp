@@ -1,7 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sportsapp/screens/group_chats_screen/body/body.dart';
+import 'package:provider/provider.dart';
+import 'package:sportsapp/helper/constants.dart';
+import 'package:sportsapp/providers/AuthProvider.dart';
+import 'package:sportsapp/providers/ThemeProvider.dart';
+import 'package:sportsapp/screens/group_chats_screen/widgets/body.dart';
 
-class GroupChatsScreen extends StatelessWidget {
+class GroupChatsScreen extends StatefulWidget {
   final String? roomName, roomId, roomDescription, roomImage, roomMembers;
   const GroupChatsScreen(
       {super.key,
@@ -12,18 +18,130 @@ class GroupChatsScreen extends StatelessWidget {
       this.roomMembers});
 
   @override
+  State<GroupChatsScreen> createState() => _GroupChatsScreenState();
+}
+
+class _GroupChatsScreenState extends State<GroupChatsScreen> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
   Widget build(BuildContext context) {
+    var authProvider = Provider.of<AuthProvider>(context);
+    mymodal() {
+      return showModalBottomSheet(
+          isDismissible: true,
+          clipBehavior: Clip.antiAlias,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          enableDrag: true,
+          isScrollControlled: true,
+          anchorPoint: const Offset(0, 1),
+          context: context,
+          builder: (BuildContext context) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    children: [
+                      Text(
+                        "Group details",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      Text(
+                        "${widget.roomName}",
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 25,
+                            ),
+                      ),
+                      Text(
+                        "${widget.roomDescription}",
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      Text("${widget.roomImage}"),
+                      FutureBuilder<Object>(
+                          future: null,
+                          builder: (context, snapshot) {
+                            return Text("${widget.roomMembers}");
+                          }),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+    }
+
+    var themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text(roomName ?? "Room"),
-        centerTitle: true,
-      ),
+          centerTitle: true,
+          actions: [
+            widget.roomImage != null && widget.roomImage != ''
+                ? GestureDetector(
+                    onTap: (() {
+                      // open cupertino modal and show details
+                      mymodal();
+                    }),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.roomImage!,
+                      imageBuilder: (context, imageProvider) => Container(
+                        width: 40.0,
+                        height: 40.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
+                        ),
+                      ),
+                      placeholder: (context, url) => const SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
+                  )
+                : const SizedBox(width: 40),
+            GestureDetector(
+              onTap: (() {
+                mymodal();
+              }),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: CircleAvatar(
+                  foregroundColor:
+                      themeProvider.isDarkMode ? Colors.white : kBlue,
+                  child: const Icon(Icons.group),
+                ),
+              ),
+            )
+          ],
+          title: GestureDetector(
+            onTap: (() {
+              mymodal();
+            }),
+            child: Text(
+              widget.roomName!,
+            ),
+          )),
       body: Body(
-        roomId: roomId,
-        roomName: roomName,
-        roomDescription: roomDescription,
-        roomImage: roomImage,
-        roomMembers: roomMembers,
+        roomId: widget.roomId,
+        roomName: widget.roomName,
+        roomDescription: widget.roomDescription,
+        roomImage: widget.roomImage,
+        roomMembers: widget.roomMembers,
       ),
     );
   }

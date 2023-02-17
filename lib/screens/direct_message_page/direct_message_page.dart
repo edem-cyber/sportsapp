@@ -1,28 +1,36 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/direct_message_page/body/body.dart';
 
-class DirectMessagePage extends StatelessWidget {
+class DirectMessagePage extends StatefulWidget {
+  const DirectMessagePage({super.key, this.id});
+
   static const routeName = '/direct_message';
-  String? id;
-  DirectMessagePage({super.key, this.id});
+
+  final String? id;
+
+  @override
+  State<DirectMessagePage> createState() => _DirectMessagePageState();
+}
+
+class _DirectMessagePageState extends State<DirectMessagePage> {
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     // function that takes id and returns user object from Firestore
     final userProfile =
         Provider.of<AuthProvider>(context, listen: false).getProfileData(
-      id: id!,
+      id: widget.id!,
     );
 
     final getSingleChatStream =
         Provider.of<AuthProvider>(context, listen: false).getSingleChatStream(
       user1: Provider.of<AuthProvider>(context, listen: false).user!.uid,
-      user2: id!,
+      user2: widget.id!,
     );
 
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -34,26 +42,29 @@ class DirectMessagePage extends StatelessWidget {
             centerTitle: true,
             actions: [
               profile != null && profile['photoURL'] != null
-                  ? CachedNetworkImage(
-                      imageUrl: profile['photoURL'],
-                      imageBuilder: (context, imageProvider) => Container(
-                        width: 40.0,
-                        height: 40.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                              image: imageProvider, fit: BoxFit.cover),
+                  ? GestureDetector(
+                      onTap: () {},
+                      child: CachedNetworkImage(
+                        imageUrl: profile['photoURL'],
+                        imageBuilder: (context, imageProvider) => Container(
+                          width: 40.0,
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                                image: imageProvider, fit: BoxFit.cover),
+                          ),
                         ),
-                      ),
-                      placeholder: (context, url) => const SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: Center(
-                          child: CircularProgressIndicator(),
+                        placeholder: (context, url) => const SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
                         ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
                     )
                   : const SizedBox(width: 40),
               const SizedBox.shrink()
@@ -61,11 +72,11 @@ class DirectMessagePage extends StatelessWidget {
             title: Text(profile!['displayName'] ?? profile['username'] ?? ''),
           ),
           body: Body(
-            id: id,
+            id: widget.id,
             name: profile['displayName'],
             username: profile['username'],
             image: profile['photoURL'],
-            scrollController: ScrollController(),
+            scrollController: scrollController,
           ),
         );
       },

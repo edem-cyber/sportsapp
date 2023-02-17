@@ -333,21 +333,6 @@ class _BodyState extends State<Body> {
                         child: Form(
                           key: chatMessageKey,
                           child: TextFormField(
-                            // onChanged: (value) {
-                            //   if (value.isEmpty) {
-                            //     setState(() {
-                            //       getIsButtonEnabled();
-                            //     });
-                            //   }
-                            // },
-                            // validator: (value) {
-                            //   // var isValid = validateChatMessage(value!);
-
-                            //   if (chatMessageKey.currentState!.validate()) {
-                            //   } else {
-                            //     return null;
-                            //   }
-                            // },
                             style: Theme.of(context).textTheme.bodyLarge,
                             maxLines: 1,
                             controller: textController,
@@ -368,10 +353,9 @@ class _BodyState extends State<Body> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        if (chatMessageKey.currentState!.validate()) {
-                          if (textController.text.trim().isNotEmpty) {
-                            sendMessage();
-                          }
+                        if (chatMessageKey.currentState!.validate() &&
+                            textController.text.trim().isNotEmpty) {
+                          sendMessage();
                         }
                       },
                       child: Container(
@@ -397,9 +381,9 @@ class _BodyState extends State<Body> {
 }
 
 class MyHeader extends StatelessWidget {
-  String? text;
-  String? heading;
-  MyHeader({
+  final String? text;
+  final String? heading;
+  const MyHeader({
     Key? key,
     this.text,
     this.heading,
