@@ -35,7 +35,7 @@ class _BodyState extends State<Body>
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var navigationService = Provider.of<NavigationService>(context);
     var themeProvider = Provider.of<ThemeProvider>(context);
-    var tabController = TabController(length: 3, vsync: this);
+    var tabController = TabController(length: 2, vsync: this);
     var userProfile = authProvider.getProfileData(id: widget.id);
     var userData = authProvider.getUserData();
 
@@ -417,9 +417,6 @@ class _BodyState extends State<Body>
                           Tab(
                             text: "Rooms",
                           ),
-                          Tab(
-                            text: "Media",
-                          )
                         ],
                       ),
                       SizedBox(
@@ -429,11 +426,9 @@ class _BodyState extends State<Body>
                           // viewportFraction: 0.8,
                           // controller: tabController,
                           children: [
-                            LikesTab(
-                              id: widget.id,
-                            ),
-                            const RoomsTab(),
-                            const MediaTab(),
+                            LikesTab(id: widget.id),
+                            RoomsTab(id: widget.id),
+                            // const MediaTab(),
                           ],
                         ),
                       ),

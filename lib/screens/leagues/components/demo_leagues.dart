@@ -22,7 +22,7 @@ List<Map<String, String>> demoLeagues = [
     'code': 'PD',
     'countryCode': 'Spain',
     'countryName': 'Spain',
-    'logo': 'assets/icons/laliga.png',
+    // 'logo': 'assets/icons/laliga.png',
     'isFavorite': "false",
   },
   {
@@ -31,7 +31,7 @@ List<Map<String, String>> demoLeagues = [
     'name': 'Serie A',
     'countryCode': 'Italy',
     'countryName': 'Italy',
-    'logo': 'assets/icons/seriea.png',
+    // 'logo': 'assets/icons/seriea.png',
     'isFavorite': "false",
   },
   {

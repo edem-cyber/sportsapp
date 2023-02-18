@@ -40,10 +40,7 @@ class _LeagueScreenState extends State<LeagueScreen>
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
       List<dynamic> leagues = data['competitions'];
-      //convert dynamic list to list of league objects
       leaguesList = leagues.map((e) => League.fromJson(e)).toList();
-      // print("LEAGUE LIST: $leaguesList");
-      // return data;
       print("STATUS: ${response.statusCode}");
     } else {}
     return leaguesList;
@@ -58,10 +55,6 @@ class _LeagueScreenState extends State<LeagueScreen>
   @override
   Widget build(BuildContext context) {
     var leaguesProvider = Provider.of<LeaguesProvider>(context);
-    //leagues list from provider api
-    // var leagues = leaguesProvider.fetchLeaguesList();
-    //convert to list of league items
-    // var leaguesList = leagues.map((e) => LeagueItem(e)).toList();
     var authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
@@ -126,14 +119,6 @@ class _LeagueScreenState extends State<LeagueScreen>
         ),
         //,
       ),
-      // body: Center(
-      //   child: ElevatedButton(
-      //     onPressed: () {
-      //       getallleagues();
-      //     },
-      //     child: const Text('Get all leagues'),
-      //   ),
-      // ),
       body: FutureBuilder<List<League>>(
         future: leaguesShown,
         // initialData: const <String, dynamic>{},
@@ -164,24 +149,7 @@ class _LeagueScreenState extends State<LeagueScreen>
                       );
                       // print("LEAGUE CODE: ${snapshot.data![index].code}");
                     },
-                    // leading: CircleAvatar(
-                    //   radius: 20,
-                    //   backgroundColor: kWhite,
-                    //   backgroundImage: CachedNetworkImageProvider(
-                    //     snapshot.data![index].emblem!,
-                    //     errorListener: () {
-                    //       Shimmer.fromColors(
-                    //         baseColor: const Color(0xFF8F8F8F),
-                    //         highlightColor: Colors.white,
-                    //         child: Container(
-                    //           width: 40,
-                    //           height: 40,
-                    //           color: Colors.white,
-                    //         ),
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
+
                     leading: CircleAvatar(
                       backgroundColor: kWhite,
                       radius: 50,
@@ -241,17 +209,3 @@ class _LeagueScreenState extends State<LeagueScreen>
     );
   }
 }
-
-
-// AppBar(
-//       scrolledUnderElevation: 3,
-//       leading: Padding(
-//         padding: const EdgeInsets.only(left: 20, right: 0, top: 0, bottom: 0),
-//         child: CircleAvatar(
-//           // ignore: prefer_if_null_operators
-//           backgroundImage: NetworkImage(url),
-//           radius: 15,
-//         ),
-//       ),
-//       title: const Text(''),
-//     );
