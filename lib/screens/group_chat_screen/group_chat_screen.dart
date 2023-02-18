@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
@@ -28,6 +29,7 @@ class _GroupChatsScreenState extends State<GroupChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // print(widget.roomId);
     var authProvider = Provider.of<AuthProvider>(context);
     var profile = authProvider.getProfileData(id: authProvider.user!.uid);
     mymodal() {
@@ -71,7 +73,10 @@ class _GroupChatsScreenState extends State<GroupChatsScreen> {
                       ),
                       Text(
                         "Members",
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(color: kBlue),
                       ),
                       ListView.builder(
                         shrinkWrap: true,
@@ -80,7 +85,8 @@ class _GroupChatsScreenState extends State<GroupChatsScreen> {
                           // String uid = widget.roomMembers![index];
                           return FutureBuilder<
                               DocumentSnapshot<Map<String, dynamic>>>(
-                            future: profile,
+                            future: authProvider.getProfileData(
+                                id: widget.roomMembers![index]),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 Map<String, dynamic> userData =
@@ -95,7 +101,12 @@ class _GroupChatsScreenState extends State<GroupChatsScreen> {
                                 );
                               } else {
                                 // Show a loading indicator while waiting for data
-                                return const CircularProgressIndicator();
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 3,
+                                  ),
+                                  child: CupertinoActivityIndicator(),
+                                );
                               }
                             },
                           );

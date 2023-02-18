@@ -3,12 +3,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sportsapp/models/ChatMessageModel.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/models/PickReply.dart';
-import 'package:sportsapp/screens/picks/picks.dart';
-
-// Models
 
 const String userCollection = 'Users';
 const String userNamesCollection = 'Usernames';
@@ -106,32 +102,6 @@ class DatabaseService {
     return messages.docs.first;
   }
 
-  //   // await chatRef.set({
-  //   //   'messages': [chatMessage.toJson()],
-  //   // });
-
-  //   // add chat to sender and reciever docs in users collection as subcollection
-  //   await _dataBase
-  //       .collection('Users')
-  //       .doc(message.senderID)
-  //       .collection('Chats')
-  //       .doc("$chatId ")
-  //       .set({"chats.$chatId": chatRef});
-
-  //   await _dataBase
-  //       .collection('Users')
-  //       .doc(recipientId)
-  //       .collection('Chats')
-  //       .doc("/Chats/$chatId");
-  //   // .set({"chats.$chatId": chatRef});
-
-  //   // await chatRef.update({
-  //   //   'members': [message.senderID, recipientId],
-  //   // });
-
-  //   // await chatRef.collection("messages").add(chatMessage.toJson());
-  // }
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> createChat(
@@ -147,7 +117,7 @@ class DatabaseService {
       if (!chatSnapshot.exists) {
         await chatRef.set({
           'members': [user1, user2],
-          'lastMessage': '',
+          'lastMessage': message["content"],
           'lastMessageTime': DateTime.now(),
         });
         await chatRef.collection("messages").add(message);
@@ -175,9 +145,6 @@ class DatabaseService {
     required String user1,
     required String user2,
   }) {
-    // String chatId = "$user1-$user2";
-    // make chatId the same for both users
-    // help me wrrite the chatid to be one for both users
     List<String> sortedMembers = [user1, user2]..sort();
     String chatId = sortedMembers.join('-');
 
@@ -188,32 +155,6 @@ class DatabaseService {
         .orderBy('timestamp', descending: true)
         .snapshots();
   }
-
-//get likes from likes array
-
-  // Stream<QuerySnapshot> streamMessagesForChatPage(String chatId) {
-  //   return _dataBase
-  //       .collection(chatCollection)
-  //       .doc(chatId)
-  //       .collection(messagesCollection)
-  //       .orderBy('sent_time', descending: false)
-  //       .snapshots();
-  // }
-
-  // // // * Add messages to the firestore databse
-  // Future<void> addMessagesToChat(String chatId, ChatMessage message) async {
-  //   try {
-  //     await _dataBase
-  //         .collection(chatCollection)
-  //         .doc(chatId)
-  //         .collection(messagesCollection)
-  //         .add(
-  //           message.toJson(),
-  //         );
-  //   } catch (error) {
-  //     debugPrint('$error');
-  //   }
-  // }
 
 //* Update time
   Future<void> updateUserLastSeenTime({required String uid}) async {
@@ -446,61 +387,6 @@ class DatabaseService {
     return users;
   }
 
-  // Future<bool> setBookmarks(
-  //     {required String sneurceName,
-  //     required String imageUrl,
-  //     required String title,
-  //     required String description,
-  //     required String url,
-  //     required String author,
-  //     required String publishDate,
-  //     required String uid}) async {
-  //   // FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  //   try {
-  //     await _dataBase
-  //         .collection(userCollection)
-  //         .doc(uid)
-  //         .collection(postDoc)
-  //         .doc(title)
-  //         .set({
-  //       "sourceName": sourceName,
-  //       "imageUrl": imageUrl,
-  //       "title": title,
-  //       "description": description,
-  //       "url": url,
-  //       "author": author,
-  //       "publishDate": publishDate,
-  //     });
-  //     return true;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
-
-  // Future<bool> likePost(String uid, String postUrl) async {
-  //   try {
-  //     await _dataBase
-  //         .collection(userCollection)
-  //         .doc(uid)
-  //         .collection(postDoc)
-  //         .doc(postUrl)
-  //         .set({
-  //       "postUrl": postUrl,
-  //     });
-  //     return true;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
-
-  //boolean function to check if the user is already in the database
-  // Future<bool> isUserInDB(String uid) async {
-  //   QuerySnapshot query = await _dataBase
-  //       .collection(userCollection)
-  //       .where('uid', isEqualTo: uid)
-  //       .get();
-  //   return query.docs.length > 0;
-
   Future<List<String>> getLikedPostsArray({required String uid}) async {
     List<String> likeList = [];
 
@@ -525,7 +411,6 @@ class DatabaseService {
 
   //delete pick from firestore
   Future deletePick({required String id}) {
-    //search pick by index and delete it
     return _dataBase.collection('Picks').doc(id).delete();
   }
 
@@ -551,8 +436,6 @@ class DatabaseService {
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> getAllPicks() async {
-    // return await _dataBase.collection('Picks').get();
-    // get picks and order by created_at
     return await _dataBase
         .collection('Picks')
         .orderBy('created_at', descending: false)

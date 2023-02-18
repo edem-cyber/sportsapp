@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
+import 'package:sportsapp/models/ChatMessageModel.dart';
 import 'package:sportsapp/models/PickReply.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/comments_page/widgets/comment.dart';
@@ -35,6 +36,7 @@ class _BodyState extends State<Body> {
   }
 
   TextEditingController textController = TextEditingController();
+  late File? _imageFile;
 
   @override
   void dispose() {
@@ -124,19 +126,37 @@ class _BodyState extends State<Body> {
       return isButtonEnabled;
     }
 
-    void sendMessage() {
+    void sendMessage() async {
       if (chatMessageKey.currentState!.validate()) {
         _scrollDown();
 
-        authProvider.addPickReply(
-          PickReply(
-            text: textController.text,
-            timestamp: Timestamp.now().toString(),
-            author: authProvider.user!.uid,
-          ),
-          widget.id!,
-        );
+        if (_imageFile != null) {
+          // send image and pick reply
+          await authProvider.addPickReply(
+            // _imageFile!,
+            PickReply(
+              text: _imageFile!.readAsStringSync(),
+              timestamp: Timestamp.now().toString(),
+              author: authProvider.user!.uid,
+              type: 'image',
+            ),
+            widget.id!,
+          );
+        } else {
+          // send only pick reply
+          authProvider.addPickReply(
+            PickReply(
+              text: textController.text,
+              timestamp: Timestamp.now().toString(),
+              author: authProvider.user!.uid,
+            ),
+            widget.id!,
+          );
+        }
         textController.clear();
+        setState(() {
+          _imageFile = null;
+        });
       }
     }
 

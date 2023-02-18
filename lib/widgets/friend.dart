@@ -71,7 +71,8 @@ class Friend extends StatelessWidget {
                   ),
                   Text(
                     desc,
-                    maxLines: 3,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],

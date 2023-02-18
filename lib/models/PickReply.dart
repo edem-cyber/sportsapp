@@ -5,13 +5,15 @@ class PickReply {
   final String? author;
   final String? timestamp;
   final String? postId;
+  final String? type;
 
-  PickReply({this.text, this.author, this.timestamp, this.postId});
+  PickReply({this.type, this.text, this.author, this.timestamp, this.postId});
 
   PickReply.fromJson(Map<String, dynamic> json)
       : text = json['text'],
         author = json['author'],
         timestamp = json['timestamp'],
+        type = json['type'],
         postId = json['postId'];
 
   Map<String, dynamic> toJson() => {
@@ -19,10 +21,11 @@ class PickReply {
         'author': author,
         'timestamp': timestamp,
         'postId': postId,
+        'type': type
       };
 
   @override
   String toString() {
-    return 'PickReply{text: $text, author: $author, timestamp: $timestamp, postId: $postId}';
+    return 'PickReply{text: $text, author: $author, timestamp: $timestamp, postId: $postId ,text: $text, $type: type}';
   }
 }

@@ -10,6 +10,9 @@ import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/comments_page/comments_page.dart';
 import 'package:sportsapp/screens/picks/widgets/room.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Body extends StatefulWidget {
   int? reply;
@@ -34,6 +37,17 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
+    // Future<File?> pickImage(ImageSource source) async {
+    //   final pickedFile = await ImagePicker().pickImage(source: source);
+    //   if (pickedFile == null) return null;
+
+    //   final appDir = await getApplicationDocumentsDirectory();
+    //   final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    //   final file = File('${appDir.path}/$fileName');
+    //   final savedImage = await pickedFile.copy(file.path);
+    //   return savedImage;
+    // }
+
     var navigationService = Provider.of<NavigationService>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var getAllPicks = authProvider.getAllPicks();

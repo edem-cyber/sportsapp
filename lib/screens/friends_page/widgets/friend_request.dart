@@ -75,8 +75,10 @@ class _FriendRequestState extends State<FriendRequest> {
                   width: 4,
                 ),
                 Text(
-                  widget.bio,
-                  maxLines: 3,
+                  widget.bio.length > 10
+                      ? widget.bio.substring(0, 10)
+                      : widget.bio,
+                  maxLines: 1,
                   style: Theme.of(context).textTheme.bodySmall,
                   // maxLines: ,
                 ),

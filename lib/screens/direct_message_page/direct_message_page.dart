@@ -22,10 +22,8 @@ class _DirectMessagePageState extends State<DirectMessagePage> {
   @override
   Widget build(BuildContext context) {
     // function that takes id and returns user object from Firestore
-    final userProfile =
-        Provider.of<AuthProvider>(context, listen: false).getProfileData(
-      id: widget.id!,
-    );
+    final userProfile = Provider.of<AuthProvider>(context, listen: false)
+        .getProfileData(id: widget.id!);
 
     final getSingleChatStream =
         Provider.of<AuthProvider>(context, listen: false).getSingleChatStream(

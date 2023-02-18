@@ -82,9 +82,9 @@ class _GroupChatsTabState extends State<GroupChatsTab>
           .doc(authProvider.user!.uid);
       final members = [authProvider.user!.uid];
       final timestamp = FieldValue.serverTimestamp();
-      final senderRef = FirebaseFirestore.instance
-          .collection('Users')
-          .doc(authProvider.user!.uid);
+      // final senderRef = FirebaseFirestore.instance
+      //     .collection('Users')
+      //     .doc(authProvider.user!.uid);
 
       final batch = FirebaseFirestore.instance.batch();
 
@@ -103,7 +103,7 @@ class _GroupChatsTabState extends State<GroupChatsTab>
       final firstMessageDoc = messagesCollection.doc();
 
       batch.set(firstMessageDoc, {
-        'senderId': senderRef,
+        'senderId': authProvider.user!.uid,
         'content': 'Welcome to $roomName group chat!',
         'type': 'text',
         'timestamp': timestamp

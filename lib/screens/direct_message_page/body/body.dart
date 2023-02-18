@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sportsapp/models/ChatMessageModel.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/screens/direct_message_page/body/from_chat_bubble.dart';
@@ -25,17 +24,16 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  final TextEditingController dmController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     print("${widget.id}, ${widget.name}, ${widget.username}, ${widget.image}");
   }
 
-  final TextEditingController dmController = TextEditingController();
-
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
 
     widget.scrollController.dispose();
