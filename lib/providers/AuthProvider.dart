@@ -18,16 +18,16 @@ import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/notification.dart';
 import 'package:http/http.dart' as http;
 //import cloud functions
-import 'package:cloud_functions/cloud_functions.dart';
+// import 'package:cloud_functions/cloud_functions.dart';
 
 class AuthProvider with ChangeNotifier {
   //initialize shared preferences
   // FirebaseAuth _auth;
   late final FirebaseAuth _auth;
   //cloud function instance firestore
-  final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-    'addUser',
-  );
+  // final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+  //   'addUser',
+  // );
   // late StorageManager _storageManager;
   late final DatabaseService _databaseService;
   DatabaseService get databaseService => _databaseService;
@@ -128,7 +128,7 @@ class AuthProvider with ChangeNotifier {
                   var isInFireStoreDoc = await checkUserDocument(fireUser.uid);
                   // _navigationService.signOutWithAnimation(SignIn.routeName);
                   if (isInFireStoreDoc != true) {
-                    _navigationService.openFullScreenDialog(SignUp());
+                    _navigationService.openFullScreenDialog(const SignUp());
                     appNotification(
                         title: "Sign Up",
                         message: "Please Sign Up Again",
