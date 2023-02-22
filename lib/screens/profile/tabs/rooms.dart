@@ -93,45 +93,32 @@ class RoomProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // list of colors that will be used to color the room
     final List<Color> colors = [
       Colors.orange,
       Colors.teal,
       Colors.cyan,
       Colors.brown,
-      // Colors.lightBlue,
       Colors.lightGreen,
       Colors.deepOrange,
       Colors.deepPurple,
       Colors.blueGrey,
     ];
 
-    // function to pick random color from the list
     Color getRandomColor() {
-      final _random = Random();
-      return colors[_random.nextInt(colors.length)];
+      final random = Random();
+      return colors[random.nextInt(colors.length)];
     }
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.3,
       decoration: BoxDecoration(
-        // color: Colors.white,
         borderRadius: BorderRadius.circular(5),
         color: getRandomColor(),
-        // boxShadow: const [
-        //   BoxShadow(
-        //     // color: Colors.grey.withOpacity(0.5),
-        //     spreadRadius: 1,
-        //     blurRadius: 7,
-        //     offset: Offset(0, 3), // changes position of shadow
-        //   ),
-        // ],
       ),
       height: 80,
       child: Center(
         child: Text("$name", style: const TextStyle(color: Colors.white)),
       ),
-      // loop through the colors list and pick a random color
     );
   }
 }

@@ -109,6 +109,21 @@ class _BaseState extends State<Base> {
                           FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                               future: userDataStream,
                               builder: (context, snapshot) {
+                                var user = snapshot.data != null
+                                    ? snapshot.data!.data()
+                                    : {
+                                        'displayName': 'USER',
+                                        'username': 'USER',
+                                        'photoURL':
+                                            'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
+                                        'email': 'USER',
+                                        'bio': 'USER',
+                                        'password': "USER",
+                                        'lastSeen': DateTime.now(),
+                                        'createdAt': DateTime.now(),
+                                        'liked_posts': [],
+                                        'isAdmin': false,
+                                      };
                                 if (!snapshot.hasData ||
                                     snapshot.error != null) {
                                   return Container(
@@ -144,8 +159,7 @@ class _BaseState extends State<Base> {
                                         decoration:
                                             const BoxDecoration(color: kBlue),
                                         accountName: Text(
-                                          snapshot.data!['displayName'] ??
-                                              'Error',
+                                          user!['displayName'] ?? 'Error',
                                           style: const TextStyle(
                                               color: kWhite, fontSize: 12),
                                         ),
@@ -155,7 +169,7 @@ class _BaseState extends State<Base> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              snapshot.data!['username'],
+                                              user['username'],
                                               style: const TextStyle(
                                                 color: kWhite,
                                                 fontSize: 12,
@@ -166,14 +180,15 @@ class _BaseState extends State<Base> {
                                                 future:
                                                     authProvider.getFriends(),
                                                 builder: (context, snapshot) {
+                                                  var friends =
+                                                      snapshot.data ?? [];
                                                   return Text.rich(
                                                     TextSpan(
                                                       //align children center
                                                       children: <InlineSpan>[
                                                         TextSpan(
                                                           text: snapshot.hasData
-                                                              ? snapshot
-                                                                  .data!.length
+                                                              ? friends.length
                                                                   .toString()
                                                               : "0",
                                                           style: Theme.of(
@@ -191,8 +206,7 @@ class _BaseState extends State<Base> {
                                                           // if more than 1 friend, add an 's'
                                                           text: snapshot
                                                                       .hasData &&
-                                                                  snapshot.data!
-                                                                          .length >
+                                                                  friends.length >
                                                                       1
                                                               ? " friends"
                                                               : " friend",
@@ -219,8 +233,7 @@ class _BaseState extends State<Base> {
                                         currentAccountPicture:
                                             CachedNetworkImage(
                                           fit: BoxFit.cover,
-                                          imageUrl: snapshot
-                                                  .data!['photoURL'] ??
+                                          imageUrl: user['photoURL'] ??
                                               AppImage.defaultProfilePicture2,
                                           imageBuilder:
                                               (context, imageProvider) =>

@@ -49,6 +49,8 @@ class DatabaseService {
     }
   }
 
+  
+
   Future<DocumentSnapshot<Map<String, dynamic>>> getUser(
       {required String uid}) async {
     return await _dataBase.collection(userCollection).doc(uid).get();

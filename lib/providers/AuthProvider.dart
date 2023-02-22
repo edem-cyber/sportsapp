@@ -12,6 +12,7 @@ import 'package:sportsapp/models/ChatMessageModel.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/models/PickReply.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
+import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/notification.dart';
@@ -58,41 +59,6 @@ class AuthProvider with ChangeNotifier {
     return _deviceInfo;
   }
 
-  // void loadInfo() async {
-  //   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-
-  //   if (kIsWeb) {
-  //     WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
-  //     // e.g. "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0"
-  //     print('Web - Running on ${webBrowserInfo.userAgent}');
-  //     // setState(() {text = webBrowserInfo.toMap().toString();});
-  //   } else if (Platform.isIOS) {
-  //     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-  //     print('iOS - Running on ${iosInfo.utsname.machine}'); // e.g. "iPod7,1"
-  //     // setState(() {text = iosInfo.toMap().toString();});
-  //     // text = iosInfo.toMap().toString();
-  //     notifyListeners();
-  //   } else if (Platform.isAndroid) {
-  //     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-  //     print('Android - Running on ${androidInfo.model}'); // e.g. "Moto G (4)"
-  //     // setState(() {text = androidInfo.toMap().toString();});
-  //   } else if (Platform.isWindows) {
-  //     WindowsDeviceInfo windowsInfo = await deviceInfo.windowsInfo;
-  //     print(windowsInfo.toMap().toString());
-  //     // setState(() {text = windowsInfo.toMap().toString();});
-  //   } else if (Platform.isMacOS) {
-  //     MacOsDeviceInfo macOSInfo = await deviceInfo.macOsInfo;
-  //     print(macOSInfo.toMap().toString());
-  //     // setState(() {text = macOSInfo.toMap().toString();});
-  //   } else if (Platform.isLinux) {
-  //     LinuxDeviceInfo linuxInfo = await deviceInfo.linuxInfo;
-  //     print(linuxInfo.toMap().toString());
-  //     // setState(() {text = linuxInfo.toMap().toString();});
-  //   }
-  // }
-  //posts list from firebase
-  // get storageManager => _storageManager;
-
   //isLoading is used to show the loading indicator when signing in or out
   bool _isLoading = false;
   get isLoading => _isLoading;
@@ -102,10 +68,34 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  User? get user => _auth.currentUser;
+
   Stream<User?> get authState => _auth.idTokenChanges();
 
+  // Future<void> _onAuthStateChanged(User? firebaseUser) async {
+  //   if (firebaseUser == null) {
+  //     user = null;
+  //     notifyListeners();
+  //     return;
+  //   }
+
+  //   final email = firebaseUser.email;
+  //   final querySnapshot = await FirebaseFirestore.instance
+  //       .collection('Users')
+  //       .where('email', isEqualTo: email)
+  //       .get();
+  //   if (querySnapshot.docs.isEmpty) {
+  //     // The user doesn't exist in the Firestore Users collection
+  //     // Redirect them to the sign-up page
+  //     // ...
+  //     // You can navigate to the sign-up page here
+  //   } else {
+  //     user = firebaseUser;
+  //     notifyListeners();
+  //   }
+  // }
+
   // User? _user;
-  User? get user => _auth.currentUser;
 
   GoogleSignIn? _googleSignIn;
   //google sign in accounnt
@@ -115,20 +105,6 @@ class AuthProvider with ChangeNotifier {
   AuthProvider() {
     // posts = _databaseService.getFollowedTopics();
     _deviceInfo = DeviceInfoPlugin();
-
-    // getDeviceInfo().then((value) {
-    //   if (value != null) {
-    //     _deviceInfo = value.toString();
-    //     notifyListeners();
-    //   }
-    // });
-    // getDeviceInfo().then((value) {
-    //   if (value != null) {
-    //     var mystring = value.toString();
-    //     //get
-    //     debugPrint("DEVICE INFO HERE: $mystring");
-    //   }
-    // });
 
     _auth = FirebaseAuth.instance;
     _databaseService = DatabaseService();
@@ -143,12 +119,22 @@ class AuthProvider with ChangeNotifier {
           _databaseService.updateUserLastSeenTime(uid: fireUser.uid);
           // debugPrint("UID IN LISTEN METHOD: $fireUser.uid");
           _databaseService.getUser(uid: fireUser.uid).then(
-            (snapshot) {
+            (snapshot) async {
               // * Check if the documentSnapshot exists or not.
               if (snapshot.exists) {
-                final userData = snapshot.data() as Map<String, dynamic>?;
+                final userData = snapshot.data();
                 //* Check if the document object is null or not
-                if (userData != null) {}
+                if (userData != null) {
+                  var isInFireStoreDoc = await checkUserDocument(fireUser.uid);
+                  // _navigationService.signOutWithAnimation(SignIn.routeName);
+                  if (isInFireStoreDoc != true) {
+                    _navigationService.openFullScreenDialog(SignUp());
+                    appNotification(
+                        title: "Sign Up",
+                        message: "Please Sign Up Again",
+                        icon: const Icon(Icons.abc));
+                  }
+                }
               }
               //* Automatic navigates to the home page
               // _navigationService.signInWithAnimation(Base.routeName);
@@ -167,11 +153,55 @@ class AuthProvider with ChangeNotifier {
           //   },
           // );
           // * In case the user is not null (exists), then the user must login
-          // _navigationService.signOutWithAnimation(SignIn.routeName);
         }
       },
     );
   }
+
+  Future<bool> checkUserDocument(String uid) async {
+    bool isExists = false;
+    try {
+      DocumentSnapshot docSnapshot =
+          await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+      if (docSnapshot.exists) {
+        isExists = true;
+      }
+    } catch (e) {
+      print('Error fetching user document: $e');
+    }
+    return isExists;
+  }
+  // void checkCurrentUser() async {
+  //   // _user = _auth.currentUser;
+  //   var userInfoMap = {
+  //     'displayName': user!.displayName ?? user!.email!.split('@')[0],
+  //     'email': user!.email,
+  //     'username': user!.email!
+  //         .split('@')[0], // set username to the part of the email before '@'
+  //     'likeList': [], // init
+  //     'bio': '',
+  //     'password': _googleSignInAccount?.id,
+  //     'photoURL': _googleSignInAccount?.photoUrl,
+  //     'lastSeen': DateTime.now(),
+  //     'createdAt': DateTime.now(),
+  //     'isAdmin': false,
+  //   };
+  //   if (user != null) {
+  //     // Check if the user has a Firestore document
+  //     DocumentSnapshot userDoc = await FirebaseFirestore.instance
+  //         .collection('Users')
+  //         .doc(user!.uid)
+  //         .get();
+  //     if (!userDoc.exists) {
+  //       // If the user does not have a Firestore document, create one
+  //       await FirebaseFirestore.instance
+  //           .collection('Users')
+  //           .doc(user!.uid)
+  //           .set(userInfoMap);
+  //     }
+  //   }
+  //   notifyListeners();
+  // }
 
   Future<void> signIn(String email, String password) async {
     //save user to storage
@@ -566,7 +596,8 @@ class AuthProvider with ChangeNotifier {
     var isAdminUser = false;
     await getUserData().then(
       (value) {
-        if (value.data()!['isAdmin'] == true) {
+        var m = value.data() ?? {};
+        if (m['isAdmin'] == true) {
           isAdminUser = true;
         }
       },
