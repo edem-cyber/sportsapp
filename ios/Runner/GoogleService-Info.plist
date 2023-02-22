@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>808298909071-c5qcbudjsjvi6v6gmg0enll06l0dbmv6.apps.googleusercontent.com</string>
+	<string>808298909071-d644vdse8tff2jjp44co969h1a078vle.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.808298909071-c5qcbudjsjvi6v6gmg0enll06l0dbmv6</string>
+	<string>com.googleusercontent.apps.808298909071-d644vdse8tff2jjp44co969h1a078vle</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBGOxt1m4wLqz7dVX0qTBpezDjQOVixgWg</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.sportsapp</string>
+	<string>mz.com.edilson.chatifyapp</string>
 	<key>PROJECT_ID</key>
 	<string>test-8fb47</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:808298909071:ios:80839b3a82b85f9d588ffa</string>
+	<string>1:808298909071:ios:1b00379ee9f25ed1588ffa</string>
 </dict>
 </plist>
