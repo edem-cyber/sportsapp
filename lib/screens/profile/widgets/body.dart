@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
@@ -79,7 +80,8 @@ class _BodyState extends State<Body>
                     children: [
                       CachedNetworkImage(
                         imageUrl: authProvider.user!.uid == widget.id
-                            ? currentUser!['photoURL']
+                            ? currentUser!['photoURL'] ??
+                                AppImage.defaultProfilePicture
                             : profile!['photoURL'],
                         fit: BoxFit.cover,
                         imageBuilder: (context, imageProvider) => Container(
@@ -102,6 +104,27 @@ class _BodyState extends State<Body>
                             ),
                           ),
                         ),
+                        errorWidget: (context, url, error) {
+                          return CircleAvatar(
+                            // ignore: prefer_if_null_operators
+                            backgroundImage: CachedNetworkImageProvider(
+                              authProvider.user!.photoURL ??
+                                  AppImage.defaultProfilePicture,
+                              errorListener: () {
+                                Shimmer.fromColors(
+                                  baseColor: const Color(0xFF8F8F8F),
+                                  highlightColor: Colors.white,
+                                  child: Container(
+                                    width: 80,
+                                    height: 80,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              },
+                            ),
+                            radius: 15,
+                          );
+                        },
                       ),
                       const SizedBox(height: 20),
                       Column(

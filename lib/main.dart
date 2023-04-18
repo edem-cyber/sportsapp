@@ -1,17 +1,18 @@
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:sportsapp/base.dart';
+import 'package:sportsapp/auth_wrapper.dart';
 import 'package:sportsapp/helper/constants.dart';
+import 'package:sportsapp/no_internet.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/LeaguesProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'routes.dart';
 import 'firebase_options.dart';
@@ -29,9 +30,37 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
   static GlobalKey mtAppKey = GlobalKey();
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool isInternetConnected = true;
+
+  @override
+  @override
+  void initState() {
+    super.initState();
+    checkInternetConnectivity();
+  }
+
+  Future<void> checkInternetConnectivity() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        isInternetConnected = false;
+      });
+    } else {
+      setState(() {
+        isInternetConnected = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // var themeProvider = Provider.of<ThemeProvider>(context);
@@ -48,12 +77,6 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<LeaguesProvider>(
             create: (_) => LeaguesProvider()),
-        // ChangeNotifierProvider<BookmarkModel>(
-        //   create: (_) => BookmarkModel(),
-        // ),
-        // ChangeNotifierProvider<CountriesProvider>(
-        //   create: (_) => CountriesProvider(),
-        // ),
         ChangeNotifierProvider<LeaguesProvider>(
           create: (_) => LeaguesProvider(),
         ),
@@ -61,46 +84,19 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, ThemeProvider themeProvider, child) {
           return GetMaterialApp(
-            key: mtAppKey,
+            key: MyApp.mtAppKey,
             navigatorKey: NavigationService.navigatorKey,
             title: 'Toppick',
             debugShowCheckedModeBanner: false,
-            initialRoute: AuthWrapper.routeName,
+            initialRoute: isInternetConnected
+                ? AuthWrapper.routeName
+                : NoInternetPage.routeName,
             //set theme preference from shared prefs
             routes: routes,
             theme: themeProvider.isDarkMode ? dark : light,
           );
         },
       ),
-    );
-  }
-}
-
-//auth wrapper
-class AuthWrapper extends StatelessWidget {
-  static const String routeName = '/';
-  const AuthWrapper({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    //auth provider
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    return StreamBuilder(
-      stream: authProvider.authState,
-      builder: (context, AsyncSnapshot<User?> snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
-          final user = snapshot.data;
-          if (user == null || user.isAnonymous) {
-            return const SignIn();
-          }
-          return const Base();
-        }
-        return const Scaffold(
-          body: Center(
-            child: CupertinoActivityIndicator(),
-          ),
-        );
-      },
     );
   }
 }
