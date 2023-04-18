@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,11 +14,9 @@ import 'package:sportsapp/providers/navigation_service.dart';
 import 'routes.dart';
 import 'firebase_options.dart';
 
-// Import the generated file
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // setupLocator();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // SharedPreferences prefs = await SharedPreferences.getInstance();
 

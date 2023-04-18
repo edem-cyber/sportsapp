@@ -23,11 +23,11 @@ class DefaultButton extends StatelessWidget {
       height: 50,
       child: ElevatedButton.icon(
         style: TextButton.styleFrom(
+          foregroundColor: kWhite,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
           ),
-          primary: kWhite,
           backgroundColor: color,
         ),
         onPressed: press,
