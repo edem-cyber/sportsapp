@@ -9,4 +9,4 @@ Video:
 https://www.youtube.com/watch?v=qEz71bcIxBQ&ab_channel=edem
 
 
-https://github.com/edem-cyber/sportsapp/blob/master/Simulator%20Screen%20Shot%20-%20iPhone%2013%20-%202023-04-18%20at%2003.54.10.png
+![Simulator Screen Shot - iPhone 13 - 2023-04-18 at 03 54 10](https://user-images.githubusercontent.com/51761485/235110149-25c610ad-128b-48cc-9fe1-6d53a6fee929.png)
