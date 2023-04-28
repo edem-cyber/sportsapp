@@ -1,6 +1,10 @@
 # sportsapp
 
-A new Flutter project.
+Sports app made with Flutter. 
+
+Video: 
+
+https://www.youtube.com/watch?v=qEz71bcIxBQ&ab_channel=edem
 
 ## Getting Started
 

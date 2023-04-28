@@ -36,7 +36,7 @@ class _BodyState extends State<Body> {
   }
 
   TextEditingController textController = TextEditingController();
-  late File? _imageFile;
+  // late File? _imageFile;
 
   @override
   void dispose() {
@@ -130,33 +130,41 @@ class _BodyState extends State<Body> {
       if (chatMessageKey.currentState!.validate()) {
         _scrollDown();
 
-        if (_imageFile != null) {
-          // send image and pick reply
-          await authProvider.addPickReply(
-            // _imageFile!,
-            PickReply(
-              text: _imageFile!.readAsStringSync(),
-              timestamp: Timestamp.now().toString(),
-              author: authProvider.user!.uid,
-              type: 'image',
-            ),
-            widget.id!,
-          );
-        } else {
-          // send only pick reply
-          authProvider.addPickReply(
-            PickReply(
-              text: textController.text,
-              timestamp: Timestamp.now().toString(),
-              author: authProvider.user!.uid,
-            ),
-            widget.id!,
-          );
-        }
+        // if (_imageFile != null) {
+        //   // send image and pick reply
+        //   await authProvider.addPickReply(
+        //     // _imageFile!,
+        //     PickReply(
+        //       text: _imageFile!.readAsStringSync(),
+        //       timestamp: Timestamp.now().toString(),
+        //       author: authProvider.user!.uid,
+        //       type: 'image',
+        //     ),
+        //     widget.id!,
+        //   );
+        // } else {
+        //   // send only pick reply
+        //   authProvider.addPickReply(
+        //     PickReply(
+        //       text: textController.text,
+        //       timestamp: Timestamp.now().toString(),
+        //       author: authProvider.user!.uid,
+        //     ),
+        //     widget.id!,
+        //   );
+        // }
+        authProvider.addPickReply(
+          PickReply(
+            text: textController.text,
+            timestamp: Timestamp.now().toString(),
+            author: authProvider.user!.uid,
+          ),
+          widget.id!,
+        );
         textController.clear();
-        setState(() {
-          _imageFile = null;
-        });
+        // setState(() {
+        //   _imageFile = null;
+        // });
       }
     }
 

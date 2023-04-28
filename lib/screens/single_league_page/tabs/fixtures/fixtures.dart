@@ -114,6 +114,7 @@ class _FixturesTabState extends State<FixturesTab>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return FutureBuilder<List<Fixture>>(
       future: getFixtures(widget.code!),
       builder: (context, snapshot) {
@@ -142,7 +143,7 @@ class _FixturesTabState extends State<FixturesTab>
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           child: Text("Matchday ${fixture.matchday}",
-                              style: Theme.of(context).textTheme.headline6!),
+                              style: Theme.of(context).textTheme.titleLarge!),
                         ),
                       // else if (fixture.matchday == null)
                       SingleMatch(

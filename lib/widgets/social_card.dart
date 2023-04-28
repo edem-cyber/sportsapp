@@ -27,6 +27,7 @@ class SocialCard extends StatelessWidget {
         child: ElevatedButton.icon(
           style: OutlinedButton.styleFrom(
             // primary: color,
+            foregroundColor: kBlack,
             side: BorderSide(
               color: color,
               width: 1,
@@ -36,7 +37,6 @@ class SocialCard extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25),
             ),
-            primary: kBlack,
             backgroundColor: const Color(0xFFF8FAFF),
             // border color
           ),

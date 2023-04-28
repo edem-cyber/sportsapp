@@ -85,15 +85,15 @@ const String themeKey = 'theme_key';
 
 TextTheme textTheme() {
   return const TextTheme(
-    bodyText1: TextStyle(color: kBlack),
-    bodyText2: TextStyle(color: kBlack),
+    bodyLarge: TextStyle(color: kBlack),
+    bodyMedium: TextStyle(color: kBlack),
   );
 }
 
 TextTheme darkTextTheme() {
   return const TextTheme(
-    bodyText1: TextStyle(color: kWhite),
-    bodyText2: TextStyle(color: kWhite),
+    bodyLarge: TextStyle(color: kWhite),
+    bodyMedium: TextStyle(color: kWhite),
   );
 }
 
@@ -103,11 +103,11 @@ AppBarTheme appBarTheme() {
     elevation: 1,
     iconTheme: const IconThemeData(color: kBlack),
     toolbarTextStyle: const TextTheme(
-      headline6: TextStyle(color: kBlack, fontSize: 18),
-    ).bodyText2,
+      titleLarge: TextStyle(color: kBlack, fontSize: 18),
+    ).bodyMedium,
     titleTextStyle: const TextTheme(
-      headline6: TextStyle(color: kBlack, fontSize: 18),
-    ).headline6,
+      titleLarge: TextStyle(color: kBlack, fontSize: 18),
+    ).titleLarge,
   );
 }
 
@@ -117,11 +117,11 @@ AppBarTheme darkAppBarTheme() {
     elevation: 1,
     iconTheme: const IconThemeData(color: kWhite),
     toolbarTextStyle: const TextTheme(
-      headline6: TextStyle(color: kWhite, fontSize: 18),
-    ).bodyText2,
+      titleLarge: TextStyle(color: kWhite, fontSize: 18),
+    ).bodyMedium,
     titleTextStyle: const TextTheme(
-      headline6: TextStyle(color: kWhite, fontSize: 18),
-    ).headline6,
+      titleLarge: TextStyle(color: kWhite, fontSize: 18),
+    ).titleLarge,
   );
 }
 

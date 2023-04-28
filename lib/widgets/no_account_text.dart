@@ -1,8 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 
 class NoAccountText extends StatelessWidget {
   //text
