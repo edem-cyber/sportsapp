@@ -68,6 +68,7 @@ dependencies:
   cloud_functions: ^4.0.11
   connectivity_plus: ^3.0.4
   avatar_glow: ^2.0.2
+  sign_in_with_apple: ^4.3.0
   # path_provider: ^2.0.12
   
 
