@@ -3,10 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../environment.dart';
-import '../models/Country.dart';
 import '../models/League.dart';
 
 class LeaguesProvider with ChangeNotifier {
@@ -14,8 +11,8 @@ class LeaguesProvider with ChangeNotifier {
   final List<League> _leagues = [];
   final List<League> _leaguesByCountry = [];
 
-  // var token = "9b317099a8914002994c7d2ffbd43c7f";
-  var token = "be1eb21948af4c8fa080ee214406c4be";
+  // // var token = "9b317099a8914002994c7d2ffbd43c7f";
+  // var token = "be1eb21948af4c8fa080ee214406c4be";
 
   List<League> get leagues => [..._leagues];
 

@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -13,11 +12,7 @@ import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/all_chats/all_chats.dart';
 import 'package:sportsapp/screens/bookmarks/bookmarks.dart';
 import 'package:sportsapp/screens/friends_page/friends_page.dart';
-import 'package:sportsapp/screens/home/home.dart';
-import 'package:sportsapp/screens/leagues/leagues.dart';
-import 'package:sportsapp/screens/picks/picks.dart';
 import 'package:sportsapp/screens/profile/profile.dart';
-import 'package:sportsapp/screens/search/search.dart';
 import 'package:sportsapp/screens/settings/settings.dart';
 import 'package:sportsapp/screens/videos/videos.dart';
 import 'package:sportsapp/widgets/app_dialog.dart';
@@ -231,20 +226,20 @@ class MyDrawer extends StatelessWidget {
                           navigateFromDrawer(Profile.routeName);
                         },
                       ),
-                      ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 35),
-                        dense: true,
-                        leading: SvgPicture.asset(
-                          "assets/icons/comment.svg",
-                          height: 20,
-                        ),
-                        title: const Text(
-                          "Topics",
-                          style: TextStyle(color: kWhite),
-                        ),
-                        onTap: () {},
-                      ),
+                      // ListTile(
+                      //   contentPadding:
+                      //       const EdgeInsets.symmetric(horizontal: 35),
+                      //   dense: true,
+                      //   leading: SvgPicture.asset(
+                      //     "assets/icons/comment.svg",
+                      //     height: 20,
+                      //   ),
+                      //   title: const Text(
+                      //     "Topics",
+                      //     style: TextStyle(color: kWhite),
+                      //   ),
+                      //   onTap: () {},
+                      // ),
                       ListTile(
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 35),

@@ -35,7 +35,7 @@ class Base extends StatefulWidget {
 class _BaseState extends State<Base> {
   final ScrollController scrollController = ScrollController();
   //change active page
-  var _currentIndex = 0;
+  var _currentIndex = 2;
 
   showPage(int index) {
     setState(() {

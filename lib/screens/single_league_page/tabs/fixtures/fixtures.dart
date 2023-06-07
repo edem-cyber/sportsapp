@@ -1,17 +1,7 @@
-import 'dart:ffi';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Fixture.dart';
-import 'package:sportsapp/models/Match.dart';
-import 'package:sportsapp/providers/LeaguesProvider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
 //import http package
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -33,8 +23,8 @@ class _FixturesTabState extends State<FixturesTab>
     with AutomaticKeepAliveClientMixin {
   //var to store the matches
   late Future<List<Fixture>> stateFixtures;
-  var token = "9b317099a8914002994c7d2ffbd43c7f";
-  // var token = "be1eb21948af4c8fa080ee214406c4be";
+  // var token = "9b317099a8914002994c7d2ffbd43c7f";
+  // // var token = "be1eb21948af4c8fa080ee214406c4be";
   // Future<Map<String, dynamic>> getMatches(String code) async {
   //   List<Matches> extractedMatches = [];
   //   Response response = await http.get(

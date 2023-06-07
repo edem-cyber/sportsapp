@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sportsapp/base.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/models/ChatMessageModel.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/models/PickReply.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
@@ -507,7 +506,7 @@ class AuthProvider with ChangeNotifier {
     }
     // print("JSON DATA: ${jsonData}");
     // print("JSON STATUS: ${jsonData['status']}");
-    print(news);
+    // print(news);
     return news;
   }
 

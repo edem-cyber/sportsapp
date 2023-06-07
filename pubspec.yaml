@@ -40,11 +40,9 @@ dependencies:
   firebase_core: ^2.7.0
   firebase_auth: ^4.2.2
   google_sign_in: ^6.0.0
-  # cloud_firestore: ^3.4.1
   file_picker: ^5.0.0
   firebase_storage: ^11.0.14
   cloud_firestore: ^4.4.3
-  # firebase_storage: ^10.3.2
   firebase_messaging: ^14.2.5
   firebase_crashlytics: ^3.0.15
   firebase_analytics: ^10.1.4
