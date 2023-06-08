@@ -227,7 +227,7 @@ class AuthProvider with ChangeNotifier {
           icon: const Icon(Icons.check, color: Colors.green));
       _navigationService.signInWithAnimation(Base.routeName);
       //UPDATE LAST SEEN
-      _databaseService.updateUserLastSeenTime(uid: _auth.currentUser!.uid);
+      // _databaseService.updateUserLastSeenTime(uid: _auth.currentUser!.uid);
     } on FirebaseAuthException catch (e) {
       var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
       appNotification(
