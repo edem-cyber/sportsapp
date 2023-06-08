@@ -20,87 +20,6 @@ import 'package:http/http.dart' as http;
 // import 'package:cloud_functions/cloud_functions.dart';
 
 class AuthProvider with ChangeNotifier {
-  //initialize shared preferences
-  // FirebaseAuth _auth;
-  late final FirebaseAuth _auth;
-  //cloud function instance firestore
-  // final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-  //   'addUser',
-  // );
-  // late StorageManager _storageManager;
-  late final DatabaseService _databaseService;
-  DatabaseService get databaseService => _databaseService;
-
-  late final NavigationService _navigationService;
-  late DeviceInfoPlugin _deviceInfo;
-  //get device info
-  // DeviceInfoPlugin get deviceInfo => _deviceInfo;
-
-  Future getDeviceInfo() async {
-    // final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
-      notifyListeners();
-      return androidInfo.toMap().toString();
-      // return androidInfo.;
-    } else if (Platform.isIOS) {
-      IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
-      notifyListeners();
-      return iosInfo.toMap().toString();
-    } else if (Platform.isWindows) {
-      WindowsDeviceInfo windowsInfo = await _deviceInfo.windowsInfo;
-      notifyListeners();
-      return windowsInfo.toMap().toString();
-    } else if (Platform.isMacOS) {
-      MacOsDeviceInfo macOsInfo = await _deviceInfo.macOsInfo;
-      return macOsInfo.toMap().toString();
-    }
-    return _deviceInfo;
-  }
-
-  //isLoading is used to show the loading indicator when signing in or out
-  bool _isLoading = false;
-  get isLoading => _isLoading;
-
-  setIsLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
-
-  User? get user => _auth.currentUser;
-
-  Stream<User?> get authState => _auth.idTokenChanges();
-
-  // Future<void> _onAuthStateChanged(User? firebaseUser) async {
-  //   if (firebaseUser == null) {
-  //     user = null;
-  //     notifyListeners();
-  //     return;
-  //   }
-
-  //   final email = firebaseUser.email;
-  //   final querySnapshot = await FirebaseFirestore.instance
-  //       .collection('Users')
-  //       .where('email', isEqualTo: email)
-  //       .get();
-  //   if (querySnapshot.docs.isEmpty) {
-  //     // The user doesn't exist in the Firestore Users collection
-  //     // Redirect them to the sign-up page
-  //     // ...
-  //     // You can navigate to the sign-up page here
-  //   } else {
-  //     user = firebaseUser;
-  //     notifyListeners();
-  //   }
-  // }
-
-  // User? _user;
-
-  GoogleSignIn? _googleSignIn;
-  //google sign in accounnt
-  GoogleSignInAccount? _googleSignInAccount;
-  GoogleSignInAccount? get googleSignInAccount => _googleSignInAccount;
-
   AuthProvider() {
     // posts = _databaseService.getFollowedTopics();
     _deviceInfo = DeviceInfoPlugin();
@@ -157,6 +76,98 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
+  // getPosts() {
+
+  // }
+  List<Article> news = [];
+
+  //initialize shared preferences
+  // FirebaseAuth _auth;
+  late final FirebaseAuth _auth;
+
+  //cloud function instance firestore
+  // final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+  //   'addUser',
+  // );
+  // late StorageManager _storageManager;
+  late final DatabaseService _databaseService;
+
+  late DeviceInfoPlugin _deviceInfo;
+  // Future<void> _onAuthStateChanged(User? firebaseUser) async {
+  //   if (firebaseUser == null) {
+  //     user = null;
+  //     notifyListeners();
+  //     return;
+  //   }
+
+  //   final email = firebaseUser.email;
+  //   final querySnapshot = await FirebaseFirestore.instance
+  //       .collection('Users')
+  //       .where('email', isEqualTo: email)
+  //       .get();
+  //   if (querySnapshot.docs.isEmpty) {
+  //     // The user doesn't exist in the Firestore Users collection
+  //     // Redirect them to the sign-up page
+  //     // ...
+  //     // You can navigate to the sign-up page here
+  //   } else {
+  //     user = firebaseUser;
+  //     notifyListeners();
+  //   }
+  // }
+
+  // User? _user;
+
+  GoogleSignIn? _googleSignIn;
+
+  //google sign in accounnt
+  GoogleSignInAccount? _googleSignInAccount;
+
+  //isLoading is used to show the loading indicator when signing in or out
+  bool _isLoading = false;
+
+  late final NavigationService _navigationService;
+
+  DatabaseService get databaseService => _databaseService;
+
+  //get device info
+  // DeviceInfoPlugin get deviceInfo => _deviceInfo;
+
+  Future getDeviceInfo() async {
+    // final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
+      notifyListeners();
+      return androidInfo.toMap().toString();
+      // return androidInfo.;
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
+      notifyListeners();
+      return iosInfo.toMap().toString();
+    } else if (Platform.isWindows) {
+      WindowsDeviceInfo windowsInfo = await _deviceInfo.windowsInfo;
+      notifyListeners();
+      return windowsInfo.toMap().toString();
+    } else if (Platform.isMacOS) {
+      MacOsDeviceInfo macOsInfo = await _deviceInfo.macOsInfo;
+      return macOsInfo.toMap().toString();
+    }
+    return _deviceInfo;
+  }
+
+  get isLoading => _isLoading;
+
+  setIsLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  User? get user => _auth.currentUser;
+
+  Stream<User?> get authState => _auth.idTokenChanges();
+
+  GoogleSignInAccount? get googleSignInAccount => _googleSignInAccount;
+
   Future<bool> checkUserDocument(String uid) async {
     bool isExists = false;
     try {
@@ -170,6 +181,7 @@ class AuthProvider with ChangeNotifier {
     }
     return isExists;
   }
+
   // void checkCurrentUser() async {
   //   // _user = _auth.currentUser;
   //   var userInfoMap = {
@@ -209,15 +221,13 @@ class AuthProvider with ChangeNotifier {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       debugPrint('PRINT USER SIGN IN : ${_auth.currentUser}');
       // _navigationService.removeAndNavigateToRoute(Base.routeName);
-      //save user to storage
-      // await _storageManager.saveData("user", _auth.currentUser!.email);
-
-      // ignore: await_only_futures
-      await appNotification(
+      appNotification(
           title: "Success",
           message: "Signed In",
           icon: const Icon(Icons.check, color: Colors.green));
       _navigationService.signInWithAnimation(Base.routeName);
+      //UPDATE LAST SEEN
+      _databaseService.updateUserLastSeenTime(uid: _auth.currentUser!.uid);
     } on FirebaseAuthException catch (e) {
       var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
       appNotification(
@@ -225,7 +235,6 @@ class AuthProvider with ChangeNotifier {
         message: er,
         icon: const Icon(Icons.error, color: kWarning),
       );
-      setIsLoading(false);
       debugPrint('Error login user into Firebase.');
     } catch (e) {
       appNotification(
@@ -233,7 +242,7 @@ class AuthProvider with ChangeNotifier {
         message: "Something went wrong",
         icon: const Icon(Icons.error, color: kWarning),
       );
-      setIsLoading(false);
+
       debugPrint('$e');
     } finally {
       setIsLoading(false);
@@ -461,11 +470,6 @@ class AuthProvider with ChangeNotifier {
     _navigationService.signOutWithAnimation(SignIn.routeName);
   }
 
-  // getPosts() {
-
-  // }
-  List<Article> news = [];
-
   Future<List<Article>> getPosts() async {
     var apiKey = "800dce9aa1334456ac941842fa55edf8";
     // var apiKey = "37b3f6b92d2a4434a249e02fd8938841";
@@ -534,6 +538,7 @@ class AuthProvider with ChangeNotifier {
       uid: _auth.currentUser!.uid,
     );
   }
+
   // Future<bool> toggleLikedPost(Article article) async {
   //   return await _databaseService.toggleLikedPost(
   //     article: article,

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -26,11 +27,13 @@ class _LeagueScreenState extends State<LeagueScreen>
   late Future<List<League>> leaguesShown;
 
   Future<List<League>> getallleagues() async {
+    //LOAD FROM .ENV FILE
+    await dotenv.load(fileName: ".env");
     List<League> leaguesList = [];
     http.Response response = await http.get(
       Uri.parse('http://api.football-data.org/v4/competitions'),
       headers: {
-        "X-Auth-Token": token,
+        "X-Auth-Token": dotenv.env['API_TOKEN']!,
       },
     );
     print("STATUS:  ${response.statusCode}");
@@ -134,23 +137,6 @@ class _LeagueScreenState extends State<LeagueScreen>
                 if (leagueCodes.contains(league.code)) {
                   return ListTile(
                     minVerticalPadding: 30,
-                    title: Text(
-                      league.name!,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    onTap: () {
-                      //push with material page route
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LeagueDetailsScreen(
-                            code: league.code!,
-                          ),
-                        ),
-                      );
-                      // print("LEAGUE CODE: ${league.code}");
-                    },
-
                     leading: CircleAvatar(
                       backgroundColor: kWhite,
                       radius: 50,
@@ -164,7 +150,7 @@ class _LeagueScreenState extends State<LeagueScreen>
                                   league.emblem!,
                                   fit: BoxFit.cover,
                                   placeholderBuilder: (context) => const Center(
-                                    child: CupertinoActivityIndicator(),
+                                    child: Icon(Icons.error),
                                   ),
                                 ),
                               ),
@@ -188,6 +174,23 @@ class _LeagueScreenState extends State<LeagueScreen>
                               ),
                             ),
                     ),
+                    title: Text(
+                      league.name!,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    onTap: () {
+                      //push with material page route
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LeagueDetailsScreen(
+                            code: league.code!,
+                          ),
+                        ),
+                      );
+                      // print("LEAGUE CODE: ${league.code}");
+                    },
+
                     // title: Text(league.name!),
                     // subtitle: Text(league.code!),
                   );

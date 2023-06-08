@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:sportsapp/helper/constants.dart';
@@ -22,10 +23,14 @@ class _LeagueTableState extends State<LeagueTable>
   // var token = "be1eb21948af4c8fa080ee214406c4be";
 
   getTable() async {
+    await dotenv.load(fileName: ".env");
+
     http.Response response = await http.get(
         Uri.parse(
             'http://api.football-data.org/v2/competitions/${widget.code}/standings'),
-        headers: {'X-Auth-Token': token});
+        headers: {
+          'X-Auth-Token': dotenv.env['API_TOKEN']!,
+        });
     String body = response.body;
     Map data = jsonDecode(body);
     List table = data['standings'][0]['table'];

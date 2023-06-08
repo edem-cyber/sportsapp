@@ -49,8 +49,6 @@ class DatabaseService {
     }
   }
 
-  
-
   Future<DocumentSnapshot<Map<String, dynamic>>> getUser(
       {required String uid}) async {
     return await _dataBase.collection(userCollection).doc(uid).get();
@@ -163,7 +161,7 @@ class DatabaseService {
     try {
       await _dataBase.collection(userCollection).doc(uid).update(
         {
-          'last_active': DateTime.now(),
+          'lastSeen': DateTime.now(),
         },
       );
     } catch (e) {

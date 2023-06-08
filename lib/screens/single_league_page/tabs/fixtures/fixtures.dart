@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sportsapp/helper/constants.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sportsapp/models/Fixture.dart';
 //import http package
 import 'package:http/http.dart' as http;
@@ -65,10 +65,14 @@ class _FixturesTabState extends State<FixturesTab>
   // }
 
   Future<List<Fixture>> getFixtures(String leagueCode) async {
+    await dotenv.load(fileName: ".env");
+
     final response = await http.get(
         Uri.parse(
             'http://api.football-data.org/v4/competitions/$leagueCode/matches'),
-        headers: {"X-Auth-Token": token});
+        headers: {
+          "X-Auth-Token": dotenv.env['API_TOKEN']!,
+        });
     if (response.statusCode == 200) {
       // parse the response and create a list of fixtures
       List<Fixture> fixtures = [];

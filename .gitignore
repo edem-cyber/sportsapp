@@ -33,6 +33,7 @@ migrate_working_dir/
 /build/
 .metadata
 
+
 # Web related
 lib/generated_plugin_registrant.dart
 
@@ -55,3 +56,4 @@ app.*.map.json
 /macos/
 /windows/
 /key.dart
+*.env
