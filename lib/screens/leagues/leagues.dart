@@ -10,7 +10,6 @@ import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/League.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/providers/LeaguesProvider.dart';
 import 'package:http/http.dart' as http;
 import 'package:sportsapp/screens/single_league_page/single_league_page.dart';
 
@@ -26,9 +25,6 @@ class _LeagueScreenState extends State<LeagueScreen>
     with TickerProviderStateMixin {
   late Future<List<League>> leaguesShown;
 
-  // var token = "9b317099a8914002994c7d2ffbd43c7Rf";
-  // // var token = "be1eb21948af4c8fa080ee214406c4be";
-
   Future<List<League>> getallleagues() async {
     List<League> leaguesList = [];
     http.Response response = await http.get(
@@ -40,10 +36,15 @@ class _LeagueScreenState extends State<LeagueScreen>
     print("STATUS:  ${response.statusCode}");
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
+      print("STATUS:  $data");
       List<dynamic> leagues = data['competitions'];
       leaguesList = leagues.map((e) => League.fromJson(e)).toList();
-      print("STATUS: ${response.statusCode}");
+    } else if (response.statusCode == 400) {
+      Map<String, dynamic> data = json.decode(response.body);
+      List<dynamic> errorMessage = data['message'];
+      print("ERROR 400 IS: $errorMessage");
     } else {}
+    print("LEAGUES ARE: $leaguesList");
     return leaguesList;
   }
 
@@ -55,7 +56,6 @@ class _LeagueScreenState extends State<LeagueScreen>
 
   @override
   Widget build(BuildContext context) {
-    var leaguesProvider = Provider.of<LeaguesProvider>(context);
     var authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
@@ -94,7 +94,6 @@ class _LeagueScreenState extends State<LeagueScreen>
           Padding(
             padding: EdgeInsets.only(left: 0, right: 20, top: 0, bottom: 0),
             child: CircleAvatar(
-              //     AppImage.defaultProfilePicture),
               foregroundColor: Colors.transparent,
               backgroundColor: Colors.transparent,
               radius: 15,
@@ -122,20 +121,21 @@ class _LeagueScreenState extends State<LeagueScreen>
       ),
       body: FutureBuilder<List<League>>(
         future: leaguesShown,
+        initialData: const [],
         // initialData: const <String, dynamic>{},
         builder: (context, snapshot) {
+          print("SNAPSHOT IS: $snapshot");
           if (snapshot.hasData) {
             return ListView.builder(
-              itemCount: snapshot.data == null ? 0 : snapshot.data!.length,
+              itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
+                var league = snapshot.data![index];
                 //check if league code is in leagueCodes list
-                //if it is, then show it
-                //if not, then don't show it
-                if (leagueCodes.contains(snapshot.data![index].code)) {
+                if (leagueCodes.contains(league.code)) {
                   return ListTile(
                     minVerticalPadding: 30,
                     title: Text(
-                      snapshot.data![index].name!,
+                      league.name!,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     onTap: () {
@@ -144,24 +144,24 @@ class _LeagueScreenState extends State<LeagueScreen>
                         context,
                         MaterialPageRoute(
                           builder: (context) => LeagueDetailsScreen(
-                            code: snapshot.data![index].code!,
+                            code: league.code!,
                           ),
                         ),
                       );
-                      // print("LEAGUE CODE: ${snapshot.data![index].code}");
+                      // print("LEAGUE CODE: ${league.code}");
                     },
 
                     leading: CircleAvatar(
                       backgroundColor: kWhite,
                       radius: 50,
-                      child: snapshot.data![index].emblem!.contains('.svg')
+                      child: league.emblem!.contains('.svg')
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(50),
                               child: SizedBox(
                                 width: 50,
                                 height: 50,
                                 child: SvgPicture.network(
-                                  snapshot.data![index].emblem!,
+                                  league.emblem!,
                                   fit: BoxFit.cover,
                                   placeholderBuilder: (context) => const Center(
                                     child: CupertinoActivityIndicator(),
@@ -175,7 +175,7 @@ class _LeagueScreenState extends State<LeagueScreen>
                                 width: 50,
                                 height: 50,
                                 child: CachedNetworkImage(
-                                  imageUrl: snapshot.data![index].emblem!,
+                                  imageUrl: league.emblem!,
                                   // fit: BoxFit.cover,
                                   placeholder: (context, url) => const Center(
                                     child: CupertinoActivityIndicator(),
@@ -188,8 +188,8 @@ class _LeagueScreenState extends State<LeagueScreen>
                               ),
                             ),
                     ),
-                    // title: Text(snapshot.data![index].name!),
-                    // subtitle: Text(snapshot.data![index].code!),
+                    // title: Text(league.name!),
+                    // subtitle: Text(league.code!),
                   );
                 } else {
                   return const SizedBox();

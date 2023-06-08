@@ -28,7 +28,6 @@ class _PicksState extends State<Picks> {
         .collection('Picks')
         .orderBy('title', descending: true)
         // .toString()
-        // convert everything to lower case
         .where('title', isGreaterThanOrEqualTo: searchTerm)
         .snapshots();
   }

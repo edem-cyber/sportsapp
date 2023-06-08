@@ -1,27 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
-import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/mydrawer.dart';
-import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/providers/navigation_service.dart';
-import 'package:sportsapp/screens/all_chats/all_chats.dart';
-import 'package:sportsapp/screens/bookmarks/bookmarks.dart';
-import 'package:sportsapp/screens/friends_page/friends_page.dart';
 import 'package:sportsapp/screens/home/home.dart';
 import 'package:sportsapp/screens/leagues/leagues.dart';
 import 'package:sportsapp/screens/picks/picks.dart';
-import 'package:sportsapp/screens/profile/profile.dart';
-import 'package:sportsapp/screens/search/search.dart';
-import 'package:sportsapp/screens/settings/settings.dart';
-import 'package:sportsapp/screens/videos/videos.dart';
-import 'package:sportsapp/widgets/app_dialog.dart';
 // import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class Base extends StatefulWidget {
@@ -125,4 +110,3 @@ class _BaseState extends State<Base> {
     );
   }
 }
-
