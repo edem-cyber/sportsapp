@@ -34,7 +34,7 @@ class _VideosState extends State<Videos> with AutomaticKeepAliveClientMixin {
                       // color: ,
                       image: DecorationImage(
                         image: CachedNetworkImageProvider(errorListener: () {
-                          print('error');
+                          debugPrint('error');
                         }, "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"),
                         fit: BoxFit.cover,
                         colorFilter: ColorFilter.mode(
@@ -127,7 +127,7 @@ class _VideosState extends State<Videos> with AutomaticKeepAliveClientMixin {
                     physics: const ClampingScrollPhysics(),
                     itemBuilder: (_, int index) {
                       final item = snapshot.data![index];
-                      final image = item.urlToImage;
+                      // final image = item.urlToImage;
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: NewsTile(

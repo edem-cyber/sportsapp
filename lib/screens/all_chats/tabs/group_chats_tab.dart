@@ -274,7 +274,7 @@ class _GroupChatsTabState extends State<GroupChatsTab>
                                                               context);
                                                         });
                                                       } catch (e) {
-                                                        print(
+                                                        debugPrint(
                                                             "CREATE ROOM ERROR: $e");
                                                       }
                                                       // check if mounted

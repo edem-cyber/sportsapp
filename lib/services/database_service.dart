@@ -137,7 +137,7 @@ class DatabaseService {
         await chatRef.collection("messages").add(message);
       }
     } catch (e) {
-      print("Error in Create Chat Function: $e");
+      debugPrint("Error in Create Chat Function: $e");
     }
   }
 
@@ -345,7 +345,7 @@ class DatabaseService {
         .snapshots()
         .map((snapshot) {
       if (snapshot.data() != null) {
-        print('friend status: ${snapshot.data()!['status']}');
+        debugPrint('friend status: ${snapshot.data()!['status']}');
         return snapshot.data()!['status'];
       } else {
         return '';

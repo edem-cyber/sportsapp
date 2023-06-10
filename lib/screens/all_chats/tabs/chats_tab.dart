@@ -126,7 +126,7 @@ class _ChatsTabState extends State<ChatsTab>
           itemCount: chats.length,
           itemBuilder: (context, index) {
             var chat = chats[index];
-            print("chats: $chats");
+            debugPrint("chats: $chats");
             String chatId = chats[index]["id"];
             return Padding(
               padding: const EdgeInsets.symmetric(
@@ -275,6 +275,5 @@ class _ChatsTabState extends State<ChatsTab>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

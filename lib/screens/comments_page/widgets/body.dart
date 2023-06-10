@@ -62,7 +62,7 @@ class _BodyState extends State<Body> {
           .doc(id)
           .get()
           .then((value) => value.data());
-      print("pick is $pick");
+      debugPrint("pick is $pick");
       return pick;
     }
 
@@ -104,7 +104,7 @@ class _BodyState extends State<Body> {
                 );
         return await taskSnapshot.ref.getDownloadURL();
       } catch (e) {
-        print("UPLOADPFP FUNCTION!!: $e");
+        debugPrint("UPLOADPFP FUNCTION!!: $e");
       }
       return null;
     }

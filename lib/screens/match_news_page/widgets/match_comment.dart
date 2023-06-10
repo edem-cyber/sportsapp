@@ -17,19 +17,19 @@ class MatchComment extends StatelessWidget {
       // {
       //   'icon': 'assets/icons/heart.svg',
       //   'onPress': () {
-      //     print('heart');
+      //     debugPrint('heart');
       //   },
       // },
       {
         'icon': 'assets/icons/paper-plane.svg',
         'onPress': () {
-          print('heart');
+          debugPrint('heart');
         },
       },
       {
         'icon': 'assets/icons/share.svg',
         'onPress': () {
-          print('heart');
+          debugPrint('heart');
         },
       },
     ];

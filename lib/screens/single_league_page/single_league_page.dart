@@ -18,7 +18,7 @@ class _LeaguePageState extends State<LeagueDetailsScreen>
   @override
   void initState() {
     super.initState();
-    print("CODE: ${widget.code}");
+    debugPrint("CODE: ${widget.code}");
   }
 
   // scrollcontext parameter

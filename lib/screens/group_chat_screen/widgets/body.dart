@@ -84,12 +84,12 @@ class _BodyState extends State<Body> {
           throw Exception("Room does not exist.");
         }
       } catch (e) {
-        print("Error in Create Chat in Room Function: $e");
+        debugPrint("Error in Create Chat in Room Function: $e");
       }
     }
 
     var themeProvider = Provider.of<ThemeProvider>(context);
-    var profile = authProvider.getProfileData(id: authProvider.user!.uid);
+    // var profile = authProvider.getProfileData(id: authProvider.user!.uid);
 
     return Container(
       padding: const EdgeInsets.all(10),
@@ -117,7 +117,8 @@ class _BodyState extends State<Body> {
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         Map<String, dynamic> message = messages[index];
-                        print(message);
+                        debugPrint("$message");
+
                         bool isSender =
                             message['senderId'] == authProvider.user!.uid;
                         // chat page body chat bubble
@@ -194,7 +195,7 @@ class _BodyState extends State<Body> {
                               'type': 'text',
                             }, roomId: widget.roomId ?? "");
                           } catch (e) {
-                            print(e);
+                            debugPrint("$e");
                           }
                         },
                       ),
@@ -216,7 +217,7 @@ class _BodyState extends State<Body> {
 
                         roomChatController.clear();
                       } catch (e) {
-                        print(e);
+                        debugPrint("$e");
                       }
                     },
                     icon: const Icon(Icons.send),

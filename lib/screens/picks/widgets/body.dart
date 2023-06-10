@@ -46,10 +46,10 @@ class _BodyState extends State<Body> {
 
     var navigationService = Provider.of<NavigationService>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
-    var getAllPicks = authProvider.getAllPicks();
+    // var getAllPicks = authProvider.getAllPicks();
     // isAdmin
     var isAdmin = authProvider.isAdmin();
-    final FirebaseFirestore dataBase = FirebaseFirestore.instance;
+    // final FirebaseFirestore dataBase = FirebaseFirestore.instance;
 
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: widget.searchResults,

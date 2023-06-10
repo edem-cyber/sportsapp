@@ -314,7 +314,7 @@ class _NewsTileState extends State<NewsTile> {
 // ikeButton(
 //                         onTap: ((isLiked) async {
 //                           isLiked = !isLiked;
-//                           print(isLiked);
+//                           debugPrint(isLiked);
 //                           // authProvider.likePost(widget.article);
 //                           // authProvider.isPostLiked(article);
 //                           // var isPostLikedInDb =

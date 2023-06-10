@@ -36,7 +36,7 @@
 
 //   String getFlagByName(String name) {
 //     String flag;
-//     print('countries count ${_allCountries.length}');
+//     debugPrint('countries count ${_allCountries.length}');
 //     flag = _allCountries
 //         .firstWhere((Country country) => country.country == name)
 //         .flag!;

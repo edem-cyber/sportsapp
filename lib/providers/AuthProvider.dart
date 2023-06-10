@@ -64,7 +64,7 @@ class AuthProvider with ChangeNotifier {
           //   (user) {
           //     if (user != null) {
           //       _user = user;
-          //       // print('User data IS : ${_user!.email()}');
+          //       // debugPrint('User data IS : ${_user!.email()}');
           //     } else {
           //       _navigationService.signOutWithAnimation(SignIn.routeName);
           //     }
@@ -177,7 +177,7 @@ class AuthProvider with ChangeNotifier {
         isExists = true;
       }
     } catch (e) {
-      print('Error fetching user document: $e');
+      debugPrint('Error fetching user document: $e');
     }
     return isExists;
   }
@@ -409,11 +409,11 @@ class AuthProvider with ChangeNotifier {
         // }
       }
     } catch (e) {
-      print(e);
+      debugPrint("$e");
       debugPrint('Error login user into Firebase: $e');
     } finally {
       setIsLoading(false);
-      print('Sign up print ${_auth.currentUser}');
+      debugPrint('Sign up debugPrint ${_auth.currentUser}');
     }
   }
 
@@ -480,8 +480,8 @@ class AuthProvider with ChangeNotifier {
 
     try {
       var response = await http.get(url);
-      // print("RESPONSE STATUS: ${response.statusCode}");
-      // print("RESPONSE BODY: ${response.body}");
+      // debugPrint("RESPONSE STATUS: ${response.statusCode}");
+      // debugPrint("RESPONSE BODY: ${response.body}");
 
       var jsonData = jsonDecode(response.body);
       if (jsonData['status'] == "ok") {
@@ -498,19 +498,19 @@ class AuthProvider with ChangeNotifier {
                 author: element['author'] ?? "",
                 articleUrl: element['url'] ?? "",
               );
-              // print("ARTICLE: ${article.title}");
-              // print("NEWS LENGTH: ${news.length}");
+              // debugPrint("ARTICLE: ${article.title}");
+              // debugPrint("NEWS LENGTH: ${news.length}");
               news.add(article);
             }
           },
         );
       }
     } catch (e) {
-      print("GETPOSTS ERROR: $e");
+      debugPrint("GETPOSTS ERROR: $e");
     }
-    // print("JSON DATA: ${jsonData}");
-    // print("JSON STATUS: ${jsonData['status']}");
-    // print(news);
+    // debugPrint("JSON DATA: ${jsonData}");
+    // debugPrint("JSON STATUS: ${jsonData['status']}");
+    // debugPrint(news);
     return news;
   }
 
