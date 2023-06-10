@@ -1,9 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:sportsapp/helper/app_images.dart';
-import 'package:sportsapp/providers/AuthProvider.dart';
+// import 'package:provider/provider.dart';
+// import 'package:sportsapp/providers/AuthProvider.dart';
 
 class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String url;
@@ -13,9 +12,9 @@ class SmallAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    var authProvider = Provider.of<AuthProvider>(
-      context,
-    );
+    // var authProvider = Provider.of<AuthProvider>(
+    //   context,
+    // );
     return AppBar(
       scrolledUnderElevation: 3,
       leading: Padding(

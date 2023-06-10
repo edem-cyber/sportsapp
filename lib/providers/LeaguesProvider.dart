@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sportsapp/models/Match.dart';
 
-import '../models/League.dart';
 
 class LeaguesProvider with ChangeNotifier {
-  final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
+  // final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
   final List<League> _leagues = [];
-  final List<League> _leaguesByCountry = [];
+  // final List<League> _leaguesByCountry = [];
 
   // // var token = "9b317099a8914002994c7d2ffbd43c7f";
   // var token = "be1eb21948af4c8fa080ee214406c4be";

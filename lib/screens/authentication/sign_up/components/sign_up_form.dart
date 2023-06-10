@@ -96,12 +96,11 @@ class _SignUpFormState extends State<SignUpForm> {
           await storage.ref("images/profile_pics/$now").putFile(
                 uploadedFile,
               );
-      return taskSnapshot != null
-          ? await taskSnapshot.ref.getDownloadURL()
-          : "";
+      return await taskSnapshot.ref.getDownloadURL();
     } catch (e) {
       print("UPLOADPFP FUNCTION!!: $e");
     }
+    return null;
   }
 
   // Future<String?> getDownload() async {

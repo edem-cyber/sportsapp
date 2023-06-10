@@ -6,13 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/comments_page/comments_page.dart';
 import 'package:sportsapp/screens/picks/widgets/room.dart';
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 
 class Body extends StatefulWidget {
   int? reply;
@@ -32,7 +28,7 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     super.initState();
-    int replyCount = widget.reply ?? 0;
+    // int replyCount = widget.reply ?? 0;
   }
 
   @override
@@ -53,7 +49,7 @@ class _BodyState extends State<Body> {
     var getAllPicks = authProvider.getAllPicks();
     // isAdmin
     var isAdmin = authProvider.isAdmin();
-    final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
+    final FirebaseFirestore dataBase = FirebaseFirestore.instance;
 
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: widget.searchResults,
@@ -126,6 +122,7 @@ class _BodyState extends State<Body> {
                             ),
                           );
                         }
+                        return null;
                       },
                       background: Container(
                         color: kWarning,

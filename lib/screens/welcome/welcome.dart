@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sportsapp/base.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
 import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
 import 'package:sportsapp/widgets/default_button.dart';

@@ -5,8 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/screens/direct_message_page/body/from_chat_bubble.dart';
-import 'package:sportsapp/screens/direct_message_page/body/send_chat_bubble.dart';
 import 'package:sportsapp/screens/group_chat_screen/widgets/group_from_chat_bubble.dart';
 import 'package:sportsapp/screens/group_chat_screen/widgets/group_send_chat_bubble.dart';
 

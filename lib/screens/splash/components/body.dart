@@ -69,7 +69,7 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     //initialize the nav class
     // _navigationService = GetIt.instance.get<NavigationService>();
-    var _navigationService =
+    var navigationService =
         Provider.of<NavigationService>(context, listen: false);
 
     return PageView.builder(
@@ -94,7 +94,7 @@ class _BodyState extends State<Body> {
                     //shiw skip else show nothing
                     TextButton(
                       onPressed: () {
-                        _navigationService.nagivateRoute(Welcome.routeName);
+                        navigationService.nagivateRoute(Welcome.routeName);
                       },
                       child: SplashText(
                         text:
@@ -107,7 +107,7 @@ class _BodyState extends State<Body> {
                         if (currentPage < splashData.length - 1) {
                           nextPage();
                         } else {
-                          _navigationService.nagivateRoute(Welcome.routeName);
+                          navigationService.nagivateRoute(Welcome.routeName);
                         }
                       },
                       child: currentPage != splashData.length - 1

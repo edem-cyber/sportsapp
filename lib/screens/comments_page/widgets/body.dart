@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/models/ChatMessageModel.dart';
 import 'package:sportsapp/models/PickReply.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/comments_page/widgets/comment.dart';
@@ -103,12 +102,11 @@ class _BodyState extends State<Body> {
             await storage.ref("images/profile_pics/$now").putFile(
                   uploadedFile,
                 );
-        return taskSnapshot != null
-            ? await taskSnapshot.ref.getDownloadURL()
-            : "";
+        return await taskSnapshot.ref.getDownloadURL();
       } catch (e) {
         print("UPLOADPFP FUNCTION!!: $e");
       }
+      return null;
     }
 
     bool isButtonEnabled = false;

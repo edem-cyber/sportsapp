@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/screens/single_league_page/tabs/fixtures/fixtures.dart';
 import 'package:sportsapp/screens/single_league_page/tabs/league_table.dart';
 

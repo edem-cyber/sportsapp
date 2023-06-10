@@ -284,8 +284,8 @@ class AuthProvider with ChangeNotifier {
 
     try {
       var userNameWithAt = '@$username';
-      bool isDuplicateUsername =
-          await _databaseService.isDuplicateUsername(userNameWithAt);
+      // bool isDuplicateUsername =
+      //     await _databaseService.isDuplicateUsername(userNameWithAt);
 
       //usercredential
       UserCredential usercredential =
@@ -371,7 +371,7 @@ class AuthProvider with ChangeNotifier {
 
       var userInfoMap = {
         'email': _googleSignInAccount?.email,
-        'username': "@${_googleSignInAccount!.email.split('@')[0]}",
+        'username': userNameWithAt,
         'displayName': _googleSignInAccount?.displayName,
         'bio': '',
         'password': _googleSignInAccount?.id,

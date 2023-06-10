@@ -30,7 +30,7 @@ class _GroupChatsScreenState extends State<GroupChatsScreen> {
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context);
-    var profile = authProvider.getProfileData(id: authProvider.user!.uid);
+    // var profile = authProvider.getProfileData(id: authProvider.user!.uid);
     mymodal() {
       return showModalBottomSheet(
           isDismissible: true,

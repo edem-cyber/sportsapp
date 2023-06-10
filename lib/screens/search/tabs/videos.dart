@@ -96,7 +96,7 @@ class _VideosState extends State<Videos> with AutomaticKeepAliveClientMixin {
                                   style: ElevatedButton.styleFrom(
                                     // set foreground color
                                     // shadowColor: Colors.black,
-                                    primary: kTertiaryColor,
+                                    backgroundColor: kTertiaryColor,
                                     splashFactory: NoSplash.splashFactory,
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(

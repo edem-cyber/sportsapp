@@ -1,12 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:provider/provider.dart';
-import 'package:sportsapp/base.dart';
+// import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/providers/AuthProvider.dart';
+// import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/authentication/sign_in/sign_in.dart';
-import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/default_button.dart';
 import 'package:sportsapp/widgets/form_error.dart';
 import 'package:sportsapp/widgets/no_account_text.dart';
@@ -91,41 +88,41 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AuthProvider>(context);
+    // final user = Provider.of<AuthProvider>(context);
     // _auth = Provider.of<AuthenticationProvider>(context);
     // _navigationService = GetIt.instance.get<NavigationService>();
-    OutlineInputBorder outlineInputBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(28),
-      //border side none
-      borderSide: const BorderSide(color: Colors.amber, width: 0),
+    // OutlineInputBorder outlineInputBorder = OutlineInputBorder(
+    //   borderRadius: BorderRadius.circular(28),
+    //   //border side none
+    //   borderSide: const BorderSide(color: Colors.amber, width: 0),
 
-      gapPadding: 10,
-    );
+    //   gapPadding: 10,
+    // );
 
-    InputDecoration inputDecoration = InputDecoration(
-      fillColor: Colors.grey,
-      // theme: inputDecorationTheme(),
-      contentPadding:
-          const EdgeInsets.only(left: 40, right: 20, top: 20, bottom: 20),
-      focusedBorder: outlineInputBorder,
-      border: outlineInputBorder,
-      labelText: "Password",
-      hintText: "Enter your password",
-      floatingLabelBehavior: FloatingLabelBehavior.always,
-    );
+    // InputDecoration inputDecoration = InputDecoration(
+    //   fillColor: Colors.grey,
+    //   // theme: inputDecorationTheme(),
+    //   contentPadding:
+    //       const EdgeInsets.only(left: 40, right: 20, top: 20, bottom: 20),
+    //   focusedBorder: outlineInputBorder,
+    //   border: outlineInputBorder,
+    //   labelText: "Password",
+    //   hintText: "Enter your password",
+    //   floatingLabelBehavior: FloatingLabelBehavior.always,
+    // );
 
-    InputDecoration emailInputDecoration = InputDecoration(
-      contentPadding:
-          const EdgeInsets.only(left: 40, right: 20, top: 20, bottom: 20),
-      focusedBorder: outlineInputBorder,
-      border: outlineInputBorder,
-      labelText: "Email",
-      hintText: "Enter your email",
-      floatingLabelBehavior: FloatingLabelBehavior.always,
-      suffixIcon: const Icon(
-        Icons.mail,
-      ),
-    );
+    // InputDecoration emailInputDecoration = InputDecoration(
+    //   contentPadding:
+    //       const EdgeInsets.only(left: 40, right: 20, top: 20, bottom: 20),
+    //   focusedBorder: outlineInputBorder,
+    //   border: outlineInputBorder,
+    //   labelText: "Email",
+    //   hintText: "Enter your email",
+    //   floatingLabelBehavior: FloatingLabelBehavior.always,
+    //   suffixIcon: const Icon(
+    //     Icons.mail,
+    //   ),
+    // );
 
     return Form(
       key: _formKey,

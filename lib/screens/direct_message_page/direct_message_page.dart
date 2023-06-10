@@ -25,11 +25,11 @@ class _DirectMessagePageState extends State<DirectMessagePage> {
     final userProfile = Provider.of<AuthProvider>(context, listen: false)
         .getProfileData(id: widget.id!);
 
-    final getSingleChatStream =
-        Provider.of<AuthProvider>(context, listen: false).getSingleChatStream(
-      user1: Provider.of<AuthProvider>(context, listen: false).user!.uid,
-      user2: widget.id!,
-    );
+    // final getSingleChatStream =
+    //     Provider.of<AuthProvider>(context, listen: false).getSingleChatStream(
+    //   user1: Provider.of<AuthProvider>(context, listen: false).user!.uid,
+    //   user2: widget.id!,
+    // );
 
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       future: userProfile,

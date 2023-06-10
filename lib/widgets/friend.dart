@@ -77,8 +77,8 @@ class Friend extends StatelessWidget {
                 ],
               ),
             ),
-            Row(
-              children: const [
+            const Row(
+              children: [
                 SizedBox(
                   width: 4,
                 ),

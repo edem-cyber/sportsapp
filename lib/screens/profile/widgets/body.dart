@@ -14,7 +14,6 @@ import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/direct_message_page/direct_message_page.dart';
 import 'package:sportsapp/screens/edit_profile/edit_profile.dart';
 import 'package:sportsapp/screens/profile/tabs/likes.dart';
-import 'package:sportsapp/screens/profile/tabs/media.dart';
 import 'package:sportsapp/screens/profile/tabs/rooms.dart';
 import 'package:sportsapp/screens/settings/settings.dart';
 
@@ -175,8 +174,7 @@ class _BodyState extends State<Body>
                                             const EditProfile());
                                       },
                                       style: OutlinedButton.styleFrom(
-                                        primary: kBlue,
-                                        shape: const StadiumBorder(),
+                                        foregroundColor: kBlue, shape: const StadiumBorder(),
                                         side: const BorderSide(color: kBlue),
                                       ),
                                       child: Text(
@@ -286,8 +284,7 @@ class _BodyState extends State<Body>
                                                     },
                                                     style: OutlinedButton
                                                         .styleFrom(
-                                                      primary: kBlue,
-                                                      shape:
+                                                      foregroundColor: kBlue, shape:
                                                           const StadiumBorder(),
                                                       side: const BorderSide(
                                                           color: kBlue),

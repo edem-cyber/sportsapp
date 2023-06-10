@@ -9,10 +9,11 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/models/League.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:http/http.dart' as http;
 import 'package:sportsapp/screens/single_league_page/single_league_page.dart';
+
+import '../../models/Match.dart';
 
 class LeagueScreen extends StatefulWidget {
   static const String routeName = '/LeagueScreen';

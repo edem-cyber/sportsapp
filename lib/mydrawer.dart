@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
+// import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/all_chats/all_chats.dart';
 import 'package:sportsapp/screens/bookmarks/bookmarks.dart';
@@ -22,7 +22,7 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var themeProvder = Provider.of<ThemeProvider>(context, listen: true);
+    // var themeProvder = Provider.of<ThemeProvider>(context, listen: true);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var navigationService =
         Provider.of<NavigationService>(context, listen: false);

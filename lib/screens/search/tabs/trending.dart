@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
@@ -117,7 +116,7 @@ class _TrendingState extends State<Trending>
                                   style: ElevatedButton.styleFrom(
                                     // set foreground color
                                     // shadowColor: Colors.black,
-                                    primary: kTertiaryColor,
+                                    backgroundColor: kTertiaryColor,
                                     splashFactory: NoSplash.splashFactory,
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(

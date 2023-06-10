@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/providers/AuthProvider.dart';
+// import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/screens/all_chats/widgets/body.dart';
 
@@ -18,7 +18,7 @@ class _AllChatsState extends State<AllChats> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<ThemeProvider>(context);
     var tabController = TabController(length: 2, vsync: this);
-    var authProvider = Provider.of<AuthProvider>(context, listen: true);
+    // var authProvider = Provider.of<AuthProvider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
           title: const Text('All Chats'),

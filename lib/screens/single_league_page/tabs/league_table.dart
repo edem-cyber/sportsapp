@@ -126,6 +126,7 @@ class _LeagueTableState extends State<LeagueTable>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return _table == []
         ? Container(
             color: Colors.white,
@@ -152,14 +153,14 @@ class _LeagueTableState extends State<LeagueTable>
                 const SizedBox(
                   height: 20,
                 ),
-                Padding(
+                const Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: Row(
                     children: [
                       Expanded(
                         child: Row(
-                          children: const [
+                          children: [
                             Text(
                               'Pos',
                               style: TextStyle(fontWeight: FontWeight.bold),
@@ -177,7 +178,7 @@ class _LeagueTableState extends State<LeagueTable>
                       Expanded(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
+                          children: [
                             Text(
                               // 'PL',
                               'MP',

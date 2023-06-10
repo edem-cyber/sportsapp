@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sportsapp/helper/app_images.dart';
+// import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
@@ -35,8 +35,8 @@ class _BodyState extends State<Body> {
                     controller: widget.scrollController,
                     itemBuilder: (_, int index) {
                       final item = snapshot.data![index];
-                      final image =
-                          item.urlToImage ?? AppImage.defaultProfilePicture;
+                      // final image =
+                      //     item.urlToImage ?? AppImage.defaultProfilePicture;
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15, vertical: 10),

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/screens/direct_message_page/direct_message_page.dart';
 import 'package:sportsapp/screens/group_chat_screen/group_chat_screen.dart';
-import 'package:sportsapp/services/database_service.dart';
+// import 'package:sportsapp/services/database_service.dart';
 
 class GroupChatsTab extends StatefulWidget {
   const GroupChatsTab({
@@ -77,9 +75,9 @@ class _GroupChatsTabState extends State<GroupChatsTab>
     Future<void> createRoom(
         {required String roomName, required String description}) async {
       final roomDoc = FirebaseFirestore.instance.collection('Rooms').doc();
-      var userDoc = FirebaseFirestore.instance
-          .collection(userCollection)
-          .doc(authProvider.user!.uid);
+      // var userDoc = FirebaseFirestore.instance
+      //     .collection(userCollection)
+      //     .doc(authProvider.user!.uid);
       final members = [authProvider.user!.uid];
       final timestamp = FieldValue.serverTimestamp();
       // final senderRef = FirebaseFirestore.instance

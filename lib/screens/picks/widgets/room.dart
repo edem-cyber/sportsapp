@@ -59,7 +59,7 @@ class Room extends StatelessWidget {
                     desc ?? "",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
                 const SizedBox(
@@ -83,7 +83,7 @@ class Room extends StatelessWidget {
                     children: [
                       Text(
                         "${snapshot.data} replies",
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       const SizedBox(
                         width: 5,

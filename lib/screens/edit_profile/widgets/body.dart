@@ -234,12 +234,11 @@ class _BodyState extends State<Body> {
           await storage.ref("images/profile_pics/$now").putFile(
                 uploadedFile,
               );
-      return taskSnapshot != null
-          ? await taskSnapshot.ref.getDownloadURL()
-          : "";
+      return await taskSnapshot.ref.getDownloadURL();
     } catch (e) {
       print("UPLOADPFP FUNCTION!!: $e");
     }
+    return null;
   }
 
   // @override
@@ -308,7 +307,7 @@ class _BodyState extends State<Body> {
                     // width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: kBlue,
+                        backgroundColor: kBlue,
                         padding: const EdgeInsets.symmetric(
                             vertical: 15, horizontal: 30),
                         shape: RoundedRectangleBorder(

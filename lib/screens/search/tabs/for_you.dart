@@ -92,7 +92,7 @@ class _ForYouState extends State<ForYou> with AutomaticKeepAliveClientMixin {
                                   style: ElevatedButton.styleFrom(
                                     // set foreground color
                                     // shadowColor: Colors.black,
-                                    primary: kTertiaryColor,
+                                    backgroundColor: kTertiaryColor,
                                     splashFactory: NoSplash.splashFactory,
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(

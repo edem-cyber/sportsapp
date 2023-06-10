@@ -1,6 +1,5 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sportsapp/helper/constants.dart';
 
 class NoInternetPage extends StatelessWidget {
@@ -27,7 +26,7 @@ class NoInternetPage extends StatelessWidget {
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.warning_amber)
+                  child: const Icon(Icons.warning_amber)
                 ),
               ),
             ),

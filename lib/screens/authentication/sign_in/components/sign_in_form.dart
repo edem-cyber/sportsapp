@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:sportsapp/base.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/authentication/auth_button.dart';
 import 'package:sportsapp/screens/authentication/forgot_password/forgot_password.dart';
 import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
-import 'package:sportsapp/widgets/default_button.dart';
 import 'package:sportsapp/widgets/form_error.dart';
 import 'package:sportsapp/widgets/no_account_text.dart';
-import 'package:sportsapp/widgets/notification.dart';
 import 'package:sportsapp/widgets/social_card.dart';
 
 class SignForm extends StatefulWidget {

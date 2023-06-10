@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sportsapp/helper/constants.dart';
 
 class ProfilePic extends StatelessWidget {
   const ProfilePic({

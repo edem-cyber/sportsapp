@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/PickReply.dart';
-import 'package:sportsapp/providers/AuthProvider.dart';
+// import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/comments_page/widgets/body.dart';
 
@@ -32,7 +32,7 @@ class _CommentsPageState extends State<CommentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+    // var authProvider = Provider.of<AuthProvider>(context, listen: false);
     var navigationService = Provider.of<NavigationService>(context);
 
     //function to get replies from firebase

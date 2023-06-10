@@ -5,15 +5,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/providers/navigation_service.dart';
+// import 'package:sportsapp/providers/ThemeProvider.dart';
+// import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/friend.dart';
 import 'package:sportsapp/screens/friends_page/widgets/friend_request.dart';
 import 'package:sportsapp/screens/profile/profile.dart';
 
 class Body extends StatefulWidget {
   final TabController tabController;
-  Body({Key? key, required this.tabController}) : super(key: key);
+  const Body({Key? key, required this.tabController}) : super(key: key);
 
   @override
   State<Body> createState() => _BodyState();
@@ -22,8 +22,9 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
-    var themeProvider = Provider.of<ThemeProvider>(context);
-    var navigationService = Provider.of<NavigationService>(context);
+    super.build(context);
+    // var themeProvider = Provider.of<ThemeProvider>(context);
+    // var navigationService = Provider.of<NavigationService>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
 
     Future<List<DocumentSnapshot>> getUsersByUids() async {

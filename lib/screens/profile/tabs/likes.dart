@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
+// import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,18 +23,18 @@ class LikesTab extends StatefulWidget {
 class _LikesTabState extends State<LikesTab> {
   @override
   Widget build(BuildContext context) {
-    var themeProvider = Provider.of<ThemeProvider>(context);
+    // var themeProvider = Provider.of<ThemeProvider>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     var navigationService = Provider.of<NavigationService>(context);
-    final FirebaseFirestore _dataBase = FirebaseFirestore.instance;
-    var userProfile = authProvider.getProfileData(id: widget.id);
-    var userData = authProvider.getUserData();
+    final FirebaseFirestore dataBase = FirebaseFirestore.instance;
+    // var userProfile = authProvider.getProfileData(id: widget.id);
+    // var userData = authProvider.getUserData();
     // var getLikedPostsArray = _databaseService.getLikedPostsArray(
     //   uid: authProvider.user!.uid,
     // );
 
     Stream<List<String>> getLikedPostsArrayStream({required String uid}) {
-      return _dataBase
+      return dataBase
           .collection(userCollection)
           .doc(uid)
           .snapshots()

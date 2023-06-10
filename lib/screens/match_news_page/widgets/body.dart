@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/providers/navigation_service.dart';
+// import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/match_news_page/widgets/match_comment.dart';
-import 'package:sportsapp/screens/single_league_page/tabs/fixtures/fixtures.dart';
 // import 'package:sticky_headers/sticky_headers.dart';
 
 class Body extends StatefulWidget {
@@ -21,8 +19,8 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
 
-    var themeProvider = Provider.of<ThemeProvider>(context);
-    var navigationService = Provider.of<NavigationService>(context);
+    // var themeProvider = Provider.of<ThemeProvider>(context);
+    // var navigationService = Provider.of<NavigationService>(context);
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.only(bottom: 70),

@@ -1,6 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -80,12 +78,12 @@ class _NewsTileState extends State<NewsTile> {
     ];
 
     var themeprovider = Provider.of<ThemeProvider>(context, listen: false);
-    var _navigationService =
+    var navigationService =
         Provider.of<NavigationService>(context, listen: false);
     return GestureDetector(
       onTap: () {
         // debugPrint("IMAGE URL IS: ${widget.article.urlToImage}");
-        _navigationService.navigateToPage(
+        navigationService.navigateToPage(
           ArticleView(
             postUrl: widget.article.articleUrl!,
             title: widget.article.title!,
@@ -147,7 +145,7 @@ class _NewsTileState extends State<NewsTile> {
                     widget.article.title!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.headline6!,
+                    style: Theme.of(context).textTheme.titleLarge!,
                   )
                 : Shimmer.fromColors(
                     baseColor: kTextLightColor,

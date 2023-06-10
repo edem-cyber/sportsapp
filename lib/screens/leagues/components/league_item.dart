@@ -12,7 +12,7 @@ class LeagueItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size _size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -29,7 +29,7 @@ class LeagueItem extends StatelessWidget {
         child: Row(
           children: <Widget>[
             SizedBox(
-              width: _size.width * 0.2,
+              width: size.width * 0.2,
               child: image != null
                   ? SvgPicture.asset(
                       image!,
@@ -41,12 +41,12 @@ class LeagueItem extends StatelessWidget {
               width: 10,
             ),
             SizedBox(
-              width: _size.width * 0.6,
+              width: size.width * 0.6,
               child: Text(
                 text!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
           ],

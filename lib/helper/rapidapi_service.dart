@@ -1,7 +1,7 @@
 import 'dart:convert';
 //import http package
 import 'package:http/http.dart' as http;
-import 'package:sportsapp/models/league.dart';
+import 'package:sportsapp/models/Match.dart';
 
 class APIService {
   static const _authority = "sameer-kumar-aztro-v1.p.rapidapi.com";
