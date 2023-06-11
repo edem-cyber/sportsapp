@@ -35,7 +35,7 @@ class _FixturesTabState extends State<FixturesTab>
   //   Map<String, dynamic> data = json.decode(response.body);
 
   //   // List<dynamic> matches = data['matches'];
-  //   // print("X: $x");
+  //   // debugPrint("X: $x");
 
   //   //convert dynamic list to list of matches objects and add to extractedMatches
   //   // extractedMatches = matches.map((e) => Matches.fromJson(e)).toList();
@@ -43,13 +43,13 @@ class _FixturesTabState extends State<FixturesTab>
   //   //arrange matches by matchday in ascending order
   //   // extractedMatches.sort((a, b) => a.matchday!.compareTo(b.matchday!));
 
-  //   // print("EXTRACTED MATCHES: ${extractedMatches[0].homeTeam!.name}");
-  //   // print("EXTRACTED MATCHES: ${extractedMatches[0].homeTeam}");
-  //   print("DATA: ${data["matches"]}");
-  //   //print tla of home team
-  //   print("DATA IMG: ${data["matches"][0]}");
+  //   // debugPrint("EXTRACTED MATCHES: ${extractedMatches[0].homeTeam!.name}");
+  //   // debugPrint("EXTRACTED MATCHES: ${extractedMatches[0].homeTeam}");
+  //   debugPrint("DATA: ${data["matches"]}");
+  //   //debugPrint tla of home team
+  //   debugPrint("DATA IMG: ${data["matches"][0]}");
 
-  //   // print(x.keys);
+  //   // debugPrint(x.keys);
   //   // for (var i in y) {
   //   //   extractedMatches.add(
   //   //     Matches(
@@ -77,7 +77,7 @@ class _FixturesTabState extends State<FixturesTab>
       // parse the response and create a list of fixtures
       List<Fixture> fixtures = [];
       final data = jsonDecode(response.body)['matches'];
-      print("DATA: $data");
+      debugPrint("DATA: $data");
       for (var fixture in data) {
         fixtures.add(Fixture(
           homeTeamLogo: fixture['homeTeam']['crest'],
@@ -91,7 +91,7 @@ class _FixturesTabState extends State<FixturesTab>
 
       return fixtures;
     } else {
-      print("ERROR: ${response.statusCode}");
+      debugPrint("ERROR: ${response.statusCode}");
       throw Exception('Failed to load fixtures');
     }
   }

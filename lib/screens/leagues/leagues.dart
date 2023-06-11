@@ -37,18 +37,18 @@ class _LeagueScreenState extends State<LeagueScreen>
         "X-Auth-Token": dotenv.env['API_TOKEN']!,
       },
     );
-    print("STATUS:  ${response.statusCode}");
+    debugPrint("STATUS:  ${response.statusCode}");
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      print("STATUS:  $data");
+      debugPrint("STATUS:  $data");
       List<dynamic> leagues = data['competitions'];
       leaguesList = leagues.map((e) => League.fromJson(e)).toList();
     } else if (response.statusCode == 400) {
       Map<String, dynamic> data = json.decode(response.body);
       List<dynamic> errorMessage = data['message'];
-      print("ERROR 400 IS: $errorMessage");
+      debugPrint("ERROR 400 IS: $errorMessage");
     } else {}
-    print("LEAGUES ARE: $leaguesList");
+    debugPrint("LEAGUES ARE: $leaguesList");
     return leaguesList;
   }
 
@@ -128,7 +128,7 @@ class _LeagueScreenState extends State<LeagueScreen>
         initialData: const [],
         // initialData: const <String, dynamic>{},
         builder: (context, snapshot) {
-          print("SNAPSHOT IS: $snapshot");
+          debugPrint("SNAPSHOT IS: $snapshot");
           if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data!.length,
@@ -189,7 +189,7 @@ class _LeagueScreenState extends State<LeagueScreen>
                           ),
                         ),
                       );
-                      // print("LEAGUE CODE: ${league.code}");
+                      // debugPrint("LEAGUE CODE: ${league.code}");
                     },
 
                     // title: Text(league.name!),
@@ -202,7 +202,7 @@ class _LeagueScreenState extends State<LeagueScreen>
             );
           }
           if (snapshot.hasError || snapshot.data == null) {
-            print("ERROR IS:  ${snapshot.error}");
+            debugPrint("ERROR IS:  ${snapshot.error}");
             return const Center(
               child: CupertinoActivityIndicator(),
             );

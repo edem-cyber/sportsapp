@@ -17,11 +17,11 @@
 //           debugPrint('value read from storage: $value');
 //           var themeMode = value ?? 'light';
 //           if (themeMode == 'light') {
-//             print('setting light theme');
+//             debugPrint('setting light theme');
 
 //             _themeData = light;
 //           } else {
-//             print('setting dark theme');
+//             debugPrint('setting dark theme');
 //             _themeData = dark;
 //           }
 //           notifyListeners();

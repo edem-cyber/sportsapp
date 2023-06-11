@@ -7,7 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
+// import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/screens/picks/widgets/body.dart';
 
 class Picks extends StatefulWidget {
@@ -50,7 +50,7 @@ class _PicksState extends State<Picks> {
   @override
   Widget build(BuildContext context) {
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
-    var themeProvider = Provider.of<ThemeProvider>(context, listen: true);
+    // var themeProvider = Provider.of<ThemeProvider>(context, listen: true);
     var size = MediaQuery.of(context).size;
 
     var isAdmin = authProvider.isAdmin();

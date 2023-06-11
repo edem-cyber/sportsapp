@@ -100,7 +100,7 @@ class _BaseState extends State<Base> {
             .toList(),
         onTap: (index) {
           if (kDebugMode) {
-            print("INDEX IS : $index");
+            debugPrint("INDEX IS : $index");
           }
 
           showPage(index);

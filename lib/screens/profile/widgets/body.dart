@@ -174,7 +174,8 @@ class _BodyState extends State<Body>
                                             const EditProfile());
                                       },
                                       style: OutlinedButton.styleFrom(
-                                        foregroundColor: kBlue, shape: const StadiumBorder(),
+                                        foregroundColor: kBlue,
+                                        shape: const StadiumBorder(),
                                         side: const BorderSide(color: kBlue),
                                       ),
                                       child: Text(
@@ -196,7 +197,8 @@ class _BodyState extends State<Body>
                                           builder: (context, snapshot) {
                                             var friendState =
                                                 snapshot.data.toString();
-                                            print("friendState: $friendState");
+                                            debugPrint(
+                                                "friendState: $friendState");
                                             if (snapshot.hasError ||
                                                 snapshot.connectionState ==
                                                     ConnectionState.waiting) {
@@ -284,7 +286,8 @@ class _BodyState extends State<Body>
                                                     },
                                                     style: OutlinedButton
                                                         .styleFrom(
-                                                      foregroundColor: kBlue, shape:
+                                                      foregroundColor: kBlue,
+                                                      shape:
                                                           const StadiumBorder(),
                                                       side: const BorderSide(
                                                           color: kBlue),

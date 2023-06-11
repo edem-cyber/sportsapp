@@ -83,7 +83,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       itemCount: friends.length,
                       itemBuilder: (BuildContext context, int index) {
-                        print(index);
+                        debugPrint("$index");
                         return Friend(
                           name: friends[index]["displayName"],
                           username: friends[index]["username"],
@@ -118,7 +118,8 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       itemCount: friendRequests.length,
                       itemBuilder: (BuildContext context, int index) {
-                        print(index);
+                        debugPrint("$index");
+
                         return FriendRequest(
                           image: friendRequests[index]["photoURL"],
                           name: friendRequests[index]["displayName"],

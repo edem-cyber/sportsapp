@@ -15,7 +15,7 @@ class FriendshipState with ChangeNotifier {
     try {
       friendRequests = await _dataBase.getFriendRequests(userId: uid);
     } catch (error) {
-      print(
+      debugPrint(
         error.toString(),
       );
     }

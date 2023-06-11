@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
-import 'package:sportsapp/providers/AuthProvider.dart';
-import 'package:sportsapp/providers/ThemeProvider.dart';
+// import 'package:provider/provider.dart';
+// import 'package:sportsapp/providers/AuthProvider.dart';
+// import 'package:sportsapp/providers/ThemeProvider.dart';
 
 class Room extends StatelessWidget {
   final String? title, desc, id, image;
@@ -22,8 +22,8 @@ class Room extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var authProvider = Provider.of<AuthProvider>(context, listen: false);
-    var themeProvider = Provider.of<ThemeProvider>(context);
+    // var authProvider = Provider.of<AuthProvider>(context, listen: false);
+    // var themeProvider = Provider.of<ThemeProvider>(context);
 
     Stream<int> getRepliesLength(String pickId) {
       var doc = FirebaseFirestore.instance.collection('Picks').doc(pickId);

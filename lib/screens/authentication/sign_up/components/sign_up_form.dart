@@ -75,12 +75,12 @@ class _SignUpFormState extends State<SignUpForm> {
   //     Reference storageRef =
   //         storage.ref().child('profile_pics/${uploadFile.path}');
   //     UploadTask uploadTask = storageRef.putFile(uploadFile);
-  //     await uploadTask.whenComplete(() => print('uploaded'));
-  //     print('File Uploaded');
+  //     await uploadTask.whenComplete(() => debugPrint('uploaded'));
+  //     debugPrint('File Uploaded');
   //     TaskSnapshot taskSnapshot = await uploadTask;
   //     // return taskSnapshot.ref.getDownloadURL();
   //     storageRef.getDownloadURL().then((fileURL) {
-  //       print("File URL: $fileURL");
+  //       debugPrint("File URL: $fileURL");
   //     });
   //   } catch (e) {
   //     debugPrint("UPLOADPFP FUNCTION: $e");
@@ -98,7 +98,7 @@ class _SignUpFormState extends State<SignUpForm> {
               );
       return await taskSnapshot.ref.getDownloadURL();
     } catch (e) {
-      print("UPLOADPFP FUNCTION!!: $e");
+      debugPrint("UPLOADPFP FUNCTION!!: $e");
     }
     return null;
   }

@@ -29,7 +29,8 @@ class _BodyState extends State<Body> {
   @override
   void initState() {
     super.initState();
-    print("${widget.id}, ${widget.name}, ${widget.username}, ${widget.image}");
+    debugPrint(
+        "${widget.id}, ${widget.name}, ${widget.username}, ${widget.image}");
   }
 
   @override
@@ -55,7 +56,7 @@ class _BodyState extends State<Body> {
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
 
     void sendMessage() {
-      print(dmController.text);
+      debugPrint(dmController.text);
       if (dmKey.currentState!.validate()) {
         _scrollDown();
         authProvider.createChat(

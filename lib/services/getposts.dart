@@ -12,12 +12,12 @@
 //     Uri url = Uri.parse(
 //         "http://newsapi.org/v2/top-headlines?country=in&excludeDomains=stackoverflow.com&sortBy=publishedAt&language=en&apiKey=800dce9aa1334456ac941842fa55edf8");
 //     var response = await http.get(url);
-//     print("RESPONSE STATUS: ${response.statusCode}");
-//     // print("RESPONSE BODY: ${response.body}");
+//     debugPrint("RESPONSE STATUS: ${response.statusCode}");
+//     // debugPrint("RESPONSE BODY: ${response.body}");
 
 //     var jsonData = jsonDecode(response.body);
-//     // print("JSON DATA: ${jsonData}");
-//     print("JSON STATUS: ${jsonData['status']}");
+//     // debugPrint("JSON DATA: ${jsonData}");
+//     debugPrint("JSON STATUS: ${jsonData['status']}");
 //     if (jsonData['status'] == "ok") {
 //       jsonData["articles"].forEach((element) {
 //         if (element['urlToImage'] != null && element['description'] != null) {

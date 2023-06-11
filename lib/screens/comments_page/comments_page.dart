@@ -54,7 +54,7 @@ class _CommentsPageState extends State<CommentsPage> {
           .doc(id)
           .get()
           .then((value) => value.data());
-      print("pick is $pick");
+      debugPrint("pick is $pick");
       return pick;
     }
 

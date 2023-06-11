@@ -44,19 +44,19 @@ class _ArticleViewState extends State<ArticleView> {
       // {
       //   'icon': 'assets/icons/heart.svg',
       //   'onPress': () {
-      //     print('heart');
+      //     debugPrint('heart');
       //   },
       // },
       {
         'icon': 'assets/icons/paper-plane.svg',
         'onPress': () {
-          print('heart');
+          debugPrint('heart');
         },
       },
       {
         'icon': 'assets/icons/share.svg',
         'onPress': () {
-          print('heart');
+          debugPrint('heart');
         },
       },
     ];
@@ -129,7 +129,7 @@ class _ArticleViewState extends State<ArticleView> {
             Text(widget.desc),
             // ElevatedButton(
             //     onPressed: () {
-            //       print(desc);
+            //       debugPrint(desc);
             //     },
             //     child: Text("hit me")),
             const SizedBox(
