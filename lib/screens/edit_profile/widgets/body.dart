@@ -103,7 +103,6 @@ class _BodyState extends State<Body> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _emailController.dispose();
     _displayNameController.dispose();
@@ -115,11 +114,11 @@ class _BodyState extends State<Body> {
       controller: _displayNameController,
       validator: (value) {
         if (value!.isEmpty) {
-          return "Display Name is required";
-        } else if (value.length < 3) {
-          return "Display Name must be at least 3 characters";
+          //   // return "Display Name is required";
+          // } else if (value.length < 3) {
+          //   return "Display Name must be at least 3 characters";
+          return null;
         }
-
         return null;
       },
       decoration: const InputDecoration(
@@ -192,28 +191,6 @@ class _BodyState extends State<Body> {
     );
   }
 
-  // void _getFromCamera() async {
-  //   XFile? pickedFile = await ImagePicker().pickImage(
-  //     source: ImageSource.camera,
-  //     maxHeight: 720,
-  //     maxWidth: 720,
-  //   );
-  //   setState(() {
-  //     imageFile = File(pickedFile!.path);
-  //   });
-  // }
-
-  // void _getFromGallery() async {
-  //   XFile? pickedFile = await ImagePicker().pickImage(
-  //     source: ImageSource.gallery,
-  //     maxHeight: 720,
-  //     maxWidth: 720,
-  //   );
-  //   setState(() {
-  //     imageFile = File(pickedFile!.path);
-  //   });
-  // }
-
   void pickImage() async {
     final XFile? imageFile = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -240,13 +217,6 @@ class _BodyState extends State<Body> {
     }
     return null;
   }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   var authProvider = Provider.of<AuthProvider>(context, listen: false);
-  //   authProvider.setIsLoading(false);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -317,26 +287,34 @@ class _BodyState extends State<Body> {
                       onPressed: () async {
                         try {
                           if (_formKey.currentState!.validate()) {
-                            try {
-                              String? value = await uploadPfP();
-                              await authProvider.updateUser(
-                                displayName: _displayNameController.text,
-                                bio: _bioController.text,
-                                photoUrl: value ?? "",
-                              );
-                            } catch (e) {
-                              debugPrint("error in uploadPfP");
+                            String? value = await uploadPfP();
+                            String displayName = _displayNameController.text;
+                            String bio = _bioController.text;
+
+                            if (displayName.isNotEmpty) {
+                              await authProvider.updateDisplayName(displayName);
                             }
+
+                            if (bio.isNotEmpty) {
+                              await authProvider.updateBio(bio);
+                            }
+
+                            if (value != null) {
+                              await authProvider.updatePhotoUrl(value);
+                            }
+
                             navigationService.goBack();
                           } else {
-                            debugPrint("form is not valid");
+                            debugPrint("Form is not valid");
                           }
-                        } on FirebaseException catch (e) {
-                          debugPrint("AUTH BUTTON FIREBASE EXCEPTION $e");
-                          // addError(error: kEmailNullError);
                         } catch (e) {
-                          debugPrint("AUTH BUTTON EXCEPTION $e");
-                          // addError(error: kEmailNullError);
+                          if (e is FirebaseException) {
+                            debugPrint("AUTH BUTTON FIREBASE EXCEPTION $e");
+                            // Handle FirebaseException error
+                          } else {
+                            debugPrint("AUTH BUTTON EXCEPTION $e");
+                            // Handle other exceptions
+                          }
                         }
                       },
                       child: const Text("Save"),

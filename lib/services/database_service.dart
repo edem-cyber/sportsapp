@@ -32,16 +32,29 @@ class DatabaseService {
   }
 
   //Update User
-  Future<void> updateUser(
-      {required String uid,
-      String? displayName,
-      String? bio,
-      String? photoUrl}) async {
+  Future<void> updateDisplayName(String uid, String displayName) async {
     try {
-      // * Going to the collections (User) the to the user uid and overrides the values of the fields
       await _dataBase.collection(userCollection).doc(uid).update({
         'displayName': displayName,
+      });
+    } catch (error) {
+      debugPrint('$error');
+    }
+  }
+
+  Future<void> updateBio(String uid, String bio) async {
+    try {
+      await _dataBase.collection(userCollection).doc(uid).update({
         'bio': bio,
+      });
+    } catch (error) {
+      debugPrint('$error');
+    }
+  }
+
+  Future<void> updatePhotoUrl(String uid, String photoUrl) async {
+    try {
+      await _dataBase.collection(userCollection).doc(uid).update({
         'photoURL': photoUrl,
       });
     } catch (error) {

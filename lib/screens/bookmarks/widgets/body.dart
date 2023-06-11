@@ -33,13 +33,12 @@ class _BodyState extends State<Body> {
           ),
           //show list of bookmarks from firebase
           FutureBuilder<List<String>>(
+            initialData: const [],
             future: getLikedPostsArray,
             builder:
                 (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
               //if the list is empty
-              if (
-                  snapshot.connectionState == ConnectionState.none ||
-                  !snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.none) {
                 return SizedBox(
                   width: size.width,
                   height: size.height,
@@ -48,7 +47,7 @@ class _BodyState extends State<Body> {
                   ),
                 );
               }
-              if (snapshot.data!.isEmpty) {
+              if (snapshot.data!.isEmpty || !snapshot.hasData) {
                 return SizedBox(
                   width: size.width,
                   height: size.height,

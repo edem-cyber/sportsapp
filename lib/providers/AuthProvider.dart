@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sportsapp/base.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/Post.dart';
@@ -15,6 +17,7 @@ import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/notification.dart';
+
 import 'package:http/http.dart' as http;
 //import cloud functions
 // import 'package:cloud_functions/cloud_functions.dart';
@@ -28,6 +31,7 @@ class AuthProvider with ChangeNotifier {
     _databaseService = DatabaseService();
     _navigationService = NavigationService();
     _googleSignIn = GoogleSignIn();
+
     //get posts
     getPosts();
 
@@ -182,38 +186,6 @@ class AuthProvider with ChangeNotifier {
     return isExists;
   }
 
-  // void checkCurrentUser() async {
-  //   // _user = _auth.currentUser;
-  //   var userInfoMap = {
-  //     'displayName': user!.displayName ?? user!.email!.split('@')[0],
-  //     'email': user!.email,
-  //     'username': user!.email!
-  //         .split('@')[0], // set username to the part of the email before '@'
-  //     'likeList': [], // init
-  //     'bio': '',
-  //     'password': _googleSignInAccount?.id,
-  //     'photoURL': _googleSignInAccount?.photoUrl,
-  //     'lastSeen': DateTime.now(),
-  //     'createdAt': DateTime.now(),
-  //     'isAdmin': false,
-  //   };
-  //   if (user != null) {
-  //     // Check if the user has a Firestore document
-  //     DocumentSnapshot userDoc = await FirebaseFirestore.instance
-  //         .collection('Users')
-  //         .doc(user!.uid)
-  //         .get();
-  //     if (!userDoc.exists) {
-  //       // If the user does not have a Firestore document, create one
-  //       await FirebaseFirestore.instance
-  //           .collection('Users')
-  //           .doc(user!.uid)
-  //           .set(userInfoMap);
-  //     }
-  //   }
-  //   notifyListeners();
-  // }
-
   Future<void> signIn(String email, String password) async {
     //save user to storage
     setIsLoading(true);
@@ -249,15 +221,6 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Future<bool> userExists(String username) async =>
-  //     (await _instance
-  //             .collection("users")
-  //             .where("username", isEqualTo: username)
-  //             .getDocuments())
-  //         .documents
-  //         .length >
-  // 0;
-
   Future<bool> checkDuplicate(String username) async {
     bool result = await _databaseService.isDuplicateUsername("@$username");
     if (result == true) {
@@ -283,23 +246,19 @@ class AuthProvider with ChangeNotifier {
     setIsLoading(true);
 
     try {
-      var userNameWithAt = '@$username';
-      // bool isDuplicateUsername =
-      //     await _databaseService.isDuplicateUsername(userNameWithAt);
-
-      //usercredential
-      UserCredential usercredential =
+      // Create user with email and password
+      UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
 
-      //update user photo with firebase
-      await usercredential.user!.updatePhotoURL(photoURL);
+      // Update user photo URL with Firebase
+      await userCredential.user!.updatePhotoURL(photoURL);
 
       var userInfoMap = {
         'email': email,
-        'username': userNameWithAt,
+        'username': '@$username',
         'displayName': displayName,
         'bio': '',
         'password': password,
@@ -309,76 +268,135 @@ class AuthProvider with ChangeNotifier {
         'liked_posts': [],
         'isAdmin': false,
       };
+
+      // Add user info to the database
       await _databaseService.addUserInfoToDB(
           uid: _auth.currentUser!.uid, userInfoMap: userInfoMap);
 
-      //save user to storage
-      if (!usercredential.isBlank!) {
+      // Save user to storage
+      if (!userCredential.isBlank!) {
         appNotification(
-            title: "Success",
-            message: "Signed Up",
-            icon: const Icon(Icons.check, color: Colors.green));
+          title: "Success",
+          message: "Signed Up",
+          icon: const Icon(Icons.check, color: Colors.green),
+        );
         _navigationService.signInWithAnimation(Base.routeName);
       }
-
-      setIsLoading(false);
-
-      _navigationService.signInWithAnimation(Base.routeName);
-
-      // return _userFromFirebase(_auth.currentUser);
     } catch (e) {
-      //switch
-      //regex to filter firebase error messages
+      // Handle error
       var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
       appNotification(
         title: "Error",
         message: er,
         icon: const Icon(Icons.error, color: kWarning),
       );
-
-      //CHECK duplicate usernames
-      // if (e.code == 'username-already-in-use') {
-
-      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
+  }
+
+  String generateRandomUsername() {
+    List<String> adjectives = [
+      'happy',
+      'sunny',
+      'playful',
+      'creative',
+      'vibrant',
+      'daring',
+      'brilliant',
+      'charming',
+      'elegant',
+      'fantastic',
+      'cyber',
+      'gentle',
+      'quirky',
+      'sparkling',
+      'talented',
+      'witty',
+      'amazing',
+      'blissful',
+      'cool',
+      'dynamic',
+      'enchanting',
+      'fearless',
+      'graceful',
+      'joyful',
+      'kind',
+      'lively',
+      'magical',
+      'noble',
+      'optimistic',
+      'peaceful',
+      'radiant'
+    ];
+
+    List<String> safeWords = [
+      'apple',
+      'banana',
+      'carrot',
+      'dolphin',
+      'elephant',
+      'flower',
+      'guitar',
+      'honey',
+      'island',
+      'jungle',
+      'koala',
+      'lemon',
+      'mountain',
+      'mango',
+      'ocean',
+      'cheese',
+      'penguin',
+      'ruby',
+      'quartz',
+      'rainbow',
+      'sunshine',
+      'tiger',
+      'umbrella',
+      'rainbow',
+      'soup',
+      'seed',
+      'volcano',
+      'watermelon',
+      'xylophone',
+      'yoga',
+      'zebra'
+    ];
+
+    Random random = Random();
+    String adjective = adjectives[random.nextInt(adjectives.length)];
+    String safeWord = safeWords[random.nextInt(safeWords.length)];
+    String number = (random.nextInt(900) + 001)
+        .toString(); // Generates a random 3-digit number (100-999)
+    return '@$adjective$safeWord$number';
   }
 
   Future<void> signInWithGoogle() async {
     try {
       setIsLoading(true);
 
-      //check if username is duplicate
-      // if (!await _databaseService.isDuplicateUniqueName(username: username)) {
-
       _googleSignInAccount = await _googleSignIn!.signIn();
-      var userNameWithAt = _googleSignInAccount!.email.split('@')[0];
+      // var userNameWithAt = _googleSignInAccount!.email.split('@')[0];
+
+      // Generate a random username
+      var randomUsername =
+          generateRandomUsername(); // Assuming you have the generateRandomUsername function implemented
 
       final GoogleSignInAuthentication? googleAuth =
           await _googleSignInAccount?.authentication;
 
-      // if (await _databaseService.isDuplicateUniqueName(
-      //     username: "@${_googleSignInAccount!.email.split('@')[0]}")) {
-      //   appNotification(
-      //     title: "Error",
-      //     message: "User already exists",
-      //     icon: const Icon(Icons.error, color: kWarning),
-      //   );
-      // setIsLoading(false);
-      // return;
-      // } else {
-
       var userInfoMap = {
         'email': _googleSignInAccount?.email,
-        'username': userNameWithAt,
+        'username':
+            randomUsername, // Use the random username instead of userNameWithAt
         'displayName': _googleSignInAccount?.displayName,
         'bio': '',
         'password': _googleSignInAccount?.id,
         'photoURL': _googleSignInAccount?.photoUrl,
         'lastSeen': DateTime.now(),
         'createdAt': DateTime.now(),
-        'likes': [],
+        'liked_posts': [],
         'isAdmin': false,
       };
 
@@ -406,7 +424,6 @@ class AuthProvider with ChangeNotifier {
           message: "Missing Google Auth Token",
           icon: const Icon(Icons.error, color: kWarning),
         );
-        // }
       }
     } catch (e) {
       debugPrint("$e");
@@ -417,49 +434,94 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Future<UserModel?> signInWithFacebook() async {
-  //   try {
-  //     _status = Status.Authenticating;
-  //     notifyListeners();
-  //     final AuthCredential credential = FacebookAuthProvider.credential(
-  //       //facebook CREDENTIALS
+  // import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-  //     );
-  //     UserCredential? credentials =
-  //         await _auth?.signInWithCredential(credential);
-  //     return _userFromFirebase(credentials?.user);
-  //   } catch (e) {
-  //     _status = Status.Unauthenticated;
-  //     notifyListeners();
-  //     return _userFromFirebase(null);
-  //   }
-  // }
+  Future<String?> fetchAppleUserPhotoURL(String userIdentifier) async {
+    final url =
+        Uri.parse('https://appleid.apple.com/auth/user/$userIdentifier');
+    final response = await http.get(url);
 
-  // Future<void> signOut() async {
-  //   try {
-  //     _googleSignIn?.signOut().then((value) => _auth.signOut().then((value) =>
-  //         _navigationService.signOutWithAnimation(SignIn.routeName)));
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final photoURL = json['response']['user']['photo'];
 
-  //     //clear cache
-  //     await _auth.currentUser?.delete();
+      return photoURL;
+    }
 
-  //     // _googleSignIn?.signOut();
+    return null;
+  }
 
-  //     //if sign out is success show notification
-  //     appNotification(
-  //         title: "Success",
-  //         message: "Signed Out",
-  //         icon: const Icon(Icons.check, color: Colors.green));
-  //     notifyListeners();
-  //     return;
-  //   } catch (e) {
-  //     debugPrint("SIGN OUT ERROR: $e");
-  //     return;
-  //   } finally {
-  //     notifyListeners();
-  //     // setIsLoading(false);
-  //   }
-  // }
+  Future<void> signInWithApple() async {
+    setIsLoading(true);
+    final rawNonce = generateNonce();
+
+    try {
+      // Start the Apple Sign-In process
+      final appleCredential =
+          await SignInWithApple.getAppleIDCredential(scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ], nonce: rawNonce);
+
+      // Get the user's email and display name from the credential
+      final email = appleCredential.email;
+      final displayName =
+          '${appleCredential.givenName} ${appleCredential.familyName}';
+
+      // Create user with Apple credential
+      final credential = OAuthProvider('apple.com').credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+        rawNonce: rawNonce,
+      );
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      // Update user photo URL with Firebase
+      // await userCredential.user!.updatePhotoURL(appleCredential.photoURL);
+      final userIdentifier = appleCredential.userIdentifier;
+      final photoURL = await fetchAppleUserPhotoURL(userIdentifier!);
+
+      var userInfoMap = {
+        'email': email,
+        'username': '',
+        'displayName': displayName,
+        'bio': '',
+        'password': '',
+        'photoURL': photoURL ?? '',
+        'lastSeen': DateTime.now(),
+        'createdAt': DateTime.now(),
+        'liked_posts': [],
+        'isAdmin': false,
+      };
+
+      // Add user info to the database
+      await _databaseService.addUserInfoToDB(
+        uid: _auth.currentUser!.uid,
+        userInfoMap: userInfoMap,
+      );
+
+      // Save user to storage
+      if (!userCredential.isBlank!) {
+        appNotification(
+          title: 'Success',
+          message: 'Signed Up',
+          icon: const Icon(Icons.check, color: Colors.green),
+        );
+        _navigationService.signInWithAnimation(Base.routeName);
+      }
+    } catch (e) {
+      // Handle error
+      print(e.toString());
+      // var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
+      appNotification(
+        title: 'Error',
+        message: e.toString(),
+        icon: const Icon(Icons.error, color: kWarning),
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
@@ -514,22 +576,33 @@ class AuthProvider with ChangeNotifier {
     return news;
   }
 
-  updateUser({String? displayName, String? bio, String? photoUrl}) {
-    _auth.currentUser!.updateProfile(
-      displayName: displayName,
-      photoURL: photoUrl,
-    );
-    _databaseService.updateUser(
-        displayName: displayName, bio: bio, photoUrl: photoUrl, uid: user!.uid);
-
-    if (photoUrl != null) {
-      user!.updatePhotoURL(photoUrl);
+  Future<void> updateDisplayName(String displayName) async {
+    try {
+      await _databaseService.updateDisplayName(
+          displayName, _auth.currentUser!.uid);
+      notifyListeners();
+    } catch (e) {
+      // Handle error
     }
-    if (displayName != null) {
-      user!.updateDisplayName(displayName);
-    }
+  }
 
-    notifyListeners();
+  Future<void> updateBio(String bio) async {
+    try {
+      await _databaseService.updateBio(bio, _auth.currentUser!.uid);
+      notifyListeners();
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  Future<void> updatePhotoUrl(String photoUrl) async {
+    try {
+      await _auth.currentUser!.updatePhotoURL(photoUrl);
+      await _databaseService.updatePhotoUrl(photoUrl, _auth.currentUser!.uid);
+      notifyListeners();
+    } catch (e) {
+      // Handle error
+    }
   }
 
   likePost(Article article) {

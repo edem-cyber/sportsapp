@@ -82,7 +82,7 @@ class _BodyState extends State<Body>
                             ? currentUser!['photoURL'] ??
                                 AppImage.defaultProfilePicture
                             : profile!['photoURL'],
-                        fit: BoxFit.cover,
+                        // fit: BoxFit.cover,
                         imageBuilder: (context, imageProvider) => Container(
                           width: 80.0,
                           height: 80.0,
@@ -90,7 +90,6 @@ class _BodyState extends State<Body>
                             shape: BoxShape.circle,
                             image: DecorationImage(
                               image: imageProvider,
-                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -105,7 +104,6 @@ class _BodyState extends State<Body>
                         ),
                         errorWidget: (context, url, error) {
                           return CircleAvatar(
-                            // ignore: prefer_if_null_operators
                             backgroundImage: CachedNetworkImageProvider(
                               authProvider.user!.photoURL ??
                                   AppImage.defaultProfilePicture,

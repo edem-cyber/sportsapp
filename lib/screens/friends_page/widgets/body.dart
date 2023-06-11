@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 // import 'package:sportsapp/providers/ThemeProvider.dart';
 // import 'package:sportsapp/providers/navigation_service.dart';
@@ -75,10 +76,10 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                 initialData: const [],
                 future: getUidsOfFriends(),
                 builder: (context, snapshot) {
+                  List<DocumentSnapshot> friends = snapshot.data!;
                   if (!snapshot.hasData || snapshot.hasError) {
                     return const Center(child: CupertinoActivityIndicator());
                   } else if (snapshot.hasData) {
-                    List<DocumentSnapshot> friends = snapshot.data!;
                     return ListView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       itemCount: friends.length,
@@ -91,17 +92,41 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                           image: friends[index]["photoURL"],
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Profile(
-                                          id: friends[index].id,
-                                        )));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Profile(
+                                  id: friends[index].id,
+                                ),
+                              ),
+                            );
                           },
                         );
                       },
                     );
+                  } else if (snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Text(
+                        "Start making friends",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium!
+                            .copyWith(
+                              color: kBlack,
+                            ),
+                      ),
+                    );
                   } else {
-                    return const Center(child: Text("No friend requests"));
+                    return Center(
+                      child: Text(
+                        "Start making friends",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium!
+                            .copyWith(
+                              color: kBlack,
+                            ),
+                      ),
+                    );
                   }
                 },
               ),
@@ -119,7 +144,6 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                       itemCount: friendRequests.length,
                       itemBuilder: (BuildContext context, int index) {
                         debugPrint("$index");
-
                         return FriendRequest(
                           image: friendRequests[index]["photoURL"],
                           name: friendRequests[index]["displayName"],
@@ -135,8 +159,20 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                         );
                       },
                     );
+                  } else if (snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Text(
+                        "No friend requests",
+                        style: Theme.of(context).textTheme.headlineMedium!,
+                      ),
+                    );
                   } else {
-                    return const Center(child: Text("No friend requests"));
+                    return Center(
+                      child: Text(
+                        "No friend requests",
+                        style: Theme.of(context).textTheme.headlineMedium!,
+                      ),
+                    );
                   }
                 },
               ),
@@ -148,6 +184,5 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

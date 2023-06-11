@@ -23,11 +23,9 @@ class EditProfile extends StatelessWidget {
           },
           child: Text(
             "Cancel",
-            // style: ,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall!
-                .copyWith(color: themeProvder.isDarkMode ? kWhite : kBlack),
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: themeProvder.isDarkMode ? kWhite : kBlack,
+                ),
           ),
         ),
         actions: [
@@ -37,7 +35,6 @@ class EditProfile extends StatelessWidget {
             },
             child: Text(
               "Save",
-              // style: ,
               style: Theme.of(context)
                   .textTheme
                   .bodySmall!

@@ -203,7 +203,7 @@ class _SignFormState extends State<SignForm> {
           SocialCard(
             text: "Continue with Google",
             icon: "assets/icons/google.svg",
-            press: () {
+            press: () async {
               authProvider.signInWithGoogle();
             },
           ),
@@ -212,11 +212,13 @@ class _SignFormState extends State<SignForm> {
           //   icon: "assets/icons/fb.svg",
           //   press: () {},
           // ),
-          // SocialCard(
-          //   text: "Continue with Apple",
-          //   icon: "assets/icons/apple.svg",
-          //   press: () {},
-          // ),
+          SocialCard(
+            text: "Continue with Apple",
+            icon: "assets/icons/apple.svg",
+            press: () {
+              authProvider.signInWithApple();
+            },
+          ),
         ],
       ),
     );
