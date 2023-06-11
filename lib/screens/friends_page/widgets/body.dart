@@ -144,6 +144,7 @@ class _BodyState extends State<Body> with AutomaticKeepAliveClientMixin {
                       itemCount: friendRequests.length,
                       itemBuilder: (BuildContext context, int index) {
                         debugPrint("$index");
+
                         return FriendRequest(
                           image: friendRequests[index]["photoURL"],
                           name: friendRequests[index]["displayName"],
