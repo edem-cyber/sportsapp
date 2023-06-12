@@ -17,6 +17,7 @@ import 'package:sportsapp/screens/authentication/sign_up/sign_up.dart';
 import 'package:sportsapp/services/database_service.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/widgets/notification.dart';
+import 'package:crypto/crypto.dart';
 
 import 'package:http/http.dart' as http;
 //import cloud functions
@@ -434,60 +435,85 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-
-  Future<String?> fetchAppleUserPhotoURL(String userIdentifier) async {
-    final url =
-        Uri.parse('https://appleid.apple.com/auth/user/$userIdentifier');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      final photoURL = json['response']['user']['photo'];
-
-      return photoURL;
-    }
-
-    return null;
-  }
-
-  Future<void> signInWithApple() async {
-    setIsLoading(true);
-    final rawNonce = generateNonce();
-
+  Future<void> signInAnonymously() async {
     try {
-      // Start the Apple Sign-In process
-      final appleCredential =
-          await SignInWithApple.getAppleIDCredential(scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ], nonce: rawNonce);
+      setIsLoading(true);
+      UserCredential userCredential = await _auth.signInAnonymously();
 
-      // Get the user's email and display name from the credential
-      final email = appleCredential.email;
-      final displayName =
-          '${appleCredential.givenName} ${appleCredential.familyName}';
-
-      // Create user with Apple credential
-      final credential = OAuthProvider('apple.com').credential(
-        idToken: appleCredential.identityToken,
-        accessToken: appleCredential.authorizationCode,
-        rawNonce: rawNonce,
-      );
-      final userCredential = await _auth.signInWithCredential(credential);
-
-      // Update user photo URL with Firebase
-      // await userCredential.user!.updatePhotoURL(appleCredential.photoURL);
-      final userIdentifier = appleCredential.userIdentifier;
-      final photoURL = await fetchAppleUserPhotoURL(userIdentifier!);
+      // Generate a random username
+      var randomUsername = generateRandomUsername();
 
       var userInfoMap = {
-        'email': email,
-        'username': '',
-        'displayName': displayName,
+        'email': '',
+        'username': randomUsername,
+        'displayName': '',
         'bio': '',
         'password': '',
-        'photoURL': photoURL ?? '',
+        'photoURL': '',
+        'lastSeen': DateTime.now(),
+        'createdAt': DateTime.now(),
+        'liked_posts': [],
+        'isAdmin': false,
+      };
+
+      await _databaseService.addUserInfoToDB(
+        uid: userCredential.user!.uid,
+        userInfoMap: userInfoMap,
+      );
+
+      if (!userCredential.isBlank!) {
+        appNotification(
+          title: "Success",
+          message: "Signed In Anonymously",
+          icon: const Icon(Icons.check, color: Colors.green),
+        );
+        _navigationService.signInWithAnimation(Base.routeName);
+      }
+    } catch (e) {
+      var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
+      appNotification(
+        title: "Error",
+        message: er,
+        icon: const Icon(Icons.error, color: kWarning),
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  Future<void> appleSign() async {
+    setIsLoading(true);
+
+    try {
+      final rawNonce = generateNonce();
+      final nonce = sha256ofString(rawNonce);
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+      );
+
+      final userCredential =
+          await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+
+      // Generate a random username
+      var randomUsername = generateRandomUsername();
+
+      var userInfoMap = {
+        'email': appleCredential.email ?? '',
+        'username': randomUsername,
+        'displayName': '', // Add the display name obtained from Apple Sign-In
+        'bio': '',
+        'password':
+            '', // Apple Sign-In doesn't provide a password, so leave it blank
+        'photoURL': '', // Add the photo URL obtained from Apple Sign-In
         'lastSeen': DateTime.now(),
         'createdAt': DateTime.now(),
         'liked_posts': [],
@@ -496,25 +522,21 @@ class AuthProvider with ChangeNotifier {
 
       // Add user info to the database
       await _databaseService.addUserInfoToDB(
-        uid: _auth.currentUser!.uid,
-        userInfoMap: userInfoMap,
-      );
+          uid: userCredential.user!.uid, userInfoMap: userInfoMap);
 
       // Save user to storage
-      if (!userCredential.isBlank!) {
-        appNotification(
-          title: 'Success',
-          message: 'Signed Up',
-          icon: const Icon(Icons.check, color: Colors.green),
-        );
-        _navigationService.signInWithAnimation(Base.routeName);
-      }
+      appNotification(
+        title: "Success",
+        message: "Signed Up",
+        icon: const Icon(Icons.check, color: Colors.green),
+      );
+      _navigationService.signInWithAnimation(Base.routeName);
     } catch (e) {
       // Handle error
-      print(e.toString());
       // var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
+      print(e);
       appNotification(
-        title: 'Error',
+        title: "Error",
         message: e.toString(),
         icon: const Icon(Icons.error, color: kWarning),
       );
@@ -523,8 +545,21 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  // String generateNonce() {
+  //   // Generate a random nonce string
+  //   // Replace this implementation with your own nonce generation logic
+  //   return 'random_nonce';
+  // }
+
+  String sha256ofString(String input) {
+    var bytes = utf8.encode(input); // Convert the input string to bytes
+    var digest = sha256.convert(bytes); // Calculate the SHA-256 hash
+    return digest.toString();
+  }
+
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
+    await _googleSignIn?.signOut();
     await _googleSignIn?.signOut();
     _auth.signOut();
     //set local user to null;

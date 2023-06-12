@@ -70,8 +70,8 @@ class _LikesTabState extends State<LikesTab> {
             height: size.height,
             child: Center(
               child: Text(
-                "No Bookmarks",
-                style: Theme.of(context).textTheme.titleLarge,
+                "No likes yet",
+                style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
           );

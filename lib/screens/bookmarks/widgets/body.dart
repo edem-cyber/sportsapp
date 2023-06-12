@@ -54,7 +54,7 @@ class _BodyState extends State<Body> {
                   child: Center(
                     child: Text(
                       "No Bookmarks",
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                 );

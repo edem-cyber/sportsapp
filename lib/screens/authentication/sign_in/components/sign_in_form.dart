@@ -207,16 +207,18 @@ class _SignFormState extends State<SignForm> {
               authProvider.signInWithGoogle();
             },
           ),
-          // SocialCard(
-          //   text: "Continue with Facebook",
-          //   icon: "assets/icons/fb.svg",
-          //   press: () {},
-          // ),
+          SocialCard(
+            text: "Continue Anonymously",
+            // icon: "assets/icons/fb.svg",
+            press: () {
+              authProvider.signInAnonymously();
+            },
+          ),
           SocialCard(
             text: "Continue with Apple",
             icon: "assets/icons/apple.svg",
             press: () {
-              authProvider.signInWithApple();
+              authProvider.appleSign();
             },
           ),
         ],
