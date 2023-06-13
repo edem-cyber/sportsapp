@@ -52,13 +52,13 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    void _scrollDown() {
-      scrollController.animateTo(
-        0.0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.fastOutSlowIn,
-      );
-    }
+    // void _scrollDown() {
+    //   scrollController.animateTo(
+    //     0.0,
+    //     duration: const Duration(milliseconds: 500),
+    //     curve: Curves.fastOutSlowIn,
+    //   );
+    // }
 
     var authProvider = Provider.of<AuthProvider>(context);
 

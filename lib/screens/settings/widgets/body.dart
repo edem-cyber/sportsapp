@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/privacy_policy/privacy_policy.dart';
+import 'package:sportsapp/widgets/app_dialog.dart';
 
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<ThemeProvider>(context);
     var navigationService = Provider.of<NavigationService>(context);
+    var authProvider = Provider.of<AuthProvider>(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: ListView(
@@ -70,28 +73,28 @@ class _BodyState extends State<Body> {
               ],
             ),
           ),
-          InkWell(
-            onTap: () {
-              navigationService.nagivateRoute(PrivacyPolicy.routeName);
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                // mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    "Security alerts",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  Text(
-                    "Push, email, in app, sms",
-                    style: Theme.of(context).textTheme.bodySmall,
-                  )
-                ],
-              ),
-            ),
-          ),
+          // InkWell(
+          //   onTap: () {
+          //     navigationService.nagivateRoute(PrivacyPolicy.routeName);
+          //   },
+          //   child: Padding(
+          //     padding: const EdgeInsets.symmetric(vertical: 10),
+          //     child: Column(
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       // mainAxisAlignment: MainAxisAlignment.start,
+          //       children: [
+          //         Text(
+          //           "Security alerts",
+          //           style: Theme.of(context).textTheme.titleLarge,
+          //         ),
+          //         Text(
+          //           "Push, email, in app, sms",
+          //           style: Theme.of(context).textTheme.bodySmall,
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          // ),
           InkWell(
             onTap: () {
               navigationService.nagivateRoute(PrivacyPolicy.routeName);
@@ -100,6 +103,29 @@ class _BodyState extends State<Body> {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 "Privacy Policy",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              confirmDialog(
+                context,
+                "Are you sure you want to sign out?",
+                "Yes",
+                "No",
+                () {
+                  authProvider.signOut();
+                },
+                () {
+                  navigationService.goBack();
+                },
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                "Logout",
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),

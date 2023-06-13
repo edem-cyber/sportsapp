@@ -15,7 +15,7 @@ class SignForm extends StatefulWidget {
   const SignForm({Key? key}) : super(key: key);
 
   @override
-  _SignFormState createState() => _SignFormState();
+  State<SignForm> createState() => _SignFormState();
 }
 
 class _SignFormState extends State<SignForm> {
@@ -52,7 +52,6 @@ class _SignFormState extends State<SignForm> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();

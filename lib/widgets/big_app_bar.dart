@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sportsapp/helper/constants.dart';
 
 class BigAppBar extends StatelessWidget {
-  final title;
+  final String? title;
   const BigAppBar({Key? key, this.title}) : super(key: key);
 
   @override
@@ -23,7 +23,7 @@ class BigAppBar extends StatelessWidget {
         title: Transform(
           transform: Matrix4.translationValues(-35.0, 0.0, 0.0),
           child: Text(
-            title,
+            title!,
             style: const TextStyle(
                 color: kTextColor, fontSize: 22, fontWeight: FontWeight.w800),
           ),

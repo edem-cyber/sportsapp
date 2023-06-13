@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 
 class NoAccountText extends StatelessWidget {
   //text
-  String text;
+  final String text;
   //onpress
-  Function() press;
+  final Function() press;
   //  NoAccountText({Key? key, required String text}) : super(key: key);
-  NoAccountText({Key? key, required this.text, required this.press})
+  const NoAccountText({Key? key, required this.text, required this.press})
       : super(key: key);
 
   @override

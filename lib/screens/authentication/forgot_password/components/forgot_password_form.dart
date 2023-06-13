@@ -12,7 +12,7 @@ class ForgotPasswordForm extends StatefulWidget {
   const ForgotPasswordForm({Key? key}) : super(key: key);
 
   @override
-  _ForgotPasswordFormState createState() => _ForgotPasswordFormState();
+  State<ForgotPasswordForm> createState() => _ForgotPasswordFormState();
 }
 
 class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
@@ -78,7 +78,6 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();

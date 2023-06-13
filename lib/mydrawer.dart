@@ -15,7 +15,6 @@ import 'package:sportsapp/screens/friends_page/friends_page.dart';
 import 'package:sportsapp/screens/profile/profile.dart';
 import 'package:sportsapp/screens/settings/settings.dart';
 import 'package:sportsapp/screens/videos/videos.dart';
-import 'package:sportsapp/widgets/app_dialog.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -316,34 +315,9 @@ class MyDrawer extends StatelessWidget {
                           navigateFromDrawer(AllChats.routeName);
                         },
                       ),
-                      const Expanded(child: SizedBox()),
-                      ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 35),
-                        dense: true,
-                        leading: const Icon(
-                          Icons.exit_to_app,
-                          color: kWhite,
-                        ),
-                        title: const Text(
-                          "Logout",
-                          style: TextStyle(color: kWhite),
-                        ),
-                        onTap: () {
-                          confirmDialog(
-                            context,
-                            "Are you sure you want to sign out?",
-                            "Yes",
-                            "No",
-                            () {
-                              authProvider.signOut();
-                            },
-                            () {
-                              navigationService.goBack();
-                            },
-                          );
-                        },
-                      )
+                      const Expanded(
+                        child: SizedBox(),
+                      ),
                     ],
                   ),
                 ),

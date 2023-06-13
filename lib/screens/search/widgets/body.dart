@@ -6,11 +6,11 @@ import 'package:sportsapp/screens/search/tabs/trending.dart';
 import 'package:sportsapp/screens/search/tabs/videos.dart';
 
 class Body extends StatefulWidget {
-  TabController tabController;
-  Body({Key? key, required this.tabController}) : super(key: key);
+  final TabController tabController;
+  const Body({Key? key, required this.tabController}) : super(key: key);
 
   @override
-  _BodyState createState() => _BodyState();
+  State<Body> createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {

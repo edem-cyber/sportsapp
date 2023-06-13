@@ -1,8 +1,6 @@
 import 'dart:math';
 import 'dart:convert';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -26,7 +24,7 @@ import 'package:http/http.dart' as http;
 class AuthProvider with ChangeNotifier {
   AuthProvider() {
     // posts = _databaseService.getFollowedTopics();
-    _deviceInfo = DeviceInfoPlugin();
+    // _deviceInfo = DeviceInfoPlugin();
 
     _auth = FirebaseAuth.instance;
     _databaseService = DatabaseService();
@@ -53,12 +51,22 @@ class AuthProvider with ChangeNotifier {
                   if (isInFireStoreDoc != true) {
                     _navigationService.openFullScreenDialog(const SignUp());
                     appNotification(
-                        title: "Sign Up",
-                        message: "Please Sign Up Again",
-                        icon: const Icon(Icons.abc));
+                      title: "Sign Up",
+                      message: "Please Sign Up Again",
+                      icon: const Icon(Icons.no_accounts),
+                    );
                   }
                 }
+
+                // if (userData!["displayName"] == "") {
+                //   appNotification(
+                //     title: "DISPLAY NAME",
+                //     message: "DISPLAY NAME IS EMPTY",
+                //     icon: const Icon(Icons.abc),
+                //   );
+                // }
               }
+
               //* Automatic navigates to the home page
               // _navigationService.signInWithAnimation(Base.routeName);
             },
@@ -97,7 +105,8 @@ class AuthProvider with ChangeNotifier {
   // late StorageManager _storageManager;
   late final DatabaseService _databaseService;
 
-  late DeviceInfoPlugin _deviceInfo;
+  // late DeviceInfoPlugin _deviceInfo;
+
   // Future<void> _onAuthStateChanged(User? firebaseUser) async {
   //   if (firebaseUser == null) {
   //     user = null;
@@ -138,27 +147,27 @@ class AuthProvider with ChangeNotifier {
   //get device info
   // DeviceInfoPlugin get deviceInfo => _deviceInfo;
 
-  Future getDeviceInfo() async {
-    // final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
-      notifyListeners();
-      return androidInfo.toMap().toString();
-      // return androidInfo.;
-    } else if (Platform.isIOS) {
-      IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
-      notifyListeners();
-      return iosInfo.toMap().toString();
-    } else if (Platform.isWindows) {
-      WindowsDeviceInfo windowsInfo = await _deviceInfo.windowsInfo;
-      notifyListeners();
-      return windowsInfo.toMap().toString();
-    } else if (Platform.isMacOS) {
-      MacOsDeviceInfo macOsInfo = await _deviceInfo.macOsInfo;
-      return macOsInfo.toMap().toString();
-    }
-    return _deviceInfo;
-  }
+  // Future getDeviceInfo() async {
+  //   // final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  //   if (Platform.isAndroid) {
+  //     AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
+  //     notifyListeners();
+  //     return androidInfo.toMap().toString();
+  //     // return androidInfo.;
+  //   } else if (Platform.isIOS) {
+  //     IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
+  //     notifyListeners();
+  //     return iosInfo.toMap().toString();
+  //   } else if (Platform.isWindows) {
+  //     WindowsDeviceInfo windowsInfo = await _deviceInfo.windowsInfo;
+  //     notifyListeners();
+  //     return windowsInfo.toMap().toString();
+  //   } else if (Platform.isMacOS) {
+  //     MacOsDeviceInfo macOsInfo = await _deviceInfo.macOsInfo;
+  //     return macOsInfo.toMap().toString();
+  //   }
+  //   return _deviceInfo;
+  // }
 
   get isLoading => _isLoading;
 
@@ -506,6 +515,21 @@ class AuthProvider with ChangeNotifier {
       // Generate a random username
       var randomUsername = generateRandomUsername();
 
+      // Retrieve the photo URL from Apple
+      var photoUrl = '';
+      final uri = Uri.https('appleid.apple.com', '/auth/user');
+      final response = await http.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer ${appleCredential.authorizationCode}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        photoUrl = body['picture'];
+      }
+
       var userInfoMap = {
         'email': appleCredential.email ?? '',
         'username': randomUsername,
@@ -513,7 +537,7 @@ class AuthProvider with ChangeNotifier {
         'bio': '',
         'password':
             '', // Apple Sign-In doesn't provide a password, so leave it blank
-        'photoURL': '', // Add the photo URL obtained from Apple Sign-In
+        'photoURL': photoUrl, // Add the photo URL obtained from Apple Sign-In
         'lastSeen': DateTime.now(),
         'createdAt': DateTime.now(),
         'liked_posts': [],

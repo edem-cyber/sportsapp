@@ -326,7 +326,6 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _emailController.dispose();
     _usernameController.dispose();

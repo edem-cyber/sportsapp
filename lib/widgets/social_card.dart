@@ -12,11 +12,11 @@ class SocialCard extends StatelessWidget {
     this.icon,
   }) : super(key: key);
 
-  final color;
+  final Color color;
   final String? icon;
   final VoidCallback? press;
   final String? text;
-  final textColor;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {

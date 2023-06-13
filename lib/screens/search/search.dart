@@ -10,10 +10,10 @@ import 'package:sportsapp/screens/search/widgets/body.dart';
 import 'package:sportsapp/screens/search/widgets/search_delegate.dart';
 
 class Search extends StatefulWidget {
-  Search({Key? key}) : super(key: key);
+  const Search({Key? key, required this.tabController}) : super(key: key);
   static const String routeName = '/search';
 
-  late TabController tabController;
+  final TabController tabController;
   @override
   State<Search> createState() => _SearchState();
 }

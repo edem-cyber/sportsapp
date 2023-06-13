@@ -45,7 +45,7 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     final GlobalKey<FormState> dmKey = GlobalKey<FormState>();
-    void _scrollDown() {
+    void scrollDown() {
       widget.scrollController.animateTo(
         0.0,
         duration: const Duration(milliseconds: 500),
@@ -58,7 +58,7 @@ class _BodyState extends State<Body> {
     void sendMessage() {
       debugPrint(dmController.text);
       if (dmKey.currentState!.validate()) {
-        _scrollDown();
+        scrollDown();
         authProvider.createChat(
           message: {
             'content': dmController.text,

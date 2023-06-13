@@ -11,9 +11,9 @@ class DefaultButton extends StatelessWidget {
     this.icon = const SizedBox.shrink(),
   }) : super(key: key);
   final String? text;
-  final icon;
-  final color;
-  final textColor;
+  final Widget icon;
+  final Color? color;
+  final Color? textColor;
   final VoidCallback? press;
 
   @override

@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/ThemeProvider.dart';
 // import 'package:sportsapp/providers/ThemeProvider.dart';
-import 'package:sportsapp/providers/navigation_service.dart';
-import 'package:sportsapp/services/database_service.dart';
+// import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LikesTab extends StatefulWidget {
@@ -25,27 +23,27 @@ class _LikesTabState extends State<LikesTab> {
   Widget build(BuildContext context) {
     // var themeProvider = Provider.of<ThemeProvider>(context);
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
-    var navigationService = Provider.of<NavigationService>(context);
-    final FirebaseFirestore dataBase = FirebaseFirestore.instance;
+    // var navigationService = Provider.of<NavigationService>(context);
+    // final FirebaseFirestore dataBase = FirebaseFirestore.instance;
     // var userProfile = authProvider.getProfileData(id: widget.id);
     // var userData = authProvider.getUserData();
     // var getLikedPostsArray = _databaseService.getLikedPostsArray(
     //   uid: authProvider.user!.uid,
     // );
 
-    Stream<List<String>> getLikedPostsArrayStream({required String uid}) {
-      return dataBase
-          .collection(userCollection)
-          .doc(uid)
-          .snapshots()
-          .map((snapshot) {
-        return List<String>.from(snapshot.data()![postDoc]);
-      });
-    }
+    // Stream<List<String>> getLikedPostsArrayStream({required String uid}) {
+    //   return dataBase
+    //       .collection(userCollection)
+    //       .doc(uid)
+    //       .snapshots()
+    //       .map((snapshot) {
+    //     return List<String>.from(snapshot.data()![postDoc]);
+    //   });
+    // }
 
-    void removeListTile(String postUrl) {
-      // authProvider.removeFromDb(postUrl);
-    }
+    // void removeListTile(String postUrl) {
+    //   // authProvider.removeFromDb(postUrl);
+    // }
     var getLikedPostsArray = authProvider.getLikedPostsArray();
     var size = MediaQuery.of(context).size;
     var themeProvider = Provider.of<ThemeProvider>(context);

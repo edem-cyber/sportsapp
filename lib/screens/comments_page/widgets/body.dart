@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -39,13 +36,12 @@ class _BodyState extends State<Body> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    void _scrollDown() {
+    void scrollDown() {
       widget.scrollController.animateTo(
         0.0,
         duration: const Duration(milliseconds: 500),
@@ -92,22 +88,22 @@ class _BodyState extends State<Body> {
       });
     }
 
-    final FirebaseStorage storage = FirebaseStorage.instance;
+    // final FirebaseStorage storage = FirebaseStorage.instance;
 
-    Future<String?> uploadPfP() async {
-      try {
-        File? uploadedFile = File(imageFile!.path);
-        var now = DateTime.now().millisecondsSinceEpoch;
-        TaskSnapshot? taskSnapshot =
-            await storage.ref("images/profile_pics/$now").putFile(
-                  uploadedFile,
-                );
-        return await taskSnapshot.ref.getDownloadURL();
-      } catch (e) {
-        debugPrint("UPLOADPFP FUNCTION!!: $e");
-      }
-      return null;
-    }
+    // Future<String?> uploadPfP() async {
+    //   try {
+    //     File? uploadedFile = File(imageFile!.path);
+    //     var now = DateTime.now().millisecondsSinceEpoch;
+    //     TaskSnapshot? taskSnapshot =
+    //         await storage.ref("images/profile_pics/$now").putFile(
+    //               uploadedFile,
+    //             );
+    //     return await taskSnapshot.ref.getDownloadURL();
+    //   } catch (e) {
+    //     debugPrint("UPLOADPFP FUNCTION!!: $e");
+    //   }
+    //   return null;
+    // }
 
     bool isButtonEnabled = false;
 
@@ -126,7 +122,7 @@ class _BodyState extends State<Body> {
 
     void sendMessage() async {
       if (chatMessageKey.currentState!.validate()) {
-        _scrollDown();
+        scrollDown();
 
         // if (_imageFile != null) {
         //   // send image and pick reply
@@ -166,27 +162,27 @@ class _BodyState extends State<Body> {
       }
     }
 
-    bool validateChatMessage(String? value) {
-      bool isValid = false;
-      RegExp regExp = RegExp(r'^\s+$');
-      if (value == null || value.isEmpty) {
-        isValid = false;
-      } else if (value.length > 400) {
-        isValid = false;
-      } else if (value.length < 2) {
-        isValid = false;
-      } else if (regExp.hasMatch(value)) {
-        isValid = false;
-      } else {
-        isValid = true;
-      }
+    // bool validateChatMessage(String? value) {
+    //   bool isValid = false;
+    //   RegExp regExp = RegExp(r'^\s+$');
+    //   if (value == null || value.isEmpty) {
+    //     isValid = false;
+    //   } else if (value.length > 400) {
+    //     isValid = false;
+    //   } else if (value.length < 2) {
+    //     isValid = false;
+    //   } else if (regExp.hasMatch(value)) {
+    //     isValid = false;
+    //   } else {
+    //     isValid = true;
+    //   }
 
-      setState(() {
-        isButtonEnabled = isValid;
-      });
+    //   setState(() {
+    //     isButtonEnabled = isValid;
+    //   });
 
-      return isValid;
-    }
+    //   return isValid;
+    // }
 
     return SafeArea(
       child: Stack(

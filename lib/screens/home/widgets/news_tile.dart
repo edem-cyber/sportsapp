@@ -30,7 +30,7 @@ class NewsTile extends StatefulWidget {
   // final String? imgUrl;
   final Article article;
 
-  late bool isLiked;
+  bool isLiked;
 
   // bool isLiked;
 

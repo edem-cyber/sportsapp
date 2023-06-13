@@ -14,9 +14,9 @@ class AuthButton extends StatelessWidget {
     this.icon = const SizedBox(),
   }) : super(key: key);
   final String? text;
-  final icon;
-  final color;
-  final textColor;
+  final Widget icon;
+  final Color? color;
+  final Color? textColor;
   final VoidCallback? press;
 
   @override
@@ -26,7 +26,8 @@ class AuthButton extends StatelessWidget {
       height: 50,
       child: ElevatedButton.icon(
         style: TextButton.styleFrom(
-          foregroundColor: kWhite, elevation: 0,
+          foregroundColor: kWhite,
+          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -37,19 +38,19 @@ class AuthButton extends StatelessWidget {
         icon: Consumer<AuthProvider>(
           builder: (context, provider, child) {
             return provider.isLoading
-            ? const CupertinoActivityIndicator(
-                // valueColor: AlwaysStoppedAnimation<Color>(kPrimaryColor),
-                color: kWhite,
-              )
-            : Text(
-                text!,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: textColor,
-                ),
-              );
+                ? const CupertinoActivityIndicator(
+                    // valueColor: AlwaysStoppedAnimation<Color>(kPrimaryColor),
+                    color: kWhite,
+                  )
+                : Text(
+                    text!,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: textColor,
+                    ),
+                  );
           },
-        )
+        ),
       ),
     );
   }

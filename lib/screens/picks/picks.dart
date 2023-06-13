@@ -96,18 +96,18 @@ class _PicksState extends State<Picks> {
 
     searchController = TextEditingController();
 
-    Stream<List<Map<String, dynamic>>> search(String query) {
-      var searchedpicks = FirebaseFirestore.instance
-          .collection('Picks')
-          .where('title', isGreaterThanOrEqualTo: query)
-          .snapshots()
-          .map((snapshot) => snapshot.docs
-              .map((doc) => doc.data())
-              .where((element) => element['title'].toString().contains(query))
-              .toList(growable: false));
+    // Stream<List<Map<String, dynamic>>> search(String query) {
+    //   var searchedpicks = FirebaseFirestore.instance
+    //       .collection('Picks')
+    //       .where('title', isGreaterThanOrEqualTo: query)
+    //       .snapshots()
+    //       .map((snapshot) => snapshot.docs
+    //           .map((doc) => doc.data())
+    //           .where((element) => element['title'].toString().contains(query))
+    //           .toList(growable: false));
 
-      return searchedpicks;
-    }
+    //   return searchedpicks;
+    // }
 
     return Scaffold(
       appBar: AppBar(

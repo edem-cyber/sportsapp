@@ -126,9 +126,7 @@ class _LeagueScreenState extends State<LeagueScreen>
       body: FutureBuilder<List<League>>(
         future: leaguesShown,
         initialData: const [],
-        // initialData: const <String, dynamic>{},
         builder: (context, snapshot) {
-          debugPrint("SNAPSHOT IS: $snapshot");
           if (snapshot.hasData) {
             return ListView.builder(
               itemCount: snapshot.data!.length,

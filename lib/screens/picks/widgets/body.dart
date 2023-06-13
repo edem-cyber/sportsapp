@@ -11,11 +11,12 @@ import 'package:sportsapp/screens/comments_page/comments_page.dart';
 import 'package:sportsapp/screens/picks/widgets/room.dart';
 
 class Body extends StatefulWidget {
-  int? reply;
+  final int? reply;
   final Stream<QuerySnapshot<Map<String, dynamic>>> searchResults;
-  Body({
+  const Body({
     Key? key,
     required this.searchResults,
+    this.reply,
   }) : super(key: key);
 
   @override
