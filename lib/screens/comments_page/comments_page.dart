@@ -25,7 +25,7 @@ class _CommentsPageState extends State<CommentsPage> {
 
     scrollController = ScrollController(
       initialScrollOffset: 0.0,
-      keepScrollOffset: true,
+      // keepScrollOffset: true,
     );
   }
 

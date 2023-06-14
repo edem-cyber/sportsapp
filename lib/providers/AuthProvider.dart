@@ -400,7 +400,7 @@ class AuthProvider with ChangeNotifier {
         'email': _googleSignInAccount?.email,
         'username':
             randomUsername, // Use the random username instead of userNameWithAt
-        'displayName': _googleSignInAccount?.displayName,
+        'displayName': _googleSignInAccount?.displayName ?? "",
         'bio': '',
         'password': _googleSignInAccount?.id,
         'photoURL': _googleSignInAccount?.photoUrl,
@@ -428,13 +428,14 @@ class AuthProvider with ChangeNotifier {
               icon: const Icon(Icons.check, color: Colors.green));
           _navigationService.signInWithAnimation(Base.routeName);
         }
-      } else {
-        appNotification(
-          title: "Error",
-          message: "Missing Google Auth Token",
-          icon: const Icon(Icons.error, color: kWarning),
-        );
       }
+      // else {
+      //   appNotification(
+      //     title: "Error",
+      //     message: "Missing Google Auth Token",
+      //     icon: const Icon(Icons.error, color: kWarning),
+      //   );
+      // }
     } catch (e) {
       debugPrint("$e");
       debugPrint('Error login user into Firebase: $e');
@@ -515,29 +516,15 @@ class AuthProvider with ChangeNotifier {
       // Generate a random username
       var randomUsername = generateRandomUsername();
 
-      // Retrieve the photo URL from Apple
-      var photoUrl = '';
-      final uri = Uri.https('appleid.apple.com', '/auth/user');
-      final response = await http.get(
-        uri,
-        headers: {
-          'Authorization': 'Bearer ${appleCredential.authorizationCode}',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        photoUrl = body['picture'];
-      }
-
       var userInfoMap = {
         'email': appleCredential.email ?? '',
         'username': randomUsername,
-        'displayName': '', // Add the display name obtained from Apple Sign-In
+        'displayName': appleCredential.givenName ??
+            "", // Add the display name obtained from Apple Sign-In
         'bio': '',
         'password':
             '', // Apple Sign-In doesn't provide a password, so leave it blank
-        'photoURL': photoUrl, // Add the photo URL obtained from Apple Sign-In
+        'photoURL': "", // Add the photo URL obtained from Apple Sign-In
         'lastSeen': DateTime.now(),
         'createdAt': DateTime.now(),
         'liked_posts': [],
@@ -546,34 +533,28 @@ class AuthProvider with ChangeNotifier {
 
       // Add user info to the database
       await _databaseService.addUserInfoToDB(
-          uid: userCredential.user!.uid, userInfoMap: userInfoMap);
+        uid: userCredential.user!.uid,
+        userInfoMap: userInfoMap,
+      );
 
       // Save user to storage
       appNotification(
         title: "Success",
         message: "Signed Up",
-        icon: const Icon(Icons.check, color: Colors.green),
+        icon: const Icon(
+          Icons.check,
+          color: Colors.green,
+        ),
       );
+
       _navigationService.signInWithAnimation(Base.routeName);
     } catch (e) {
       // Handle error
-      // var er = e.toString().replaceRange(0, 14, '').split(']')[1].trim();
-      print(e);
-      appNotification(
-        title: "Error",
-        message: e.toString(),
-        icon: const Icon(Icons.error, color: kWarning),
-      );
+      debugPrint("APPLE SIGN IN ERROR: $e");
     } finally {
       setIsLoading(false);
     }
   }
-
-  // String generateNonce() {
-  //   // Generate a random nonce string
-  //   // Replace this implementation with your own nonce generation logic
-  //   return 'random_nonce';
-  // }
 
   String sha256ofString(String input) {
     var bytes = utf8.encode(input); // Convert the input string to bytes

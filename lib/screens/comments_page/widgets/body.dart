@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -26,9 +29,20 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   XFile? imageFile;
 
+  void scrollDown() {
+    widget.scrollController.animateTo(
+      widget.scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   scrollDown();
+    // });
   }
 
   TextEditingController textController = TextEditingController();
@@ -37,18 +51,11 @@ class _BodyState extends State<Body> {
   @override
   void dispose() {
     super.dispose();
+    widget.scrollController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    void scrollDown() {
-      widget.scrollController.animateTo(
-        0.0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.fastOutSlowIn,
-      );
-    }
-
     var authProvider = Provider.of<AuthProvider>(context, listen: true);
     final GlobalKey<FormState> chatMessageKey = GlobalKey<FormState>();
 
@@ -57,7 +64,9 @@ class _BodyState extends State<Body> {
           .collection('Picks')
           .doc(id)
           .get()
-          .then((value) => value.data());
+          .then(
+            (value) => value.data(),
+          );
       debugPrint("pick is $pick");
       return pick;
     }
@@ -69,11 +78,15 @@ class _BodyState extends State<Body> {
           .collection('replies')
           .orderBy('timestamp', descending: false)
           .snapshots()
-          .map((snapshot) => snapshot.docs
-              .map(
-                (e) => PickReply.fromJson(e.data()),
-              )
-              .toList());
+          .map(
+            (snapshot) => snapshot.docs
+                .map(
+                  (e) => PickReply.fromJson(
+                    e.data(),
+                  ),
+                )
+                .toList(),
+          );
     }
 
     final picker = ImagePicker();
@@ -83,9 +96,23 @@ class _BodyState extends State<Body> {
         source: ImageSource.gallery,
         imageQuality: 25,
       );
-      setState(() {
-        this.imageFile = imageFile;
-      });
+      setState(
+        () {
+          this.imageFile = imageFile;
+        },
+      );
+    }
+
+    void pickFile() async {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+      if (result != null) {
+        Uint8List? fileBytes = result.files.first.bytes;
+        String fileName = result.files.first.name;
+
+        // Upload file
+        await FirebaseStorage.instance.ref('uploads/').putData(fileBytes!);
+      }
     }
 
     // final FirebaseStorage storage = FirebaseStorage.instance;
@@ -195,10 +222,13 @@ class _BodyState extends State<Body> {
                 if (snapshot.connectionState == ConnectionState.waiting ||
                     snapshot.connectionState == ConnectionState.none ||
                     snapshot.data == null) {
-                  return const Center(child: CupertinoActivityIndicator());
+                  return const Center(
+                    child: CupertinoActivityIndicator(),
+                  );
                 } else if (snapshot.hasData) {
                   return Scrollbar(
                     thumbVisibility: true,
+                    controller: widget.scrollController,
                     child: ListView(
                       controller: widget.scrollController,
                       physics: const ClampingScrollPhysics(),
@@ -319,83 +349,84 @@ class _BodyState extends State<Body> {
             ),
           ),
           Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.only(top: 7, left: 10, right: 10),
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        pickImage();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.only(
-                          right: 10,
-                          top: 15,
-                          bottom: 15,
-                        ),
-                        child: const Icon(
-                          Icons.image_outlined,
-                          color: kBlue,
-                          size: 30,
-                        ),
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(top: 7, left: 10, right: 10),
+              child: Row(
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      pickFile();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(
+                        right: 10,
+                        top: 15,
+                        bottom: 15,
+                      ),
+                      child: const Icon(
+                        Icons.image_outlined,
+                        color: kBlue,
+                        size: 30,
                       ),
                     ),
-                    Expanded(
-                      child: Theme(
-                        data: ThemeData(
-                          textSelectionTheme: const TextSelectionThemeData(
-                            selectionColor: kLightBlue,
-                          ),
+                  ),
+                  Expanded(
+                    child: Theme(
+                      data: ThemeData(
+                        textSelectionTheme: const TextSelectionThemeData(
+                          selectionColor: kLightBlue,
                         ),
-                        child: Form(
-                          key: chatMessageKey,
-                          child: TextFormField(
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            maxLines: 1,
-                            controller: textController,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: kGrey.withOpacity(0.15),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40.0),
-                                borderSide: BorderSide.none,
-                              ),
-                              hintText: "Start a message...",
-                              hintStyle: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      child: Form(
+                        key: chatMessageKey,
+                        child: TextFormField(
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          maxLines: 1,
+                          controller: textController,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: kGrey.withOpacity(0.15),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40.0),
+                              borderSide: BorderSide.none,
                             ),
-                            textInputAction: TextInputAction.newline,
+                            hintText: "Start a message...",
+                            hintStyle: Theme.of(context).textTheme.bodyLarge,
                           ),
+                          textInputAction: TextInputAction.newline,
                         ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        if (chatMessageKey.currentState!.validate() &&
-                            textController.text.trim().isNotEmpty) {
-                          sendMessage();
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.only(
-                          left: 15,
-                          top: 15,
-                          bottom: 15,
-                        ),
-                        child: const Icon(
-                          Icons.send,
-                          color: kBlue,
-                          size: 25,
-                        ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (chatMessageKey.currentState!.validate() &&
+                          textController.text.trim().isNotEmpty) {
+                        sendMessage();
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(
+                        left: 15,
+                        top: 15,
+                        bottom: 15,
+                      ),
+                      child: const Icon(
+                        Icons.send,
+                        color: kBlue,
+                        size: 25,
                       ),
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

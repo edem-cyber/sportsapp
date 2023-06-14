@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sportsapp/helper/app_images.dart';
 import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/direct_message_page/direct_message_page.dart';
@@ -144,8 +145,7 @@ class _ChatsTabState extends State<ChatsTab>
                       : {
                           'displayName': 'User',
                           'username': 'User',
-                          'photoURL':
-                              'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
+                          'photoURL': AppImage.defaultProfilePicture
                         };
                   if (!snapshot.hasData ||
                       snapshot.connectionState == ConnectionState.waiting) {
@@ -186,10 +186,8 @@ class _ChatsTabState extends State<ChatsTab>
                       },
                       leading: CircleAvatar(
                         radius: 25.0,
-                        backgroundImage: CachedNetworkImageProvider(
-                          user!['photoURL'] ??
-                              'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
-                        ),
+                        backgroundImage:
+                            CachedNetworkImageProvider(user!['photoURL']),
                       ),
                       title: Text(
                         user['displayName'] ?? user['username'] ?? '',
