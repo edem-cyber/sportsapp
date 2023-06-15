@@ -1,8 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +11,7 @@ import 'package:sportsapp/helper/constants.dart';
 import 'package:sportsapp/models/PickReply.dart';
 import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/screens/comments_page/widgets/comment.dart';
+import 'package:video_player/video_player.dart';
 
 class Body extends StatefulWidget {
   final String? id;
@@ -103,17 +104,37 @@ class _BodyState extends State<Body> {
       );
     }
 
-    void pickFile() async {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+    FilePickerResult? filePickerResult;
+    File? pickedFile;
 
-      if (result != null) {
-        Uint8List? fileBytes = result.files.first.bytes;
-        String fileName = result.files.first.name;
+    getImageorVideoFromGallery(context) async {
+      filePickerResult = await FilePicker.platform.pickFiles();
 
-        // Upload file
-        await FirebaseStorage.instance.ref('uploads/').putData(fileBytes!);
+      if (filePickerResult != null) {
+        pickedFile = File(filePickerResult!.files.single.path.toString());
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                filePickerResult!.files.single.extension == 'mp4'
+                    ? VideoBlock(file: pickedFile!)
+                    : ImageBlock(
+                        file: pickedFile!,
+                      )));
+      } else {
+        // can perform some actions like notification etc
       }
     }
+
+    // void pickFile() async {
+    //   FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    //   if (result != null) {
+    //     Uint8List? fileBytes = result.files.first.bytes;
+    //     String fileName = result.files.first.name;
+
+    //     // Upload file
+    //     await FirebaseStorage.instance.ref('uploads/').putData(fileBytes!);
+    //   }
+    // }
 
     // final FirebaseStorage storage = FirebaseStorage.instance;
 
@@ -360,7 +381,7 @@ class _BodyState extends State<Body> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      pickFile();
+                      getImageorVideoFromGallery(context);
                     },
                     child: Container(
                       padding: const EdgeInsets.only(
@@ -483,6 +504,61 @@ class MyHeader extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class ImageBlock extends StatefulWidget {
+  final File file;
+  const ImageBlock({Key? key, required this.file}) : super(key: key);
+  @override
+  State<ImageBlock> createState() => _ImageBlockState();
+}
+
+class _ImageBlockState extends State<ImageBlock> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(body: Center(child: Image.file(widget.file)));
+  }
+}
+
+////////// video screen ///////////
+
+class VideoBlock extends StatefulWidget {
+  final File file;
+  const VideoBlock({Key? key, required this.file}) : super(key: key);
+  @override
+  State<VideoBlock> createState() => _VideoBlockState();
+}
+
+class _VideoBlockState extends State<VideoBlock> {
+  VideoPlayerController? videoPlayerController;
+  @override
+  void initState() {
+    videoPlayerController =
+        VideoPlayerController.file(File(widget.file.path.toString()))
+          ..initialize().then((_) {
+            videoPlayerController!.play();
+            setState(() {});
+          });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    videoPlayerController!.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: AspectRatio(
+          aspectRatio: videoPlayerController!.value.aspectRatio,
+          child: VideoPlayer(videoPlayerController!),
         ),
       ),
     );
