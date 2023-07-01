@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -90,147 +91,116 @@ class _BodyState extends State<Body> {
           );
     }
 
-    final picker = ImagePicker();
-
-    void pickImage() async {
-      final XFile? imageFile = await picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 25,
-      );
-      setState(
-        () {
-          this.imageFile = imageFile;
-        },
-      );
-    }
-
     FilePickerResult? filePickerResult;
     File? pickedFile;
+
+    Future<void> uploadMediaToFirebase(
+      File file,
+    ) async {
+      try {
+        final Reference storageRef = FirebaseStorage.instance
+            .ref()
+            .child('Media')
+            .child('${DateTime.now().millisecondsSinceEpoch}');
+        final UploadTask uploadTask = storageRef.putFile(file);
+        final TaskSnapshot uploadSnapshot = await uploadTask;
+
+        if (uploadSnapshot.state == TaskState.success) {
+          final String downloadUrl = await storageRef.getDownloadURL();
+
+          // Save the download URL and other metadata to Firestore
+          // await FirebaseFirestore.instance.collection('P').add({
+          //   'mediaUrl': downloadUrl,
+          //   'mediaType': fileExtension,
+          //   'timestamp': FieldValue.serverTimestamp(),
+          // });
+
+          //the below fucntion just adds whatever
+          authProvider.addPickReply(
+            PickReply(
+              text: downloadUrl,
+              timestamp: Timestamp.now().toString(),
+              author: authProvider.user!.uid,
+              type: "Media",
+            ),
+            widget.id!,
+          );
+
+          // Perform any additional actions if needed
+        } else {
+          // Handle the upload failure
+        }
+      } catch (e) {
+        // Handle any errors that occurred during the upload process
+      }
+    }
 
     getImageorVideoFromGallery(context) async {
       filePickerResult = await FilePicker.platform.pickFiles();
 
       if (filePickerResult != null) {
-        pickedFile = File(filePickerResult!.files.single.path.toString());
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) =>
-                filePickerResult!.files.single.extension == 'mp4'
-                    ? VideoBlock(file: pickedFile!)
-                    : ImageBlock(
-                        file: pickedFile!,
-                      )));
+        pickedFile = File(
+          filePickerResult!.files.single.path.toString(),
+        );
+        // String? fileExtension = filePickerResult!.files.single.extension;
+
+        // Upload the media file to Firebase Storage and save metadata in Firestore
+        uploadMediaToFirebase(
+          pickedFile!,
+          // fileExtension!,
+        );
       } else {
-        // can perform some actions like notification etc
+        // Can perform some actions like notification, show error message, etc.
       }
-    }
-
-    // void pickFile() async {
-    //   FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-    //   if (result != null) {
-    //     Uint8List? fileBytes = result.files.first.bytes;
-    //     String fileName = result.files.first.name;
-
-    //     // Upload file
-    //     await FirebaseStorage.instance.ref('uploads/').putData(fileBytes!);
-    //   }
-    // }
-
-    // final FirebaseStorage storage = FirebaseStorage.instance;
-
-    // Future<String?> uploadPfP() async {
-    //   try {
-    //     File? uploadedFile = File(imageFile!.path);
-    //     var now = DateTime.now().millisecondsSinceEpoch;
-    //     TaskSnapshot? taskSnapshot =
-    //         await storage.ref("images/profile_pics/$now").putFile(
-    //               uploadedFile,
-    //             );
-    //     return await taskSnapshot.ref.getDownloadURL();
-    //   } catch (e) {
-    //     debugPrint("UPLOADPFP FUNCTION!!: $e");
-    //   }
-    //   return null;
-    // }
-
-    bool isButtonEnabled = false;
-
-    bool getIsButtonEnabled() {
-      if (chatMessageKey.currentState!.validate()) {
-        setState(() {
-          isButtonEnabled = true;
-        });
-      } else {
-        setState(() {
-          isButtonEnabled = false;
-        });
-      }
-      return isButtonEnabled;
     }
 
     void sendMessage() async {
       if (chatMessageKey.currentState!.validate()) {
         scrollDown();
 
-        // if (_imageFile != null) {
-        //   // send image and pick reply
-        //   await authProvider.addPickReply(
-        //     // _imageFile!,
-        //     PickReply(
-        //       text: _imageFile!.readAsStringSync(),
-        //       timestamp: Timestamp.now().toString(),
-        //       author: authProvider.user!.uid,
-        //       type: 'image',
-        //     ),
-        //     widget.id!,
-        //   );
-        // } else {
-        //   // send only pick reply
-        //   authProvider.addPickReply(
-        //     PickReply(
-        //       text: textController.text,
-        //       timestamp: Timestamp.now().toString(),
-        //       author: authProvider.user!.uid,
-        //     ),
-        //     widget.id!,
-        //   );
-        // }
         authProvider.addPickReply(
           PickReply(
             text: textController.text,
             timestamp: Timestamp.now().toString(),
             author: authProvider.user!.uid,
+            type: "String",
           ),
           widget.id!,
         );
         textController.clear();
-        // setState(() {
-        //   _imageFile = null;
-        // });
       }
     }
 
-    // bool validateChatMessage(String? value) {
-    //   bool isValid = false;
-    //   RegExp regExp = RegExp(r'^\s+$');
-    //   if (value == null || value.isEmpty) {
-    //     isValid = false;
-    //   } else if (value.length > 400) {
-    //     isValid = false;
-    //   } else if (value.length < 2) {
-    //     isValid = false;
-    //   } else if (regExp.hasMatch(value)) {
-    //     isValid = false;
-    //   } else {
-    //     isValid = true;
-    //   }
+    Widget buildShimmerContainer() {
+      return Container(
+        padding: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: kGrey.withOpacity(0.4),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(40),
+          ),
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey,
+            highlightColor: Colors.white,
+            child: Container(
+              height: 35,
+              width: MediaQuery.of(context).size.width,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      );
+    }
 
-    //   setState(() {
-    //     isButtonEnabled = isValid;
-    //   });
-
-    //   return isValid;
-    // }
+    Widget buildComment(PickReply comment) {
+      return Comment(
+        id: comment.author ?? "Error loading image",
+        text: comment.text ?? "Error loading text",
+      );
+    }
 
     return SafeArea(
       child: Stack(
@@ -266,56 +236,13 @@ class _BodyState extends State<Body> {
                                 );
                               } else if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return Container(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  decoration: BoxDecoration(
-                                    color: kGrey.withOpacity(0.4),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(40),
-                                    ),
-                                  ),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: Shimmer.fromColors(
-                                      baseColor: Colors.grey,
-                                      highlightColor: Colors.white,
-                                      child: Container(
-                                        height: 35,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
-                                );
+                                return buildShimmerContainer();
                               }
-                              return Container(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                decoration: BoxDecoration(
-                                  color: kGrey.withOpacity(0.4),
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(40),
-                                  ),
-                                ),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Shimmer.fromColors(
-                                    baseColor: Colors.grey,
-                                    highlightColor: Colors.white,
-                                    child: Container(
-                                      height: 35,
-                                      width: MediaQuery.of(context).size.width,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              );
+                              return buildShimmerContainer();
                             },
                           ),
                         ),
-                        const SizedBox(
-                          height: 20,
-                        ),
+                        const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
@@ -326,9 +253,7 @@ class _BodyState extends State<Body> {
                                 .copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
-                        const SizedBox(
-                          height: 20,
-                        ),
+                        const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: ListView.separated(
@@ -339,26 +264,19 @@ class _BodyState extends State<Body> {
                                 padding: const EdgeInsets.only(left: 10),
                                 alignment: Alignment.centerLeft,
                                 height: 50,
-                                child: const VerticalDivider(
-                                  color: kGrey,
-                                ),
+                                child: const VerticalDivider(color: kGrey),
                               );
                             },
                             shrinkWrap: true,
                             itemCount: snapshot.data!.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return Comment(
-                                id: snapshot.data![index].author ??
-                                    "Error loading image",
-                                text: snapshot.data![index].text ??
-                                    "Error loading text",
-                              );
+                              final comment = snapshot.data![index];
+                              return buildComment(comment);
                             },
                           ),
                         ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height / 10,
-                        ),
+                            height: MediaQuery.of(context).size.height / 10),
                       ],
                     ),
                   );

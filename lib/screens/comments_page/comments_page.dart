@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sportsapp/helper/constants.dart';
-// import 'package:sportsapp/providers/AuthProvider.dart';
 import 'package:sportsapp/providers/navigation_service.dart';
 import 'package:sportsapp/screens/comments_page/widgets/body.dart';
 
@@ -18,15 +17,20 @@ class CommentsPage extends StatefulWidget {
 }
 
 class _CommentsPageState extends State<CommentsPage> {
-  late ScrollController scrollController;
+  ScrollController scrollController = ScrollController(
+    // initialScrollOffset: scrollController.position.maxScrollExtent,
+    keepScrollOffset: true,
+  );
   @override
   void initState() {
     super.initState();
 
-    scrollController = ScrollController(
-      initialScrollOffset: 0.0,
-      // keepScrollOffset: true,
-    );
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+    //   // scrollController = ScrollController(
+    //   //   initialScrollOffset: scrollController.position.maxScrollExtent,
+    //   //   keepScrollOffset: true,
+    //   // );
+    // });
   }
 
   @override

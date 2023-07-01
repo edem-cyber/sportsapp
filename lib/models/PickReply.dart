@@ -1,10 +1,10 @@
 
 class PickReply {
-  final String? text;
+  late final String? text;
   final String? author;
   final String? timestamp;
   final String? postId;
-  final String? type;
+  late final String? type;
 
   PickReply({this.type, this.text, this.author, this.timestamp, this.postId});
 

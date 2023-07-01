@@ -71,6 +71,9 @@ dependencies:
   crypto: ^3.0.3
   video_player: ^2.6.1
   flutter_downloader: ^1.10.4
+  chewie: ^1.5.0
+  chat_bubbles: ^1.4.1
+  
   # path_provider: ^2.0.12
   
 
@@ -136,4 +139,3 @@ flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icons/TOPPICK.png"
-

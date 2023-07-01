@@ -79,6 +79,17 @@ class DatabaseService {
         );
   }
 
+//   Future<void> addPickReplyWithMedia(PickReply reply, String doc, String mediaUrl) async {
+//   reply.mediaUrl = mediaUrl; // Assuming you have a property named `mediaUrl` in your `PickReply` class
+
+//   await _dataBase
+//       .collection('Picks')
+//       .doc(doc)
+//       .collection('replies')
+//       .add(reply.toJson());
+// }
+
+
 //* Getting the chats from the users
   Stream<QuerySnapshot> getChatsForUser({required String uid}) {
     return _dataBase
