@@ -89,42 +89,44 @@ class Comment extends StatelessWidget {
                 ),
               );
             } else if (isVideo(contentType)) {
-              final videoPlayerController =
-                  VideoPlayerController.network(mediaUrl);
-              final chewieController = ChewieController(
-                videoPlayerController: videoPlayerController,
-                autoPlay: false,
-                looping: false,
-                placeholder: Container(
-                  color: Colors.black,
-                  child: const Stack(
-                    children: [
-                      Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
+              if (extractMediaUrl(text) == mediaUrl) {
+                final videoPlayerController =
+                    VideoPlayerController.network(mediaUrl);
+                final chewieController = ChewieController(
+                  videoPlayerController: videoPlayerController,
+                  autoPlay: false,
+                  looping: false,
+                  placeholder: Container(
+                    color: Colors.black,
+                    child: const Stack(
+                      children: [
+                        Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      Positioned.fill(
-                        // child: Image.network(
-                        //   'https://example.com/video_thumbnail.jpg',
-                        //   fit: BoxFit.cover,
-                        // ),
-                        child: Center(
-                          child: Text("Video"),
+                        Positioned.fill(
+                          // child: Image.network(
+                          //   'https://example.com/video_thumbnail.jpg',
+                          //   fit: BoxFit.cover,
+                          // ),
+                          child: Center(
+                            child: Text("Video"),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
+                );
 
-              return SizedBox(
-                height: 200, // Adjust the desired height
-                width: double.infinity,
-                child: Chewie(
-                  controller: chewieController,
-                ),
-              );
+                return SizedBox(
+                  height: 200, // Adjust the desired height
+                  width: double.infinity,
+                  child: Chewie(
+                    controller: chewieController,
+                  ),
+                );
+              }
             }
           }
           return Container();
@@ -173,12 +175,14 @@ class Comment extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (extractMediaUrl(text).isNotEmpty) buildMedia(context),
-              BubbleSpecialThree(
-                text: text,
-                color: const Color(0xFFE8E8EE),
-                tail: true,
-                isSender: false,
-              ),
+              if (!isImage(extractMediaUrl(text)) &&
+                  !isVideo(extractMediaUrl(text)))
+                BubbleSpecialThree(
+                  text: text,
+                  color: const Color(0xFFE8E8EE),
+                  tail: true,
+                  isSender: false,
+                ),
             ],
           ),
         ),
